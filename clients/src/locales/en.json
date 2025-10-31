@@ -1,0 +1,17 @@
+{
+  "create": "Create",
+  "createLabel": "Create Room ?",
+  "join": "Join",
+  "joinLabel": "Enter the 6-digit room ID",
+  "theme": "Theme",
+  "language": "Language",
+  "settings": "Settings",
+  "cancel": "Cancel",
+  "Save": "Save",
+  "confirm": "Confirm",
+  "light": "Light",
+  "dark": "Dark",
+  "displayName": "Display name",
+  "nameTooShort": "Name must be at least 3 characters!",
+  "nameTooLong": "Name cannot exceed 30 characters!"
+}

@@ -1,0 +1,17 @@
+{
+  "create": "Tạo phòng",
+  "createLabel": "Xác nhận tạo phòng?",
+  "join": "Vào phòng",
+  "joinLabel": "Nhập ID phòng gồm 6 số",
+  "theme": "Tông màu",
+  "language": "Ngôn ngữ",
+  "settings": "Cài đặt",
+  "cancel": "Hủy",
+  "Save": "Lưu",
+  "confirm": "Xác nhận",
+  "light": "Sáng",
+  "dark": "Tối",
+  "displayName": "Tên hiển thị",
+  "nameTooShort": "Tên phải có ít nhất 3 ký tự!",
+  "nameTooLong": "Tên không được quá 30 ký tự!"
+}

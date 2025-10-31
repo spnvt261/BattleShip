@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* :root {
+    
+} */
+body{
+    text-decoration: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    box-sizing: border-box;
+}
+@layer base {
+    /* 🌞 LIGHT THEME */
+    :root {
+        --color-bg: #e8f9fd;
+        --color-text: #0f172a;
+        --color-board: #95ecf3;
+        --color-ship: #3b82f6;
+        --color-ship-hit: #f87171;
+        --color-ship-sunk: #dc2626;
+        --color-water: #bae6fd;
+        --color-water-miss: #93c5fd;
+        --color-accent: #0284c7;
+        --color-border: #38bdf8;
+        --color-panel: #ffffff;
+
+        /* BUTTON */
+        --color-btn-bg: #0284c7;
+        /* màu chính */
+        --color-btn-text: #ffffff;
+        /* chữ trắng */
+        --color-btn-hover: #0369a1;
+        /* tối hơn 1 chút */
+        --color-btn-active: #0c4a6e;
+        /* nhấn mạnh */
+        --color-btn-shadow: rgba(2, 132, 199, 0.3);
+        /* đổ bóng */
+        --color-btn-disabled: #94a3b8;
+        /* xám nhạt */
+
+        /* FORM  */
+        --color-form-bg:black;
+    }
+
+    /* 🌑 DARK THEME */
+    [data-theme="dark"] {
+        --color-bg: #0f172a;
+        --color-text: #f8fafc;
+        --color-board: #1e293b;
+        --color-ship: #0284c7;
+        --color-ship-hit: #f87171;
+        --color-ship-sunk: #b91c1c;
+        --color-water: #334155;
+        --color-water-miss: #475569;
+        --color-accent: #38bdf8;
+        --color-border: #64748b;
+        --color-panel: #1e293b;
+
+        /* BUTTON */
+        --color-btn-bg: #38bdf8;
+        --color-btn-text: #0f172a;
+        --color-btn-hover: #0ea5e9;
+        --color-btn-active: #0369a1;
+        --color-btn-shadow: rgba(56, 189, 248, 0.35);
+        --color-btn-disabled: #475569;
+
+        /* FORM  */
+        --color-form-bg:black;
+    }
+}
+
+
