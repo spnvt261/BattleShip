@@ -6,14 +6,15 @@ interface Props {
 
 }
 const JoinRoomModal = ({ }: Props) => {
-    const {t} = useAppSettings()
+    const { t } = useAppSettings()
     return (
         <div>
             <CustomKeyField6
-                className="w-full mx-auto"
+                className="mx-auto"
             />
+
             <div className="flex justify-end">
-                <CustomButton 
+                <CustomButton
                     label={t("confirm")}
                     className="mt-6"
                 />

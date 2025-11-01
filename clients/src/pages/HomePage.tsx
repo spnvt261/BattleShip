@@ -49,6 +49,7 @@ const HomePage = ({ }: Props) => {
                         btnLabel={t("join")}
                         formTitle={t("joinLabel")}
                         children={<JoinRoomModal />}
+                        showIconClose
                     />
                     <ModalToggle
                         btnLabel={t("settings")}

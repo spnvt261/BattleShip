@@ -45,6 +45,7 @@ export interface Ship {
     size: number;                     // Số ô mà tàu chiếm (5, 4, 3, 3, 2)
     coordinates: { x: number; y: number }[]; // Danh sách ô mà tàu chiếm
     sunk: boolean;                    // Bị đánh chìm chưa
+    image?:string;
 }
 
 export interface Shot {

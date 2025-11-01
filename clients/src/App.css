@@ -15,3 +15,15 @@
         opacity: 0;
     }
 }
+
+/* Tạo class custom cho Tailwind */
+.clip-hexagon {
+  clip-path: polygon(
+    15% 0%,   /* trên trái */
+    85% 0%,   /* trên phải */
+    100% 50%, /* giữa phải nhọn */
+    85% 100%, /* dưới phải */
+    15% 100%, /* dưới trái */
+    0% 50%    /* giữa trái nhọn */
+  );
+}

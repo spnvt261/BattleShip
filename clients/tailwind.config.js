@@ -14,6 +14,7 @@ export default {
                 bg: 'var(--color-bg)',
                 text: 'var(--color-text)',
                 board: 'var(--color-board)',
+                'border-cell': 'var(--color-cell-border)',
                 ship: 'var(--color-ship)',
                 'ship-hit': 'var(--color-ship-hit)',
                 'ship-sunk': 'var(--color-ship-sunk)',
@@ -24,6 +25,7 @@ export default {
                 panel: 'var(--color-panel)',
                 btn: {
                     bg: 'var(--color-btn-bg)',
+                    bg2: 'var(--color-btn-bg2)',
                     text: 'var(--color-btn-text)',
                     hover: 'var(--color-btn-hover)',
                     active: 'var(--color-btn-active)',

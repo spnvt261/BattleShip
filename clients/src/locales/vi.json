@@ -13,5 +13,9 @@
   "dark": "Tối",
   "displayName": "Tên hiển thị",
   "nameTooShort": "Tên phải có ít nhất 3 ký tự!",
-  "nameTooLong": "Tên không được quá 30 ký tự!"
+  "nameTooLong": "Tên không được quá 30 ký tự!",
+  "deployFleet":"Xếp thuyền chiến thuật",
+  "ready":"Sẵn sàng",
+  "dragToMove":"Giữ để di chuyển thuyền",
+  "clickToRotate":"Nhân 2 lần để xoay thuyền"
 }

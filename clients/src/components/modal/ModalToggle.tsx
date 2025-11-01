@@ -7,9 +7,10 @@ interface Props {
     btnLabel: string;
     formTitle: string;
     children?: React.ReactNode; // Nội dung form tùy chỉnh
+    showIconClose?: boolean
 }
 
-const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children }) => {
+const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children, showIconClose }) => {
     const [showModal, setShowModal] = useState(false);
     const renderChildren = () => {
         if (!children) return null;
@@ -65,12 +66,15 @@ const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children }) => {
                                         clipPath: "polygon(20px 0%, 100% 0%, 100% 40px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% calc(100% - 20px), 0% 20px)",
                                     }}
                                 >
-                                    <button
-                                        onClick={() => setShowModal(false)}
-                                        className="absolute top-3 right-3 text-text rounded-[.75rem] p-1 hover:bg-btn-hover z-10"
-                                    >
-                                        <AiOutlineClose size={24} />
-                                    </button>
+                                    { showIconClose&&
+                                        <button
+                                            onClick={() => setShowModal(false)}
+                                            className="absolute top-3 right-3 text-text rounded-[.75rem] p-1 hover:bg-btn-hover z-10"
+                                        >
+                                            <AiOutlineClose size={24} />
+                                        </button>
+                                    }
+
 
                                     <h2 className="text-xl font-bold mb-4 pr-8">{formTitle}</h2>
 

@@ -16,6 +16,9 @@ body{
 @layer base {
     /* 🌞 LIGHT THEME */
     :root {
+        /* CELL  */
+        --color-cell-border: #000;
+
         --color-bg: #e8f9fd;
         --color-text: #0f172a;
         --color-board: #95ecf3;
@@ -23,13 +26,15 @@ body{
         --color-ship-hit: #f87171;
         --color-ship-sunk: #dc2626;
         --color-water: #bae6fd;
-        --color-water-miss: #93c5fd;
+        --color-water-miss: #acafb3;
         --color-accent: #0284c7;
         --color-border: #38bdf8;
         --color-panel: #ffffff;
 
+        /* --color-cell- */
         /* BUTTON */
         --color-btn-bg: #0284c7;
+        --color-btn-bg2: #0284c7;
         /* màu chính */
         --color-btn-text: #ffffff;
         /* chữ trắng */
@@ -48,6 +53,9 @@ body{
 
     /* 🌑 DARK THEME */
     [data-theme="dark"] {
+        /* CELL  */
+        --color-cell-border: #fff;
+        
         --color-bg: #0f172a;
         --color-text: #f8fafc;
         --color-board: #1e293b;
@@ -55,13 +63,15 @@ body{
         --color-ship-hit: #f87171;
         --color-ship-sunk: #b91c1c;
         --color-water: #334155;
-        --color-water-miss: #475569;
+        --color-water-miss: #9eabbe;
         --color-accent: #38bdf8;
         --color-border: #64748b;
         --color-panel: #1e293b;
 
+
         /* BUTTON */
         --color-btn-bg: #38bdf8;
+        --color-btn-bg2: #fff;
         --color-btn-text: #0f172a;
         --color-btn-hover: #0ea5e9;
         --color-btn-active: #0369a1;
