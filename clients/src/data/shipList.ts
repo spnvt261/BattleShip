@@ -7,7 +7,7 @@ export const ListShip : Ship[] = [
         size: 2, 
         coordinates: [], 
         sunk: false,
-        image:"public/images/ships/carrier.png"
+        image:"/images/ships/carrier.png"
     },
     { 
         id: "2", 
@@ -15,7 +15,7 @@ export const ListShip : Ship[] = [
         size: 3, 
         coordinates: [], 
         sunk: false ,
-        image:"public/images/ships/battleship.png"
+        image:"/images/ships/battleship.png"
     },
     { 
         id: "3", 
@@ -23,7 +23,7 @@ export const ListShip : Ship[] = [
         size: 3, 
         coordinates: [], 
         sunk: false ,
-        image:"public/images/ships/cruiser.png"
+        image:"/images/ships/cruiser.png"
     },
     { 
         id: "4", 
@@ -31,7 +31,7 @@ export const ListShip : Ship[] = [
         size: 4, 
         coordinates: [], 
         sunk: false ,
-        image:"public/images/ships/submarine.png"
+        image:"/images/ships/submarine.png"
     },
     { 
         id: "5", 
@@ -39,6 +39,6 @@ export const ListShip : Ship[] = [
         size: 5, 
         coordinates: [], 
         sunk: false ,
-        image:"public/images/ships/destroyer.png"
+        image:"/images/ships/destroyer.png"
     },
 ]

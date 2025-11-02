@@ -17,5 +17,20 @@
   "deployFleet":"Xếp thuyền chiến thuật",
   "ready":"Sẵn sàng",
   "dragToMove":"Giữ để di chuyển thuyền",
-  "clickToRotate":"Nhân 2 lần để xoay thuyền"
+  "clickToRotate":"Nhân 2 lần để xoay thuyền",
+   "creatingRoom":"Đang tạo phòng...",
+  "creatRoomSuccess":"Tạo phòng thành công!",
+  "room_of_player": "Phòng của {{player}}",
+  "wating_player": "Đợi người chơi khác",
+  "Not enough players": "Chưa đủ người",
+  "Room not found":"Không tìm thấy phòng",
+  "Room is full":"Phòng đã đầy!",
+  "you":"bạn",
+  "loading_join":"Đang vào phòng...",
+  "leave":"Đã rời phòng",
+  "success":"Thành công",
+  "error":"Xảy ra lỗi!",
+  "loading":"Loading...",
+  "player_join":"{{player}} đã vào phòng",
+  "player_left":"{{player}} đã rời phòng"
 }

@@ -2,7 +2,7 @@
 import { socket } from "../socket";
 import type { Player, Ship, Game, Room } from "../types/game";
 
-// ---- Emit các action ----
+// ---- Emit c├íc action ----
 export const createRoom = (name: string, playerId:string, cb?: (res: any) => void) =>
     socket.emit("create_room", { name ,playerId}, cb);
 
@@ -31,7 +31,7 @@ export const sendChat = (roomId: string, name: string, text: string, cb?: (res: 
 
 
 
-// ---- Listen các event từ server ----
+// ---- Listen c├íc event tß╗½ server ----
 export const onRoomUpdate = (cb: (payload: { room: Room; players: Player[] }) => void) =>{
     socket.on("room_update", cb);
     return () => socket.off("room_update", cb); 

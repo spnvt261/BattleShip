@@ -1,5 +1,5 @@
 
-import ConfirmModal from "../components/modal/ConfirmModal";
+import CreateRoomModal from "../components/modal/CreateRoomModal";
 import JoinRoomModal from "../components/modal/JoinRoomModal";
 import ModalToggle from "../components/modal/ModalToggle";
 import SettingModal from "../components/modal/SettingModal";
@@ -9,9 +9,6 @@ interface Props { }
 
 const HomePage = ({ }: Props) => {
     const { t } = useAppSettings();
-    const handleCreateRoom = () => {
-
-    }
     return (
         <div className="w-full h-screen overflow-hidden bg-bg">
             <div className="flex flex-col items-center justify-center h-full">
@@ -41,9 +38,7 @@ const HomePage = ({ }: Props) => {
                     <ModalToggle
                         btnLabel={t("create")}
                         formTitle={t("createLabel")}
-                        children={<ConfirmModal
-                            onConfirm={handleCreateRoom}
-                        />}
+                        children={<CreateRoomModal/>}
                     />
                     <ModalToggle
                         btnLabel={t("join")}

@@ -14,6 +14,7 @@ interface Props {
     isFocus?: boolean;
     disabled?: boolean;
     small?: boolean
+    gridSize:number;
 }
 
 const Cell = ({
@@ -25,7 +26,8 @@ const Cell = ({
     shot,
     isFocus,
     disabled,
-    small
+    small,
+    gridSize
 }: Props) => {
     const handleClick = () => {
         if (!hit && !disabled) {
@@ -40,7 +42,7 @@ const Cell = ({
                 relative flex items-center justify-center
                 ${className}
                 ${disabled?"cursor-default":"hover:bg-panel"}
-                ${small ? 'w-5 h-5' : 'w-10 h-10'}
+                ${small ? 'w-5 h-5' : `w-[${gridSize}px] h-[${gridSize}px]`}
                 ${hit ? (hasShip ? "bg-ship-hit" : "bg-water-miss") : "bg-water"}
                 ${isFocus ? "ring-2 ring-accent border-accent z-10" : "border-border-cell"}
                 border transition-all duration-200 cursor-pointer select-none
@@ -67,7 +69,7 @@ const Cell = ({
                             data-effect={`${x}-${y}`}
                         />
 
-                        {/* Icon: nổ bom hoặc sóng nước */}
+                        {/* Icon: nß╗ò bom hoß║╖c s├│ng n╞░ß╗¢c */}
                         <motion.div
                             key={`icon-${x}-${y}`}
                             initial={{ scale: 0, opacity: 0 }}
@@ -81,8 +83,8 @@ const Cell = ({
                             ) : (
                                 // <FaWater className="text-blue-700 w-[80%] h-[80%]" />
                                 <MdCircle 
-                                    className="text-gray-700 w-[80%] h-[80%]"  // màu lavender
-                                    stroke="currentColor"                        // đảm bảo lấy màu từ text color
+                                    className="text-gray-700 w-[80%] h-[80%]"  // m├áu lavender
+                                    stroke="currentColor"                        // ─æß║úm bß║úo lß║Ñy m├áu tß╗½ text color
                                 />
                             )}
                         </motion.div>

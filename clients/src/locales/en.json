@@ -17,5 +17,20 @@
   "deployFleet":"Deploy Fleet",
   "ready":"Ready",
   "dragToMove":"Drag to move",
-  "clickToRotate":"Double click to rotate"
+  "clickToRotate":"Double click to rotate",
+  "creatingRoom":"Creating room...",
+  "creatRoomSuccess":"Create room success!",
+  "room_of_player": "{{player}}'s Room",
+  "wating_player": "Waiting for player",
+  "Not enough players": "Not enough players!",
+  "Room not found":"Room not found!",
+  "Room is full":"Room is full",
+  "you":"you",
+  "loading_join":"Joining Room...",
+  "leave":"Left the room",
+  "success":"Success",
+  "error":"Error!",
+  "loading":"Loading...",
+  "player_join":"{{player}} joined the room",
+  "player_left":"{{player}} left the room"
 }

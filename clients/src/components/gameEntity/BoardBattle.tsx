@@ -12,13 +12,14 @@ interface Props {
     small?: boolean;
     className?: string;
     gridCount: number;
+    gridSize?:number;
 }
 
-const BoardBattle = ({ type, showAxisLabels, small, className, gridCount }: Props) => {
+const BoardBattle = ({ type, showAxisLabels, small, className, gridCount,gridSize=40 }: Props) => {
     const letters = "ABCDEFGHIJ".slice(0, gridCount).split("");
     const numbers = Array.from({ length: gridCount }, (_, i) => i + 1);
 
-    // Khởi tạo bảng ngẫu nhiên
+    // Khß╗ƒi tß║ío bß║úng ngß║½u nhi├¬n
     const [grid, setGrid] = useState<CellState[][]>(
         Array.from({ length: gridCount }, () =>
             Array.from({ length: gridCount }, () => ({
@@ -31,7 +32,7 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount }: Prop
     const [focusedCell, setFocusedCell] = useState<{ x: number; y: number } | null>(null);
     const [disabledCells, setDisabledCells] = useState<{ x: number; y: number }[]>([]);
 
-    /** 🔒 Disable vùng quanh ô trúng trong 1 giây */
+    /** ≡ƒöÆ Disable v├╣ng quanh ├┤ tr├║ng trong 1 gi├óy */
     const disableAround = (x: number, y: number) => {
         const radius = 1;
         const toDisable: { x: number; y: number }[] = [];
@@ -56,9 +57,9 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount }: Prop
         }, 1000);
     };
 
-    /** 🔫 Khi bắn */
+    /** ≡ƒö½ Khi bß║»n */
     const shot = (x: number, y: number) => {
-        console.log(`💥 Shot at (${x + 1}, ${y + 1})`);
+        console.log(`≡ƒÆÑ Shot at (${x + 1}, ${y + 1})`);
 
         setGrid((prev) =>
             prev.map((row, rowIndex) =>
@@ -75,7 +76,7 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount }: Prop
         setFocusedCell(null);
     };
 
-    /** 👆 Khi click vào 1 ô */
+    /** ≡ƒæå Khi click v├áo 1 ├┤ */
     const handleClick = (x: number, y: number) => {
         if (type !== "canShot") return;
 
@@ -91,7 +92,7 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount }: Prop
 
     return (
         <div className={`inline-block ${className}`}>
-            {/* Trục X */}
+            {/* Trß╗Ñc X */}
             {showAxisLabels && (
                 <div className="flex ml-8 mb-1">
                     {numbers.map((num) => (
@@ -105,18 +106,18 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount }: Prop
                 </div>
             )}
 
-            {/* Bảng */}
+            {/* Bß║úng */}
             <div className="flex flex-col">
                 {letters.map((letter, row) => (
                     <div key={letter} className="flex">
-                        {/* Trục Y */}
+                        {/* Trß╗Ñc Y */}
                         {showAxisLabels && (
                             <div className="w-8 h-10 flex items-center justify-center font-bold">
                                 {letter}
                             </div>
                         )}
 
-                        {/* Các ô */}
+                        {/* C├íc ├┤ */}
                         {numbers.map((_, col) => (
                             <Cell
                                 key={`${row}-${col}`}
@@ -128,6 +129,7 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount }: Prop
                                 isFocus={focusedCell?.x === row && focusedCell?.y === col}
                                 disabled={isDisabled(row, col) || type !== "canShot"}
                                 small={small}
+                                gridSize={gridSize}
                             />
                         ))}
                     </div>

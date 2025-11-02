@@ -92,20 +92,20 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             }
 
             if (!placed) {
-                console.warn(`Không thể đặt tàu ${ship.id} sau ${attempts} lần thử`);
+                console.warn(`Kh├┤ng thß╗â ─æß║╖t t├áu ${ship.id} sau ${attempts} lß║ºn thß╗¡`);
             }
         }
 
         return result;
     };
-    // State lưu vị trí và hướng tàu
+    // State l╞░u vß╗ï tr├¡ v├á h╞░ß╗¢ng t├áu
     const [ships, setShips] = useState<
         Record<string, { x: number; y: number; isVertical: boolean }>
     >(
         () => generateRandomPositions(gridCount, gridSize)
     );
 
-    /** Cập nhật vị trí/hướng tàu */
+    /** Cß║¡p nhß║¡t vß╗ï tr├¡/h╞░ß╗¢ng t├áu */
     const updateShip = useCallback(
         (id: string, data: Partial<{ x: number; y: number; isVertical: boolean }>) => {
             setShips(prev => {
@@ -117,7 +117,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
         [onSetupChange]
     );
 
-    // Expose hàm random cho cha
+    // Expose h├ám random cho cha
     useImperativeHandle(ref, () => ({
         randomizeShips: () => {
             const newPositions = generateRandomPositions(gridCount, gridSize);
@@ -129,7 +129,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
 
 
-    /** Lấy các ô mà tàu chiếm */
+    /** Lß║Ñy c├íc ├┤ m├á t├áu chiß║┐m */
     const getOccupiedCells = useCallback(
         (pos: { x: number; y: number; isVertical: boolean }, size: number) => {
             const cells: { x: number; y: number }[] = [];
@@ -147,7 +147,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
         [gridSize]
     );
 
-    /** Kiểm tra va chạm và giới hạn board */
+    /** Kiß╗âm tra va chß║ím v├á giß╗¢i hß║ín board */
     const checkCollision = useCallback(
         (id: string, pos: { x: number; y: number; isVertical: boolean }) => {
             const shipData = ListShip.find(s => s.id === id);
@@ -155,7 +155,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
             const occupied = getOccupiedCells(pos, shipData.size);
 
-            // Vượt khỏi board
+            // V╞░ß╗út khß╗Åi board
             if (
                 occupied.some(
                     c => c.x < 0 || c.x >= gridCount || c.y < 0 || c.y >= gridCount
@@ -163,7 +163,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             )
                 return true;
 
-            // Va chạm với tàu khác
+            // Va chß║ím vß╗¢i t├áu kh├íc
             for (const [otherId, otherPos] of Object.entries(ships)) {
                 if (otherId === id) continue;
                 const otherShip = ListShip.find(s => s.id === otherId);
@@ -193,14 +193,14 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             const shipData = ListShip.find(s => s.id === id);
             if (!shipData) return;
 
-            // Tính vị trí mới theo delta, snap về lưới
+            // T├¡nh vß╗ï tr├¡ mß╗¢i theo delta, snap vß╗ü l╞░ß╗¢i
             let newPos = {
                 x: Math.round((prev.x + delta.x) / gridSize) * gridSize,
                 y: Math.round((prev.y + delta.y) / gridSize) * gridSize,
                 isVertical: prev.isVertical,
             };
 
-            // Ghim tàu vào biên gần nhất
+            // Ghim t├áu v├áo bi├¬n gß║ºn nhß║Ñt
             const clampPositionToBoard = (
                 pos: typeof newPos,
                 shipSize: number
@@ -216,7 +216,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
             newPos = clampPositionToBoard(newPos, shipData.size);
 
-            // Nếu va chạm với tàu khác, không cập nhật
+            // Nß║┐u va chß║ím vß╗¢i t├áu kh├íc, kh├┤ng cß║¡p nhß║¡t
             if (checkCollision(id, newPos)) return;
 
             updateShip(id, newPos);
@@ -224,7 +224,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
         [ships, gridSize, gridCount, checkCollision, updateShip]
     );
 
-    /** Xoay tàu (double click) */
+    /** Xoay t├áu (double click) */
     const handleRotate = useCallback(
         (id: string) => {
             const current = ships[id];
@@ -236,7 +236,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                 isVertical: !current.isVertical,
             };
 
-            // Nếu xoay bị đè hoặc vượt, không đổi
+            // Nß║┐u xoay bß╗ï ─æ├¿ hoß║╖c v╞░ß╗út, kh├┤ng ─æß╗òi
             if (checkCollision(id, newPos)) return;
             updateShip(id, newPos);
         },
@@ -249,7 +249,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             className={`inline-block ${className || ""}`}
             style={{ position: "relative" }}
         >
-            {/* Trục X */}
+            {/* Trß╗Ñc X */}
             {(
                 <div className="flex ml-[40px] mb-1">
                     {numbers.map((num, idx) => (
@@ -275,7 +275,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
             <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid]}>
                 <div style={{ display: "flex", position: "relative" }}>
-                    {/* Trục Y */}
+                    {/* Trß╗Ñc Y */}
                     {letters.map((letter, idx) => (
                         <div
                             key={letter}
@@ -295,7 +295,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                         </div>
                     ))}
 
-                    {/* Board chính */}
+                    {/* Board ch├¡nh */}
                     <div style={{ position: "relative" }}>
                         {/* Grid */}
                         <div
@@ -314,6 +314,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                                     hit={false}
                                     disabled
                                     shot={() => { }}
+                                    gridSize={gridSize}
                                 />
                             ))}
                         </div>
@@ -333,6 +334,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                                     positionFirstBlock={pos}
                                     isVertical={pos.isVertical}
                                     onRotate={handleRotate}
+                                    
                                 />
                             );
                         })}

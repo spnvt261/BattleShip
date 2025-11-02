@@ -9,10 +9,11 @@ interface AppSettingsContextType {
     theme: Theme;
     language: Language;
     playerName: string;
+    playerId: string;
     setPlayerName: (name: string) => void;
     setTheme: (theme: Theme) => void;
     setLanguage: (lang: Language) => void;
-    t: (key: string) => string;
+    t: (key: string, variables?: Record<string, string>) => string;
 }
 
 const AppSettingsContext = createContext<AppSettingsContextType | undefined>(undefined);
@@ -30,6 +31,14 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
         const randomName = `user${Math.floor(Math.random() * 9000) + 1000}`;
         localStorage.setItem("player_name", randomName);
         return randomName;
+    });
+
+    const [playerId] = useState<string>(() => {
+        const storedId = localStorage.getItem("player_id");
+        if (storedId && storedId !== "") return storedId.trim();
+        const randomId = `${Math.floor(Math.random() * 9000000) + 1000000}`;
+        localStorage.setItem("player_id", randomId);
+        return randomId;
     });
 
     const setPlayerName = (name: string) => {
@@ -58,9 +67,20 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }, [theme]);
     const translations = language === "en" ? en : vi;
 
-    const t = (key: string) => translations[key as keyof typeof translations] || key;
+    const t = (key: string, variables?: Record<string, string>) => {
+        let text = translations[key as keyof typeof translations] || key;
+
+        if (variables) {
+            Object.keys(variables).forEach((k) => {
+                const regex = new RegExp(`{{${k}}}`, "g");
+                text = text.replace(regex, variables[k]);
+            });
+        }
+
+        return text;
+    };
     return (
-        <AppSettingsContext.Provider value={{ theme, language, playerName, setTheme, setLanguage, t, setPlayerName }}>
+        <AppSettingsContext.Provider value={{ theme, language, playerName, setTheme, setLanguage, t, setPlayerName, playerId }}>
             {children}
         </AppSettingsContext.Provider>
     );
