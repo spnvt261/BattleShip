@@ -1,20 +1,41 @@
 // src/hooks/useGameSocket.ts
 import { useEffect } from "react";
 import * as gameSocketService from "../services/gameSocketService";
-import { socket } from "../socket";
+import { socket } from "../socketConfig";
+import { useNotification } from "../context/NotifycationContext";
+import { useAppSettings } from "../context/appSetting";
 
 export function useSocket() {
-  useEffect(() => {
-    // Tß╗▒ ─æß╗Öng reconnect ─æ├ú ─æ╞░ß╗úc socket.io handle
-    socket.on("connect", () => console.log("Socket connected:", socket.id));
-    socket.on("disconnect", () => console.log("Socket disconnected"));
+  const { notify } = useNotification();
+  const { t } = useAppSettings();
 
-    // Cleanup khi component unmount
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.warn("⚠️ Socket disconnected");
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Không thể kết nối tới server:", err.message);
+      notify(t("connect_error"), "error");
+    });
+
+    socket.on("reconnect_failed", () => {
+      console.error("❌ Kết nối lại server thất bại sau 3 lần");
+      notify(t("reconnect_failed"), "error");
+      socket.disconnect();
+    });
+
     return () => {
-      socket.off(); // remove tß║Ñt cß║ú listener
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("connect_error");
+      socket.off("reconnect_failed");
     };
   }, []);
 
-  // Trß║ú vß╗ü to├án bß╗Ö service ─æß╗â component gß╗ìi trß╗▒c tiß║┐p
   return gameSocketService;
 }

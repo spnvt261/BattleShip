@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react"
 import { FiCheck, FiCopy } from "react-icons/fi";
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useAppSettings } from "../context/appSetting";
 import { useSocket } from "../hooks/useSocket";
 import { useNotification } from "../context/NotifycationContext";
 import CustomButton from "../components/customButton";
-import { useRoom } from "../hooks/useRoom";
 import { usePlayerChangeNotify } from "../hooks/usePlayerChangeNotify";
+import { useGame } from "../context/GameContext";
 
 
 
 const RoomPage = () => {
-    const { roomId, player1, player2 } = useRoom();
-    usePlayerChangeNotify(player1,player2);
+    const { room, player1, player2, setRoomId, cleanRoom, game } = useGame();
+    const { roomId } = useParams<{ roomId: string }>()
+    usePlayerChangeNotify(player1, player2);
     const [copied, setCopied] = useState(false);
-    const { leaveRoom, joinRoom,startGame } = useSocket();
+    const { leaveRoom, joinRoom, startGame } = useSocket();
     const { t, playerId, playerName } = useAppSettings()
     const navigate = useNavigate();
     const { notify } = useNotification();
     const [loading, setLoading] = useState<boolean>(false);
+
     const handleCopy = () => {
         if (roomId) navigator.clipboard.writeText(roomId).then(() => {
             setCopied(true);
@@ -26,29 +28,53 @@ const RoomPage = () => {
         });
     };
 
-    useEffect(() => {
 
-        return () => {
-            roomId &&leaveRoom(roomId, playerId);
-        };
-    }, [])
     useEffect(() => {
-        if(!roomId || (!player1 && !player2)) return;
+        if (!roomId) {
+            return
+        }
+        if (!room) setRoomId(roomId)
+
+
+        const handleBeforeUnload = () => {
+            leaveRoom(roomId, playerId);
+            cleanRoom();
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            roomId && leaveRoom(roomId, playerId);
+            cleanRoom();
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [roomId])
+
+    useEffect(() => {
+        if (!roomId)return
+        if (game) {
+            if (game.status == 'placing') {
+                navigate(`/room/${roomId}/setup`)
+            }
+        }
+    }, [game])
+
+
+    useEffect(() => {
+        if (!roomId || (!player1 && !player2)) return;
         const currentPlayerInRoom = playerId === player1?.id || player2?.id === playerId;
 
         if (!currentPlayerInRoom) {
-            console.log(playerId, player1?.id, player2?.id);
-
             if (!player1 || !player2) {
-                // Chỗ còn trống, join room
-                joinRoom(roomId, playerName, playerId);
+                joinRoom(roomId, playerName, playerId, (res) => {
+                    console.log(res);
+
+                });
             } else {
                 // Room full và người này không có trong room → notify
                 notify(t("Room is full"), "warning");
                 navigate("/");
             }
         }
-        
+
     }, [player1])
 
     const handleStartGame = () => {
@@ -58,12 +84,20 @@ const RoomPage = () => {
             setLoading(false)
             return;
         }
-        roomId&& playerId&& startGame(roomId,playerId)
+        roomId && playerId && startGame(roomId, playerId, (res) => {
+            // console.log(res);
+            if (res.error) {
+
+            } else if (res.ok) {
+
+            }
+        })
     }
 
     const handleLeaveRoom = () => {
         roomId && leaveRoom(roomId, playerId)
-        notify(t("leave"), 'success')
+        cleanRoom();
+        notify(t("leave"), 'warning')
         navigate("/")
     }
 

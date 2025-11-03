@@ -20,6 +20,7 @@
   "clickToRotate":"Nhân 2 lần để xoay thuyền",
    "creatingRoom":"Đang tạo phòng...",
   "creatRoomSuccess":"Tạo phòng thành công!",
+  "creatRoomFail":"Có lỗi khi tạo phòng! Hãy thử lại",
   "room_of_player": "Phòng của {{player}}",
   "wating_player": "Đợi người chơi khác",
   "Not enough players": "Chưa đủ người",
@@ -32,5 +33,6 @@
   "error":"Xảy ra lỗi!",
   "loading":"Loading...",
   "player_join":"{{player}} đã vào phòng",
-  "player_left":"{{player}} đã rời phòng"
+  "player_left":"{{player}} đã rời phòng",
+  "connect_error":"Có lỗi khi kết nối tới sever"
 }

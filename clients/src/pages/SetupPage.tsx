@@ -4,11 +4,15 @@ import { useAppSettings } from "../context/appSetting"
 import { FaRotateLeft } from "react-icons/fa6";
 import { FaRandom } from "react-icons/fa";
 import { useEffect, useMemo, useRef } from "react";
-import { useRoom } from "../hooks/useRoom";
 import { useNotification } from "../context/NotifycationContext";
+import { useGame } from "../context/GameContext";
+import { useParams } from "react-router-dom";
 const SetupPage = () => {
     const { t, playerId } = useAppSettings();
-    const {player1,player2} = useRoom();
+    const {roomId} = useParams<{roomId:string}>()
+    console.log(roomId);
+    
+    const {player1,player2,setRoomId,room} = useGame();
     const {notify} = useNotification();
     const boardRef = useRef<BoardSetupRef>(null);
     const handleReady = () => {
@@ -24,9 +28,14 @@ const SetupPage = () => {
     //     // console.log("Ships updated:", ships);
     // };
     useEffect(() => {
+        if (!roomId) {
+            return
+        }
+        if (!room) setRoomId(roomId)
         if(!player1 && !player2){
             return
         }
+        
         if (playerId!== player1?.id && playerId!==player2?.id) {
             notify(t('error'),'error')
             return;

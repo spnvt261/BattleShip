@@ -20,6 +20,7 @@
   "clickToRotate":"Double click to rotate",
   "creatingRoom":"Creating room...",
   "creatRoomSuccess":"Create room success!",
+   "creatRoomFail":"Error! Try again.",
   "room_of_player": "{{player}}'s Room",
   "wating_player": "Waiting for player",
   "Not enough players": "Not enough players!",
@@ -32,5 +33,6 @@
   "error":"Error!",
   "loading":"Loading...",
   "player_join":"{{player}} joined the room",
-  "player_left":"{{player}} left the room"
+  "player_left":"{{player}} left the room",
+  "connect_error":"Error connecting to server"
 }

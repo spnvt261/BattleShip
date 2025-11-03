@@ -5,6 +5,7 @@ import { useSocket } from "../../hooks/useSocket";
 import CustomButton from "../customButton";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../context/NotifycationContext";
+import { useGame } from "../../context/GameContext";
 
 interface Props {
     label?: string;
@@ -16,14 +17,23 @@ const CreateRoomModal = ({ label, onCancel,onClose }: Props) => {
     const { t ,playerName,playerId} = useAppSettings();
     const [loading,setLoading] = useState<boolean>(false)
     const {createRoom } = useSocket();
+    const {setRoom} = useGame();
     const nagigate = useNavigate()
     const {notify} = useNotification()
     const handleCreateRoom = ()=>{
         setLoading(true)
         notify(t("creatingRoom"),'loading');
         createRoom(playerName,playerId,(res)=>{
+            if(!res.room){
+                setLoading(false)
+                notify(`${t("createRoomFail") + res?.error}`,'error');
+                return;
+            }
+            // console.log(res);
+            
+            setRoom(res.room)
             // console.log(res.roomId);
-            nagigate(`/room/${res.roomId}`)
+            nagigate(`/room/${res.room.id}`)
             notify(t("createRoomSuccess"),'success');
         })
     }

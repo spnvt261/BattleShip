@@ -1,32 +1,33 @@
 // src/services/gameSocketService.ts
-import { socket } from "../socket";
+import { socket } from "../socketConfig";
 import type { Player, Ship, Game, Room } from "../types/game";
 
-// ---- Emit c├íc action ----
-export const createRoom = (name: string, playerId:string, cb?: (res: any) => void) =>
+export const createRoom = (name: string, playerId:string, cb?: (res: { room: Room; playerId: string; error?:string }) => void) =>
     socket.emit("create_room", { name ,playerId}, cb);
 
-export const joinRoom = (roomId: string, name: string,playerId:string, cb?: (res: any) => void) =>
+export const getRoom = (roomId: string, cb: (res: { room?: Room; players?: Player[];error?:string }) => void) =>
+    socket.emit("get_room", { roomId }, cb);
+
+export const joinRoom = (roomId: string, name: string,playerId:string, cb?: (res: { ok?: boolean; error?: string; room?: Room; playerId?: string }) => void) =>
     socket.emit("join_room", { roomId, name, playerId }, cb);
 
-export const leaveRoom = (roomId: string,playerId:string, cb?: (res: any) => void) =>
+export const leaveRoom = (roomId: string,playerId:string, cb?: (res: { ok?: boolean; error?: string }) => void) =>
     socket.emit("leave_room", { roomId, playerId }, cb);
 
-export const startGame = (roomId: string,playerId:string, cb?: (res: any) => void) => {
+export const startGame = (roomId: string,playerId:string, cb?: (res: { ok?: boolean; error?: string; game?: Game }) => void) => {
     socket.emit("start_game", { roomId, playerId }, cb);
 }
     
-
 export const placeShips = (roomId: string, ships: Ship[], cb?: (res: any) => void) =>
     socket.emit("place_ships", { roomId, ships }, cb);
 
-export const ready = (roomId: string, playerId: string, cb?: (res: any) => void) =>
+export const ready = (roomId: string, playerId: string, cb?: (res: { ok?: boolean }) => void) =>
     socket.emit("ready", { roomId, playerId }, cb);
 
-export const attack = (roomId: string, x: number, y: number, cb?: (res: any) => void) =>
+export const attack = (roomId: string, x: number, y: number, cb?: (res: { success: boolean; error?: string }) => void) =>
     socket.emit("attack", { roomId, x, y }, cb);
 
-export const sendChat = (roomId: string, name: string, text: string, cb?: (res: any) => void) =>
+export const sendChat = (roomId: string, name: string, text: string, cb?: (res: { ok?: boolean }) => void) =>
     socket.emit("chat", { roomId, name, text }, cb);
 
 
@@ -51,6 +52,4 @@ export const onGameOver = (cb: (payload: { winner: string }) => void) =>
 export const onChat = (cb: (msg: { roomId: string; name: string; text: string }) => void) =>
     socket.on("chat", cb);
 
-export const getRoom = (roomId: string, cb: (res: { roomId: string; players: Player[] }) => void) =>
-    socket.emit("get_room", { roomId }, cb);
 

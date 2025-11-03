@@ -19,18 +19,21 @@ export function initSockets(io: IOServer) {
             const room = createRoom(payload.name, playerId);
             socket.join(room.id);
             // return roomId and confirmed playerId
-            cb && cb({ roomId: room.id, playerId });
+            cb && cb({ room: room, playerId });
             io.to(room.id).emit("room_update", { room, players: room.players });
         });
 
         socket.on("get_room", (payload: { roomId: string }, cb: any) => {
             const { roomId } = payload;
-            const room = getRoom(roomId); // Lấy room từ service
+            const room = getRoom(roomId);
             if (!room) {
                 return cb && cb({ error: "Room not found" });
             }
-            // Trả room cho client qua callback
-            cb && cb({ roomId: room.id, players: room.players });
+
+            // JOIN socket vào room để nhận sự kiện realtime
+            socket.join(roomId);
+
+            cb && cb({ room: room, players: room.players });
         });
 
 
@@ -61,6 +64,9 @@ export function initSockets(io: IOServer) {
                 cb && cb({ error: res.error });
                 return;
             }
+            // socket.join(payload.roomId);
+            // const room = getRoom(payload.roomId);
+            // io.to(payload.roomId).emit("room_update", { room, players: room?.players });
             cb && cb({ ok: true, game: res.game });
         });
 
