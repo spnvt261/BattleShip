@@ -14,7 +14,7 @@
   "displayName": "Tên hiển thị",
   "nameTooShort": "Tên phải có ít nhất 3 ký tự!",
   "nameTooLong": "Tên không được quá 30 ký tự!",
-  "deployFleet":"Xếp thuyền chiến thuật",
+  "deployFleet":"Triển khai hạm đội",
   "ready":"Sẵn sàng",
   "dragToMove":"Giữ để di chuyển thuyền",
   "clickToRotate":"Nhân 2 lần để xoay thuyền",
@@ -35,5 +35,9 @@
   "player_join":"{{player}} đã vào phòng",
   "player_left":"{{player}} đã rời phòng",
   "connect_error":"Có lỗi khi kết nối tới sever",
-  "confirm_out": "Xác nhận rời khỏi phòng?"
+  "confirm_out": "Xác nhận rời khỏi phòng?",
+  "enemy_fleet":"Hạm đội của đối thủ",
+  "enemy_turn":"Lượt của đối thủ",
+  "your_fleet":"Hạm đội của bạn",
+  "your_turn":"Lượt của bạn"
 }

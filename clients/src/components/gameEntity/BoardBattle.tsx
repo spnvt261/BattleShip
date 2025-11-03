@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Cell from "./Cell";
+import type { Ship, Shot } from "../../types/game";
 
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
     className?: string;
     gridCount?: number;
     gridSize?:number;
+    shotsFired?:Shot[];
+    myListShip?:Ship[]
 }
 
 const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10,gridSize=40 }: Props) => {
@@ -47,7 +50,9 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10,gr
 
     
     const shot = (x: number, y: number) => {
-
+        disableAround(x,y)
+        console.log(x,y);
+        
         setFocusedCell(null);
     };
 
@@ -71,25 +76,28 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10,gr
         >
             
             {showAxisLabels && (
-                <div className="flex ml-[40px] mb-1">
+                <div className="flex mb-1"
+                    style={{marginLeft:gridSize*0.8}}
+                >
                     {numbers.map((num) => (
                         <div
                             key={num}
-                            className="w-10 h-10 flex items-center justify-center text-sm font-bold"
+                            className="w-10 h-10 flex items-end justify-center text-sm font-bold"
+                            style={{width:gridSize,height:gridSize}}
                         >
                             {num}
                         </div>
                     ))}
                 </div>
             )}
-
-            
             <div className="flex flex-col">
                 {letters.map((letter, row) => (
                     <div key={letter} className="flex">
                         
                         {showAxisLabels && (
-                            <div className="w-8 h-10 flex items-center justify-center font-bold">
+                            <div className="w-8 h-10 flex items-center justify-center font-bold"
+                                style={{width:gridSize*0.8,height:gridSize}}
+                            >
                                 {letter}
                             </div>
                         )}

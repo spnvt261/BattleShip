@@ -8,8 +8,8 @@ export interface InternalSocketEvents {
 export type ServerToClientEvents = {
     room_update: (payload: { room: Room; players: Player[] }) => void;
     game_start: (payload: { game: Game }) => void;
-    hit: (payload: { x: number; y: number; playerId: string }) => void;
-    miss: (payload: { x: number; y: number; playerId: string }) => void;
+    hit: (payload: { x: number; y: number; attackerId:string; targetId:string}) => void;
+    miss: (payload: { x: number; y: number; attackerId:string; targetId:string}) => void;
     game_over: (payload: { winner: string }) => void;
     chat: (msg: { roomId: string; name: string; text: string }) => void;
 };

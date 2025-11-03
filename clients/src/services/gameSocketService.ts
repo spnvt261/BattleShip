@@ -40,11 +40,16 @@ export const onRoomUpdate = (cb: (payload: { room: Room; players: Player[] }) =>
 export const onGameStart = (cb: (payload: { game: Game }) => void) =>
     socket.on("game_start", cb);
 
-export const onHit = (cb: (payload: { x: number; y: number; playerId: string }) => void) =>
-    socket.on("hit", cb);
+export const onHit = (cb: (payload: { x: number; y: number; attackerId:string; targetId:string}) => void) => {
+     socket.on("hit", cb);
+    return () => socket.off("hit",cb)
+}
 
-export const onMiss = (cb: (payload: { x: number; y: number; playerId: string }) => void) =>
+export const onMiss = (cb: (payload: { x: number; y: number; attackerId:string; targetId:string }) => void) => {
     socket.on("miss", cb);
+    return ()=> socket.off("miss", cb)
+}
+    
 
 export const onGameOver = (cb: (payload: { winner: string }) => void) =>
     socket.on("game_over", cb);

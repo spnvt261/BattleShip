@@ -42,14 +42,13 @@ const Cell = ({
             className={`
                 relative flex items-center justify-center
                 ${className}
-                ${disabled?"cursor-default":"hover:bg-accent"}
-                ${small ? 'w-5 h-5' : ``}
+                ${disabled?"cursor-default":"hover:bg-panel"}
                 ${hit ? (hasShip ? "bg-ship-hit" : "bg-water-miss") : "bg-water"}
                 ${isFocus ? "ring-2 ring-accent border-accent z-10" : "border-border-cell"}
                 border transition-all duration-200 cursor-pointer select-none
                 ${disabled ? "opacity-60 cursor-not-allowed" : ""}
             `}
-            style={!small ? { width: gridSize, height: gridSize } : undefined}
+            style={!small ? { width: gridSize, height: gridSize } : {width:gridSize*0.6,height:gridSize*0.6}}
         >
             <AnimatePresence>
                 {hit && (

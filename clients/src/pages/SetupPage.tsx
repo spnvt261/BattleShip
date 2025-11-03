@@ -8,9 +8,9 @@ import { useNotification } from "../context/NotifycationContext";
 import { useGame } from "../context/GameContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSocket } from "../hooks/useSocket";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import ModalToggle from "../components/modal/ModalToggle";
 import ConfirmModal from "../components/modal/ConfirmModal";
+import { RxExit } from "react-icons/rx";
 const SetupPage = () => {
     const { t, playerId } = useAppSettings();
     const { roomId } = useParams<{ roomId: string }>()
@@ -69,9 +69,9 @@ const SetupPage = () => {
                 <div className="flex justify-between gap-2 mt-4">
                     <ModalToggle
                         btnLabel=""
-                        Icon={<IoMdArrowRoundBack className="text-text" />}
+                        Icon={<RxExit className="text-text" />}
                         formTitle={t("confirm_out")}
-                        classNameBtn="bg-transparent border border-gray-700 hover:bg-transparent hover:scale-[1.05] transition-scale duration-200"
+                        classNameBtn="bg-transparent border border-gray-700 hover:bg-transparent hover:scale-[1.05] transition-scale duration-200 rotate-180"
                         children={
                             <ConfirmModal onConfirm={() => {
                                 roomId && leaveRoom(roomId, playerId)

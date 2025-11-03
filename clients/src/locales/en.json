@@ -35,5 +35,9 @@
   "player_join":"{{player}} joined the room",
   "player_left":"{{player}} left the room",
   "connect_error":"Error connecting to server",
-  "confirm_out": "Confirm to leave room?"
+  "confirm_out": "Confirm to leave room?",
+  "enemy_fleet":"Enemy's Fleet",
+  "enemy_turn":"Enemy's turn",
+  "your_fleet":"Your fleet",
+  "your_turn":"Your turn"
 }

@@ -1,9 +1,10 @@
-import { useState, useMemo, useCallback, useImperativeHandle, forwardRef } from "react";
+import { useState, useMemo, useCallback, useImperativeHandle, forwardRef, useRef } from "react";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { createSnapModifier } from "@dnd-kit/modifiers";
 import { ListShip } from "../../data/shipList";
 import Ship from "./Ship";
 import Cell from "./Cell";
+import type { Ship as ShipType } from "../../types/game";
 
 interface Props {
     gridCount?: number;
@@ -16,7 +17,7 @@ interface Props {
 
 export interface BoardSetupRef {
     randomizeShips: () => void;
-    getShips:()=>void;
+    getShips: () => void;
 }
 
 const BoardSetup = forwardRef<BoardSetupRef, Props>(({
@@ -28,13 +29,22 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
     const letters = "ABCDEFGHIJ".split("").slice(0, gridCount);
     const numbers = Array.from({ length: gridCount }, (_, i) => i + 1);
     const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize]);
+    const listShips = useRef<ShipType[]>([])
+
+
+    const getCoordinatesShip = (cellFirstPosition: number, rowFirstPosition: number, size: number, isVertical: boolean): { x: number; y: number }[] => {
+        return Array.from({ length: size }, (_, i) => ({
+            x: !isVertical ? cellFirstPosition : cellFirstPosition + i,
+            y: !isVertical ? rowFirstPosition + i : rowFirstPosition
+        }))
+    }
 
     const generateRandomPositions = (
         gridCount: number,
         gridSize: number
     ): Record<string, { x: number; y: number; isVertical: boolean }> => {
         const result: Record<string, { x: number; y: number; isVertical: boolean }> = {};
-
+        listShips.current=[]
         const getOccupiedCells = (
             pos: { x: number; y: number; isVertical: boolean },
             size: number
@@ -88,31 +98,43 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                 if (!isCollision(occupied, result)) {
                     result[ship.id] = pos;
                     placed = true;
+
+                    listShips.current.push({
+                        ...ship,
+                        coordinates: getCoordinatesShip(gx, gy, ship.size, isVertical)
+                    })
                 }
             }
+
 
             if (!placed) {
                 console.warn(`Kh├┤ng thß╗â ─æß║╖t t├áu ${ship.id} sau ${attempts} lß║ºn thß╗¡`);
             }
         }
+        // console.log(listShips);
+
 
         return result;
     };
-    
+
     const [ships, setShips] = useState<
         Record<string, { x: number; y: number; isVertical: boolean }>
     >(
         () => generateRandomPositions(gridCount, gridSize)
     );
 
-   
+
     const updateShip = useCallback(
-        (id: string, data: Partial<{ x: number; y: number; isVertical: boolean }>) => {
+        (id: string, data: { x: number; y: number; isVertical: boolean }) => {
+            let ship = listShips.current.find(p=>p.id === id)
+            if(ship) ship.coordinates = getCoordinatesShip(data.x/gridSize,data.y/gridSize,ship.size,data.isVertical)
             setShips(prev => {
                 const newData = { ...prev, [id]: { ...prev[id], ...data } };
                 onSetupChange?.(newData);
                 return newData;
             });
+            // console.log(listShips);
+            
         },
         [onSetupChange]
     );
@@ -124,7 +146,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             setShips(newPositions);
             onSetupChange?.(newPositions);
         },
-        getShips: () => ships,
+        getShips: () => listShips.current,
     }));
 
 
@@ -192,7 +214,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
             const shipData = ListShip.find(s => s.id === id);
             if (!shipData) return;
-            
+
 
             // T├¡nh vß╗ï tr├¡ mß╗¢i theo delta, snap vß╗ü l╞░ß╗¢i
             let newPos = {
@@ -335,7 +357,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                                     positionFirstBlock={pos}
                                     isVertical={pos.isVertical}
                                     onRotate={handleRotate}
-                                    
+
                                 />
                             );
                         })}

@@ -26,7 +26,7 @@ export interface Game {
 
 export interface PlayerState {
     playerId: string;                 // Liên kết với Player.id
-    board: Cell[][];                  // Ma trận ô (10x10 hoặc tùy)
+    board?: Cell[][];                  // Ma trận ô (10x10 hoặc tùy)
     ships: Ship[];                    // Tàu được đặt trên board
     shotsFired: Shot[];               // Các ô đã bắn
     isReady: boolean;                 // Đã đặt tàu xong chưa
