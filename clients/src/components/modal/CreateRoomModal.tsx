@@ -17,7 +17,7 @@ const CreateRoomModal = ({ label, onCancel,onClose }: Props) => {
     const { t ,playerName,playerId} = useAppSettings();
     const [loading,setLoading] = useState<boolean>(false)
     const {createRoom } = useSocket();
-    const {setRoom} = useGame();
+    const {setRoomId} = useGame();
     const nagigate = useNavigate()
     const {notify} = useNotification()
     const handleCreateRoom = ()=>{
@@ -31,7 +31,7 @@ const CreateRoomModal = ({ label, onCancel,onClose }: Props) => {
             }
             // console.log(res);
             
-            setRoom(res.room)
+            setRoomId(res.room.id)
             // console.log(res.roomId);
             nagigate(`/room/${res.room.id}`)
             notify(t("createRoomSuccess"),'success');

@@ -20,7 +20,7 @@ const RoomPage = () => {
     const navigate = useNavigate();
     const { notify } = useNotification();
     const [loading, setLoading] = useState<boolean>(false);
-
+    
     const handleCopy = () => {
         if (roomId) navigator.clipboard.writeText(roomId).then(() => {
             setCopied(true);
@@ -36,27 +36,17 @@ const RoomPage = () => {
         if (!room) setRoomId(roomId)
 
 
-        const handleBeforeUnload = () => {
-            leaveRoom(roomId, playerId);
-            cleanRoom();
-        };
-        window.addEventListener("beforeunload", handleBeforeUnload);
-        return () => {
-            roomId && leaveRoom(roomId, playerId);
-            cleanRoom();
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-        };
+
     }, [roomId])
 
     useEffect(() => {
-        if (!roomId)return
+        if (!roomId) return
         if (game) {
             if (game.status == 'placing') {
                 navigate(`/room/${roomId}/setup`)
             }
         }
     }, [game])
-
 
     useEffect(() => {
         if (!roomId || (!player1 && !player2)) return;
@@ -65,7 +55,9 @@ const RoomPage = () => {
         if (!currentPlayerInRoom) {
             if (!player1 || !player2) {
                 joinRoom(roomId, playerName, playerId, (res) => {
-                    console.log(res);
+                    if(res.ok){
+
+                    }
 
                 });
             } else {
@@ -87,7 +79,7 @@ const RoomPage = () => {
         roomId && playerId && startGame(roomId, playerId, (res) => {
             // console.log(res);
             if (res.error) {
-
+                
             } else if (res.ok) {
 
             }

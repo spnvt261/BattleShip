@@ -34,5 +34,6 @@
   "loading":"Loading...",
   "player_join":"{{player}} đã vào phòng",
   "player_left":"{{player}} đã rời phòng",
-  "connect_error":"Có lỗi khi kết nối tới sever"
+  "connect_error":"Có lỗi khi kết nối tới sever",
+  "confirm_out": "Xác nhận rời khỏi phòng?"
 }

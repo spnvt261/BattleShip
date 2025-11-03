@@ -1,4 +1,4 @@
-import { cloneElement, useState, type ReactElement } from "react";
+import { cloneElement, useState, type ReactElement, type ReactNode } from "react";
 import CustomButton from "../customButton";
 import { AiOutlineClose } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,10 +7,13 @@ interface Props {
     btnLabel: string;
     formTitle: string;
     children?: React.ReactNode; // Nội dung form tùy chỉnh
-    showIconClose?: boolean
+    showIconClose?: boolean;
+    Icon?:ReactNode;
+    classNameBtn?:string;
+    btnWidth?:string;
 }
 
-const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children, showIconClose }) => {
+const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children, showIconClose,Icon,classNameBtn, btnWidth = "100%" }) => {
     const [showModal, setShowModal] = useState(false);
     const renderChildren = () => {
         if (!children) return null;
@@ -33,8 +36,9 @@ const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children, showIconC
                 <CustomButton
                     label={btnLabel}
                     onClick={() => setShowModal(true)}
-                    width="100%"
-                    className="my-1"
+                    width={btnWidth}
+                    className={`my-1 ${classNameBtn}`}
+                    Icon = {Icon}
                 />
             </div>
             <AnimatePresence>

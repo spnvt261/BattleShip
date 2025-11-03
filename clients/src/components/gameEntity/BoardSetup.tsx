@@ -6,7 +6,7 @@ import Ship from "./Ship";
 import Cell from "./Cell";
 
 interface Props {
-    gridCount: number;
+    gridCount?: number;
     gridSize?: number;
     className?: string;
     onSetupChange?: (
@@ -20,7 +20,7 @@ export interface BoardSetupRef {
 }
 
 const BoardSetup = forwardRef<BoardSetupRef, Props>(({
-    gridCount,
+    gridCount = 10,
     gridSize = 40,
     className,
     onSetupChange,
@@ -98,14 +98,14 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
         return result;
     };
-    // State l╞░u vß╗ï tr├¡ v├á h╞░ß╗¢ng t├áu
+    
     const [ships, setShips] = useState<
         Record<string, { x: number; y: number; isVertical: boolean }>
     >(
         () => generateRandomPositions(gridCount, gridSize)
     );
 
-    /** Cß║¡p nhß║¡t vß╗ï tr├¡/h╞░ß╗¢ng t├áu */
+   
     const updateShip = useCallback(
         (id: string, data: Partial<{ x: number; y: number; isVertical: boolean }>) => {
             setShips(prev => {
@@ -192,6 +192,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
             const shipData = ListShip.find(s => s.id === id);
             if (!shipData) return;
+            
 
             // T├¡nh vß╗ï tr├¡ mß╗¢i theo delta, snap vß╗ü l╞░ß╗¢i
             let newPos = {

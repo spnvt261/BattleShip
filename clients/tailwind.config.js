@@ -7,8 +7,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Orbitron', 'sans-serif'],  
-                battle: ['Orbitron', 'sans-serif'], 
+                sans: ['Orbitron', 'sans-serif'],
+                battle: ['Orbitron', 'sans-serif'],
             },
             colors: {
                 bg: 'var(--color-bg)',
@@ -32,6 +32,19 @@ export default {
                     shadow: 'var(--color-btn-shadow)',
                     disabled: 'var(--color-btn-disabled)',
                 },
+            },
+            keyframes: {
+                rainbow: {
+                    '0%': { color: '#f87171' },    // đỏ
+                    '20%': { color: '#fbbf24' },   // vàng
+                    '40%': { color: '#34d399' },   // xanh lá
+                    '60%': { color: '#60a5fa' },   // xanh dương
+                    '80%': { color: '#a78bfa' },   // tím
+                    '100%': { color: '#f87171' },  // đỏ trở lại
+                },
+            },
+            animation: {
+                rainbow: 'rainbow 1s infinite',
             },
 
         },

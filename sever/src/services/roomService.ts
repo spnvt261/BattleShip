@@ -28,6 +28,8 @@ export function createRoom(hostName: string, hostId: string): Room {
 }
 
 export function getRoom(roomId: string): Room | undefined {
+    // console.log(rooms);
+    
     return rooms[roomId];
 }
 
@@ -88,16 +90,14 @@ export function setReady(roomId: string, playerId: string, isReady: boolean, io?
     const p = room.players.find(pl => pl.id === playerId);
     if (p) p.isReady = isReady;
 
-    // broadcast room update
-    if (io) io.to(roomId).emit("room_update", { room, players: room.players });
 
     // if both players ready => start game
     if (room.players.length === 2 && room.players.every(pl => pl.isReady)) {
-        const game = createGameForRoom(room);
-        room.game = game;
         room.status = "playing";
-        if (io) io.to(roomId).emit("game_start", { game });
+        if(room.game) room.game.status = "playing";
     }
+    // broadcast room update
+    if (io) io.to(roomId).emit("room_update", { room, players: room.players });
 }
 
 export function broadcastRoomUpdate(roomId: string, io: Server) {

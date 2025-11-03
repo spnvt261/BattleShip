@@ -33,7 +33,7 @@ const JoinRoomModal = ({ }: Props) => {
             }
             setRoomIdProvider(roomId);
             navigate(`/room/${roomId}`);
-            notify(t("success"),'success')
+            // notify(t("success"),'success')
         })  
     }
     return (

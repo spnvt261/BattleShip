@@ -31,9 +31,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [game, setGame] = useState<Game | null>(null);
     const [roomId, setRoomId] = useState<string | null>(null);
     const { getRoom, onRoomUpdate } = useSocket()
-    
+
     const fetchRoom = useCallback(() => {
         if (!roomId) return;
+
         getRoom(roomId, (res) => {
             if (!res.room) {
                 notify(t(`Room not found`), 'error')
@@ -54,20 +55,27 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         fetchRoom();
         const unsubscribe = onRoomUpdate((res) => {
+            if(room && res.room.players.length===1 && room.players.length===2){
+                const playerLeaveRoom:Player = room.players.filter(p=>p.id!==res.room.players[0].id)[0]
+                notify(t("player_left",{player:playerLeaveRoom?.name || ""}),'warning')
+                cleanRoom()
+                navigate("/")
+            }
             setPlayer1(res.room?.players[0] ?? null);
             setPlayer2(res.room?.players[1] ?? null);
-            setGame(res.room?.game ?? null)
+            if (res.room.game) setGame(res.room.game)
         });
         return () => {
             unsubscribe?.();
         };
-    }, [roomId, onRoomUpdate]);
-
+    }, [roomId, onRoomUpdate,player2,player1, game]);
+    
     const cleanRoom = () => {
         setPlayer1(null)
         setPlayer2(null)
-        setRoom(null)
         setGame(null)
+        setRoom(null)
+        setRoomId(null)
     }
 
     return (
