@@ -8,6 +8,8 @@
   "settings": "Cài đặt",
   "cancel": "Hủy",
   "Save": "Lưu",
+  "exit": "Rời phòng",
+  "start": "Bắt đầu",
   "confirm": "Xác nhận",
   "light": "Sáng",
   "dark": "Tối",
@@ -22,7 +24,7 @@
   "creatRoomSuccess":"Tạo phòng thành công!",
   "creatRoomFail":"Có lỗi khi tạo phòng! Hãy thử lại",
   "room_of_player": "Phòng của {{player}}",
-  "wating_player": "Đợi người chơi khác",
+  "wating_player": "Đợi người chơi khác...",
   "Not enough players": "Chưa đủ người",
   "Room not found":"Không tìm thấy phòng",
   "Room is full":"Phòng đã đầy!",
@@ -39,5 +41,11 @@
   "enemy_fleet":"Hạm đội của đối thủ",
   "enemy_turn":"Lượt của đối thủ",
   "your_fleet":"Hạm đội của bạn",
-  "your_turn":"Lượt của bạn"
+  "your_turn":"Lượt của bạn",
+  "wating_for_enemy":"Chờ đối thủ...",
+  "starting":"Chuẩn bị bắt đầu",
+  "win":"Win",
+  "loose":"Loose",
+  "back_to_home":"Trở về trang chủ",
+  "match_finish":"Trận đấu đã kết thúc"
 }

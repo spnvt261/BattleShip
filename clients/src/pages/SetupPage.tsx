@@ -11,19 +11,33 @@ import { useSocket } from "../hooks/useSocket";
 import ModalToggle from "../components/modal/ModalToggle";
 import ConfirmModal from "../components/modal/ConfirmModal";
 import { RxExit } from "react-icons/rx";
+import type { PlayerState } from "../types/game";
+import CustomButton from "../components/customButton";
 const SetupPage = () => {
     const { t, playerId } = useAppSettings();
     const { roomId } = useParams<{ roomId: string }>()
     const { ready, leaveRoom } = useSocket()
-    const { player1, player2, setRoomId, room, cleanRoom,game } = useGame();
+    const { player1, player2, setRoomId, room, cleanRoom, game } = useGame();
     const { notify } = useNotification();
     const navigate = useNavigate();
     const boardRef = useRef<BoardSetupRef>(null);
+    
     const handleReady = () => {
         if (!boardRef.current) return;
-        console.log("Ships:", boardRef.current?.getShips())
-        roomId && ready(roomId, playerId)
+        // console.log("Ships:", boardRef.current?.getShips())
+        const playerState: PlayerState = {
+            playerId: playerId,
+            isReady: false,
+            ships: boardRef.current?.getShips(),
+            shotsFired: [],
+            shotsReceived:[],
+            sunkEnemyShips:[]
+        }
+        roomId && ready(roomId, playerState)
     };
+    // const handleUnReady = () => {
+
+    // }
     const gridSize = useMemo(() => {
         if (typeof window === "undefined") return 40;
         return window.innerWidth <= 512 ? 30 : 40;
@@ -32,36 +46,46 @@ const SetupPage = () => {
     //    
     //     // console.log("Ships updated:", ships);
     // };
-    
     useEffect(() => {
         if (!roomId) {
             return
         }
-
-        if(game && game.status!=='placing'){
-            notify(t('error'), 'error')
-            navigate("/")
-            return;
-        }
-
         if (!room) setRoomId(roomId)
+    }, [roomId])
+
+    // useEffect(() => {
+    //     if (game && game.status !== 'placing'&& (playerId === player1?.id || playerId === player2?.id)) {
+    //         notify(t('error'), 'error')
+    //         cleanRoom()
+    //         navigate("/")
+    //         return;
+    //     }
+    // }, [game])
+
+    useEffect(() => {
+        if (!roomId) {
+            return
+        }
         if (!player1 && !player2) {
 
             return
         }
-        
-        if (playerId !== player1?.id && playerId !== player2?.id) {
+
+
+        if (player1?.isReady && player2?.isReady && (playerId === player1.id || playerId === player2.id)) {
+            setTimeout(() => {
+                navigate(`/room/${roomId}/fight`)
+            }, 3500)
+            return;
+        }
+        if (game && game.status !== 'placing'&& (playerId === player1?.id || playerId === player2?.id)) {
             notify(t('error'), 'error')
+            cleanRoom()
             navigate("/")
             return;
         }
-
-        if(player1?.isReady && player2?.isReady){
-            setTimeout(()=>{
-                navigate(`/room/${roomId}/fight`)
-            },3500)
-        }
-    }, [player1,player2,game])
+        
+    }, [player1, player2,game])
 
     return (
         <div className="relative flex justify-center items-center px-2 py-10 [@media(max-width:512px)]:flex-col">
@@ -86,9 +110,11 @@ const SetupPage = () => {
                 <div className="flex justify-between gap-2 mb-4">
                     <div className="relative px-2 flex items-center justify-center w-1/2 py-5 border-2 border-blue-500 rounded-[0.5rem] overflow-hidden h-8">
                         <span
-                            className={`absolute text-blue-500 transition-all duration-500 ease-in-out ${player1?.isReady ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
+                            className={`absolute flex text-blue-500 transition-all duration-500 ease-in-out ${player1?.isReady ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
                         >
-                            {player1?.name}
+                            <span className="block max-w-[80px] truncate">
+                                {player1?.name}
+                            </span>
                             {
                                 player1?.id === playerId && <span className=" ml-2">({t("you")})</span>
                             }
@@ -105,9 +131,11 @@ const SetupPage = () => {
                     </div>
                     <div className="relative px-2 flex items-center justify-center w-1/2 py-5 border-2 border-red-500 rounded-[0.5rem] overflow-hidden h-8">
                         <span
-                            className={`absolute text-red-500 transition-all duration-500 ease-in-out ${player2?.isReady ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
+                            className={`absolute flex text-red-500 transition-all duration-500 ease-in-out ${player2?.isReady ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
                         >
-                            {player2?.name}
+                            <span className="block max-w-[80px] truncate">
+                                {player2?.name}
+                            </span>
                             {
                                 player2?.id === playerId && <span className="ml-2">({t("you")})</span>
                             }
@@ -134,11 +162,34 @@ const SetupPage = () => {
 
                 />
                 <div className="w-full flex justify-center items-center mt-4">
-                    <button
-                        onClick={handleReady}
-                        className="px-8 py-2 bg-btn-bg2 text-btn-text clip-hexagon hover:bg-gray-100 hover:bg-red-400">
-                        {t("ready")}
-                    </button>
+                    {/* <CustomButton
+                                onClick={handleUnReady}
+                                className="px-8 py-2 bg-btn-bg2 text-btn-text clip-hexagon hover:bg-gray-100 hover:bg-red-400"
+                                label={t("cancel")}
+                            />  */}
+                    {
+                        (player1?.isReady && player2?.isReady) ?
+                            <CustomButton
+                                onClick={() => { }}
+                                className="px-8 py-2 bg-btn-bg2 text-btn-text"
+                                label={t("starting")}
+                                disabled
+                            />
+                            : (player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady) ?
+                                <CustomButton
+                                    onClick={() => { }}
+                                    className="px-8 py-2 bg-btn-bg2 text-btn-text"
+                                    label={t("wating_for_enemy")}
+                                    disabled
+                                /> :
+                                <CustomButton
+                                    onClick={handleReady}
+                                    className="px-8 py-2 bg-btn-bg2 text-btn-text clip-hexagon hover:bg-gray-100 hover:bg-red-400"
+                                    label={t("ready")}
+                                />
+                    }
+
+
                 </div>
             </div>
             <div className="flex flex-col justify-center gap-4 items-center mt-10 w-[200px] [@media(max-width:512px)]:w-full ">

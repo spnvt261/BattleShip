@@ -29,6 +29,8 @@ export interface PlayerState {
     board?: Cell[][];                  // Ma trận ô (10x10 hoặc tùy)
     ships: Ship[];                    // Tàu được đặt trên board
     shotsFired: Shot[];               // Các ô đã bắn
+    shotsReceived:Shot[];             //Các ô bị bắn
+    sunkEnemyShips:Ship[]             //Các tàu mình đã hạ gục
     isReady: boolean;                 // Đã đặt tàu xong chưa
 }
 

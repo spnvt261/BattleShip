@@ -27,9 +27,11 @@ export interface Game {
 
 export interface PlayerState {
     playerId: string;
-    board: Cell[][];
+    board?: Cell[][];
     ships: Ship[];
     shotsFired: Shot[];
+    shotsReceived: Shot[];
+    sunkEnemyShips:Ship[]
     isReady: boolean;
 }
 

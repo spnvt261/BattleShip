@@ -1,4 +1,8 @@
-import { Cell, Ship } from "../types";
+import { Server } from "socket.io";
+import { getRoom } from "../services/roomService";
+import { socketToPlayer } from "../socket";
+import { Cell, Ship, Shot } from "../types";
+import { getPlayerState } from "../services/gameService";
 
 export function createEmptyBoard(size = 10): Cell[][] {
   const board: Cell[][] = [];
@@ -55,6 +59,25 @@ export function checkShotHit(ships: Ship[], x: number, y: number): { hit: boolea
   return { hit: false };
 }
 
-export function isShipSunk(ship: Ship, shots: { x: number; y: number }[]): boolean {
+export function isShipSunk(ship: Ship, shots: Shot[]): boolean {
   return ship.coordinates.every(c => shots.some(s => s.x === c.x && s.y === c.y));
+}
+
+export function broadcastGameUpdate(roomId: string, io: Server) {
+  const room = getRoom(roomId);
+  if (!room) return;
+
+  const socketsInRoom = io.sockets.adapter.rooms.get(roomId) || new Set();
+  // console.log(socketsInRoom);
+
+  for (const socketId of socketsInRoom) {
+    const playerId = socketToPlayer.get(socketId);
+    if (!playerId) continue;
+
+    if (room.game) {
+      const personalState = getPlayerState(room.game, playerId);
+      io.to(socketId).emit("player_state_update", personalState);
+    }
+
+  }
 }

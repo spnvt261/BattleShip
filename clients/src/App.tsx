@@ -28,8 +28,8 @@ function App() {
                     <Route path='/' element={<HomePage />} />
                     <Route path='/room/:roomId' element={<RoomPage />} />
                     <Route path='/room/:roomId/setup' element={<SetupPage />} />
-                    {/* <Route path='/room/:roomId/fight' element={<GamePage />} /> */}
-                    <Route path='/fight' element={<GamePage />} />
+                    <Route path='/room/:roomId/fight' element={<GamePage />} />
+                    {/* <Route path='/fight' element={<GamePage />} /> */}
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Suspense>

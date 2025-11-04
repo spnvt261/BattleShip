@@ -60,7 +60,7 @@ const CustomKeyField6 = ({
             const isNext = i === value.length && isFocused;
 
             return (
-                <div key={i} className="flex flex-col items-center w-10 relative">
+                <div key={i} className="flex flex-col items-center w-8 relative">
                     <span
                         className={`text-3xl font-mono ${isEntered ? "text-text" : "text-gray-400"
                             }`}
@@ -83,7 +83,7 @@ const CustomKeyField6 = ({
     return (
         <div className={`relative w-fit ${className}`}>
             <div
-                className={`flex gap-3 p-4 bg-transparent rounded-2xl border ${isFocused
+                className={`flex gap-2 px-2 py-4 bg-transparent rounded-2xl border ${isFocused
                     ? error || errorText
                         ? "border-red-500 ring-2 ring-red-300"
                         : "border-0"

@@ -1,4 +1,4 @@
-import type { Game, Player, Room, Ship } from "./game";
+import type { Game, Player, PlayerState, Room, Ship } from "./game";
 
 export interface InternalSocketEvents {
   reconnect_failed: () => void;
@@ -10,8 +10,11 @@ export type ServerToClientEvents = {
     game_start: (payload: { game: Game }) => void;
     hit: (payload: { x: number; y: number; attackerId:string; targetId:string}) => void;
     miss: (payload: { x: number; y: number; attackerId:string; targetId:string}) => void;
-    game_over: (payload: { winner: string }) => void;
+    game_over: (payload: { winnerId: string }) => void;
     chat: (msg: { roomId: string; name: string; text: string }) => void;
+    turn_update: (payload:{playerId:string}) =>void;
+    player_state_update:(payload:{playerState:PlayerState})=>void
+    kicked:(payload :{roomId:string, message:string})=>void
 };
 
 export type ClientToServerEvents = {
@@ -20,7 +23,7 @@ export type ClientToServerEvents = {
         cb?: (res: { room: Room; playerId: string;error?:string }) => void
     ) => void;
     get_room: (
-        data: { roomId: string }, 
+        data: { roomId: string,playerId:string }, 
         cb?: (res: { room?: Room; players?: Player[]; error?: string }) => void
     ) => void;
     join_room: (
@@ -40,12 +43,16 @@ export type ClientToServerEvents = {
         cb?: (res: { success: boolean; error?: string }) => void
     ) => void;
     ready: (
-        data: { roomId: string; playerId: string }, 
+        data: { roomId: string; playerState: PlayerState }, 
         cb?: (res: { ok?: boolean }) => void
     ) => void;
     attack: (
-        data: { roomId: string; x: number; y: number }, 
+        data: { roomId: string; x: number; y: number,attackerId:string }, 
         cb?: (res: { success: boolean; error?: string }) => void
+    ) => void;
+    kick_player: (
+        data: { roomId: string; playerId:string }, 
+        cb?: any
     ) => void;
     chat: (
         data: { roomId: string; name: string; text: string; playerId?: string },

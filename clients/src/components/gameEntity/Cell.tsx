@@ -15,6 +15,7 @@ interface Props {
     disabled?: boolean;
     small?: boolean
     gridSize:number;
+    hasMyShip?:boolean
 }
 
 const Cell = ({
@@ -27,14 +28,15 @@ const Cell = ({
     isFocus,
     disabled,
     small,
-    gridSize
+    gridSize,
+    hasMyShip
 }: Props) => {
     const handleClick = () => {
+        
         if (!hit && !disabled) {
             shot(x, y);
         }
     };
-    
     
     return (
         <div
@@ -42,8 +44,8 @@ const Cell = ({
             className={`
                 relative flex items-center justify-center
                 ${className}
-                ${disabled?"cursor-default":"hover:bg-panel"}
-                ${hit ? (hasShip ? "bg-ship-hit" : "bg-water-miss") : "bg-water"}
+                ${disabled?"cursor-default":"hover:ring-red-600 hover:ring-2 hover:z-20 hover:border-red-600"}
+                ${hit ? (hasShip ? "bg-ship-hit opacity-[0.6]" : "bg-water-miss") : `bg-water ${hasMyShip?"!bg-btn-bg":""}`}
                 ${isFocus ? "ring-2 ring-accent border-accent z-10" : "border-border-cell"}
                 border transition-all duration-200 cursor-pointer select-none
                 ${disabled ? "opacity-60 cursor-not-allowed" : ""}
@@ -65,7 +67,10 @@ const Cell = ({
                                 const el = document.querySelector(
                                     `[data-effect="${x}-${y}"]`
                                 ) as HTMLElement;
-                                if (el) el.style.zIndex = "-10";
+                                if (el) {
+                                    el.style.zIndex = "-11";
+                                    el.style.display = 'none';
+                                } 
                             }}
                             data-effect={`${x}-${y}`}
                         />

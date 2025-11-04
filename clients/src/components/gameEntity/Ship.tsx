@@ -11,9 +11,13 @@ interface Props {
     shipame: string;
     isVertical?: boolean
     onRotate?: (id: string) => void;
+    small?: boolean;
+    onlyView?: boolean;
+    isSunk?: boolean;
+    showOpacity?:boolean
 }
 
-const Ship = ({ id, positionFirstBlock, isVertical, size, gridSize, gridCount, image, shipame, onRotate }: Props) => {
+const Ship = ({ id, positionFirstBlock, isVertical, size, gridSize, gridCount, image, shipame, onRotate, small, onlyView, isSunk,showOpacity }: Props) => {
     // console.log(positionFirstBlock);
 
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id });
@@ -64,19 +68,22 @@ const Ship = ({ id, positionFirstBlock, isVertical, size, gridSize, gridCount, i
     };
 
 
-
+    if (small) {
+        x = x * 0.6;
+        y = y * 0.6;
+    }
     const style: React.CSSProperties = {
         position: "absolute",
         top: 0,
         left: 1,
-        width: size * gridSize,
-        height: gridSize,
+        width: small ? size * gridSize * 0.6 : size * gridSize,
+        height: small ? gridSize * 0.6 : gridSize,
         background: "transparent",
         borderRadius: 8,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        cursor: "grab",
+        cursor: onlyView ? "pointer" : "grab",
         userSelect: "none",
         transform: `
             translate3d(${x}px, ${y}px, 0)
@@ -86,6 +93,7 @@ const Ship = ({ id, positionFirstBlock, isVertical, size, gridSize, gridCount, i
         border: `${isDragging ? "2px solid red" : ""}`,
         transformOrigin: "top left",
         transition: isDragging ? "none" : "transform 0.15s ease-out",
+        opacity:showOpacity?"0.9":"1"
     };
 
 
@@ -101,9 +109,16 @@ const Ship = ({ id, positionFirstBlock, isVertical, size, gridSize, gridCount, i
             {...listeners}
             {...attributes}
             onDoubleClick={handleDoubleClick}
-            onTouchEnd={handleTouchEnd} 
+            onTouchEnd={handleTouchEnd}
         >
             <img alt={shipame} src={image} className={`w-full h-full select-none pointer-events-none`} />
+            {
+                isSunk && 
+                <div className="damage">
+                    
+                </div>
+            }
+
         </div>
     );
 };

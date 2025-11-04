@@ -1,14 +1,20 @@
 
+import { useEffect } from "react";
 import CreateRoomModal from "../components/modal/CreateRoomModal";
 import JoinRoomModal from "../components/modal/JoinRoomModal";
 import ModalToggle from "../components/modal/ModalToggle";
 import SettingModal from "../components/modal/SettingModal";
 import { useAppSettings } from "../context/appSetting";
+import { useGame } from "../context/GameContext";
 
 interface Props { }
 
 const HomePage = ({ }: Props) => {
     const { t } = useAppSettings();
+    const {cleanRoom} = useGame();
+    useEffect(()=>{
+        cleanRoom()
+    },[])
     return (
         <div className="w-full h-screen overflow-hidden bg-bg">
             <div className="flex flex-col items-center justify-center h-full">

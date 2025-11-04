@@ -2,9 +2,9 @@ import { useState, useMemo, useCallback, useImperativeHandle, forwardRef, useRef
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { createSnapModifier } from "@dnd-kit/modifiers";
 import { ListShip } from "../../data/shipList";
-import Ship from "./Ship";
 import Cell from "./Cell";
-import type { Ship as ShipType } from "../../types/game";
+import type {Ship as ShipType } from "../../types/game";
+import Ship from "./Ship";
 
 interface Props {
     gridCount?: number;
@@ -17,7 +17,7 @@ interface Props {
 
 export interface BoardSetupRef {
     randomizeShips: () => void;
-    getShips: () => void;
+    getShips: () => ShipType[];
 }
 
 const BoardSetup = forwardRef<BoardSetupRef, Props>(({
@@ -34,8 +34,8 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
     const getCoordinatesShip = (cellFirstPosition: number, rowFirstPosition: number, size: number, isVertical: boolean): { x: number; y: number }[] => {
         return Array.from({ length: size }, (_, i) => ({
-            x: !isVertical ? cellFirstPosition : cellFirstPosition + i,
-            y: !isVertical ? rowFirstPosition + i : rowFirstPosition
+            x: isVertical ? rowFirstPosition + i : rowFirstPosition,
+            y: isVertical ? cellFirstPosition : cellFirstPosition + i,
         }))
     }
 

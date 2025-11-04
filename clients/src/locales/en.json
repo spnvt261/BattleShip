@@ -8,6 +8,8 @@
   "settings": "Settings",
   "cancel": "Cancel",
   "Save": "Save",
+  "exit": "Exit",
+  "start": "Start",
   "confirm": "Confirm",
   "light": "Light",
   "dark": "Dark",
@@ -22,7 +24,7 @@
   "creatRoomSuccess":"Create room success!",
    "creatRoomFail":"Error! Try again.",
   "room_of_player": "{{player}}'s Room",
-  "wating_player": "Waiting for player",
+  "wating_player": "Waiting for player...",
   "Not enough players": "Not enough players!",
   "Room not found":"Room not found!",
   "Room is full":"Room is full",
@@ -39,5 +41,11 @@
   "enemy_fleet":"Enemy's Fleet",
   "enemy_turn":"Enemy's turn",
   "your_fleet":"Your fleet",
-  "your_turn":"Your turn"
+  "your_turn":"Your turn",
+  "wating_for_enemy":"Waiting for enemy...",
+  "starting":"Starting...",
+  "win":"Win",
+  "loose":"Loose",
+  "back_to_home":"Back to home",
+  "match_finish":"Match finished"
 }

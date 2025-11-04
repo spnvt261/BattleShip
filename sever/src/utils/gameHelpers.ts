@@ -25,6 +25,8 @@ export function checkEndGame(game: Game): { ended: boolean; winnerId?: string } 
   return { ended: false };
 }
 
+
 export function recordShot(shots: Shot[], x: number, y: number, hit: boolean, targetPlayerId: string) {
   shots.push({ x, y, hit, targetPlayerId, firedAt: Date.now() });
+  
 }

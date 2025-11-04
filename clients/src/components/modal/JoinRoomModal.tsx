@@ -15,16 +15,16 @@ const JoinRoomModal = ({ }: Props) => {
     const { t, playerName, playerId } = useAppSettings()
     const [roomId, setRoomId] = useState<string | undefined>(undefined);
     const { notify } = useNotification();
-    const {setRoomId:setRoomIdProvider} = useGame()
+    const { setRoomId: setRoomIdProvider } = useGame()
     const { joinRoom } = useSocket();
-    const [loading,setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
     const handleJoinRoom = () => {
         if (!roomId || roomId?.length < 6) {
             return
         }
         setLoading(true);
-        notify(t("loading_join"),'loading')
+        notify(t("loading_join"), 'loading')
         joinRoom(roomId, playerName, playerId, (res) => {
             if (!res.ok) {
                 notify(t(`${res.error}`), 'error')
@@ -34,7 +34,7 @@ const JoinRoomModal = ({ }: Props) => {
             setRoomIdProvider(roomId);
             navigate(`/room/${roomId}`);
             // notify(t("success"),'success')
-        })  
+        })
     }
     return (
         <div>
@@ -42,19 +42,37 @@ const JoinRoomModal = ({ }: Props) => {
                 <CustomKeyField6
                     value={roomId}
                     onChange={(e) => { setRoomId(e.target.value) }}
+                    className=""
                 />
                 <span
                     className="cursor-pointer p-2 border rounded-[.5rem] bg-transparent hover:bg-gray-500"
                     onClick={async () => {
                         try {
                             const text = await navigator.clipboard.readText();
-                            if (/^\d{6}$/.test(text)) {
-                                setRoomId(text);
+                            console.log("Clipboard content:", text);
+
+                            // Regex tìm roomId từ link dạng: .../room/123456
+                            const match = text.match(/\/room\/(\d{6})$/);
+
+                            let id = null;
+                            if (match) {
+                                // Nếu là URL hợp lệ -> lấy phần roomId
+                                id = match[1];
+                            } else if (/^\d{6}$/.test(text)) {
+                                // Nếu chỉ là 6 số (roomId thuần)
+                                id = text;
+                            }
+
+                            if (id) {
+                                setRoomId(id);
+                            } else {
+                                alert("Clipboard không chứa roomId hợp lệ!");
                             }
                         } catch (err) {
                             console.error("Failed to read clipboard", err);
                         }
                     }}
+
                 >
                     <FiClipboard className="text-text w-5 h-5" />
                 </span>
@@ -66,7 +84,7 @@ const JoinRoomModal = ({ }: Props) => {
                     label={t("confirm")}
                     className="mt-6"
                     onClick={() => handleJoinRoom()}
-                    disabled={loading|| !roomId || roomId?.length < 6}
+                    disabled={loading || !roomId || roomId?.length < 6}
                 />
             </div>
         </div>

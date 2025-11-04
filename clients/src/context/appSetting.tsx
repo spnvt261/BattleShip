@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import en from "../locales/en.json";
 import vi from "../locales/vi.json";
+import { v4 as uuidv4 } from "uuid";
 
 type Theme = "light" | "dark";
 type Language = "vi" | "en";
@@ -36,9 +37,10 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [playerId] = useState<string>(() => {
         const storedId = localStorage.getItem("player_id");
         if (storedId && storedId !== "") return storedId.trim();
-        const randomId = `${Math.floor(Math.random() * 9000000) + 1000000}`;
-        localStorage.setItem("player_id", randomId);
-        return randomId;
+        // tạo UUID mới
+        const newId = uuidv4();
+        localStorage.setItem("player_id", newId);
+        return newId;
     });
 
     const setPlayerName = (name: string) => {

@@ -7,6 +7,7 @@ import { useNotification } from "../context/NotifycationContext";
 import CustomButton from "../components/customButton";
 import { usePlayerChangeNotify } from "../hooks/usePlayerChangeNotify";
 import { useGame } from "../context/GameContext";
+import { IoClose } from "react-icons/io5";
 
 
 
@@ -15,17 +16,52 @@ const RoomPage = () => {
     const { roomId } = useParams<{ roomId: string }>()
     usePlayerChangeNotify(player1, player2);
     const [copied, setCopied] = useState(false);
-    const { leaveRoom, joinRoom, startGame } = useSocket();
+    const { leaveRoom, joinRoom, startGame, kickPlayer, onKicked } = useSocket();
     const { t, playerId, playerName } = useAppSettings()
     const navigate = useNavigate();
     const { notify } = useNotification();
     const [loading, setLoading] = useState<boolean>(false);
-    
-    const handleCopy = () => {
-        if (roomId) navigator.clipboard.writeText(roomId).then(() => {
+
+    const handleCopy= () => {
+        if (!roomId) return;
+
+        // Tạo URL đầy đủ
+        const link = `${window.location.origin}/room/${roomId}`;
+
+        // Modern Clipboard API (Chrome, Edge, Safari mới)
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(link)
+                .then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                })
+                .catch(err => {
+                    console.warn("Clipboard write failed:", err);
+                    fallbackCopy(link);
+                });
+        } else {
+            // Fallback cho Safari hoặc môi trường không an toàn
+            fallbackCopy(link);
+        }
+    };
+
+    // 👇 fallback cho Safari / HTTP
+    const fallbackCopy = (text: string) => {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+            document.execCommand("copy");
             setCopied(true);
-            setTimeout(() => setCopied(false), 2000); // 3s trở về icon copy
-        });
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error("Fallback copy failed", err);
+        }
+        document.body.removeChild(textarea);
     };
 
 
@@ -34,9 +70,6 @@ const RoomPage = () => {
             return
         }
         if (!room) setRoomId(roomId)
-
-
-
     }, [roomId])
 
     useEffect(() => {
@@ -55,19 +88,27 @@ const RoomPage = () => {
         if (!currentPlayerInRoom) {
             if (!player1 || !player2) {
                 joinRoom(roomId, playerName, playerId, (res) => {
-                    if(res.ok){
+                    if (res.ok) {
 
                     }
 
                 });
-            } else {
-                // Room full và người này không có trong room → notify
-                notify(t("Room is full"), "warning");
-                navigate("/");
             }
         }
 
     }, [player1])
+    useEffect(() => {
+        const unsubscribe = onKicked((res) => {
+            if (res) {
+                cleanRoom()
+                notify(res.message, 'warning')
+                navigate("/")
+            }
+        })
+        return () => {
+            unsubscribe?.()
+        }
+    }, [player2])
 
     const handleStartGame = () => {
         setLoading(true)
@@ -79,7 +120,7 @@ const RoomPage = () => {
         roomId && playerId && startGame(roomId, playerId, (res) => {
             // console.log(res);
             if (res.error) {
-                
+
             } else if (res.ok) {
 
             }
@@ -105,19 +146,19 @@ const RoomPage = () => {
                 />
 
                 <div
-                    className="relative bg-panel shadow-[0_15px_40px_rgba(0,0,0,0.6)] p-6"
+                    className="relative bg-panel shadow-[0_15px_40px_rgba(0,0,0,0.6)] p-4"
                     style={{
                         clipPath: "polygon(20px 0%, 100% 0%, 100% 40px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% calc(100% - 20px), 0% 20px)",
                     }}
                 >
                     <div className="flex flex-col gap-4">
-                        <p className="mx-auto w-fit text-text flex items-center gap-3">
+                        <p className="mx-auto w-fit text-text flex items-center gap-3 [@media(max-width:512px)]:flex-col">
                             {t("room_of_player", { player: player1?.name || "" })}
                             <span className="px-2 py-1 font-bold border border-border rounded-[.5rem] flex items-center gap-2">
                                 ID: {roomId}
                                 <span
                                     onClick={handleCopy}
-                                    className="p-1 bg-border border border-border rounded-[.5rem]"
+                                    className="p-1 bg-border border border-border rounded-[.5rem] active:scale-[1.1] transition-all duration-[100]"
                                 >
                                     {copied ? <FiCheck className="text-green-500" /> : <FiCopy className="cursor-pointer" />}
                                 </span>
@@ -133,18 +174,29 @@ const RoomPage = () => {
                                 }
 
                             </div>
-                            <div className="relative max-w-[50%] border rounded-[1rem] p-3 border-red-500 flex-1 flex items-center justify-center">
+                            <div className="relative max-w-[50%] border rounded-[1rem] overflow-hidden p-3 border-red-500 flex-1 flex items-center justify-center">
                                 <p className="w-fit max-w-[100%] mx-auto break-words overflow-hidden text-center">
                                     {player2 ? player2.name : <span className="text-red-500">{t("wating_player")}</span>}
                                 </p>
                                 {
                                     player2?.id === playerId && <span className="absolute bottom-1 left-1/2 -translate-x-1/2">[ {t("you")} ]</span>
                                 }
+                                {
+                                    player2 && player1?.id === playerId && <CustomButton
+                                        label=""
+                                        Icon={<IoClose className="text-text" />}
+                                        className="absolute top-1 right-1 bg-transparent shadow-0 border-none border-gray-700 hover:bg-transparent hover:scale-[1.05] transition-scale duration-200"
+                                        onClick={() => {
+                                            roomId && kickPlayer(roomId, player2.id)
+                                        }}
+                                    />
+                                }
+
                             </div>
                         </div>
                         <div className="flex gap-4 justify-end">
                             <CustomButton
-                                label="Rời phòng"
+                                label={t("exit")}
                                 className="bg-red-400 hover:bg-red-500"
                                 onClick={() => handleLeaveRoom()}
                                 disabled={loading}
@@ -152,7 +204,7 @@ const RoomPage = () => {
                             {
                                 player1?.id === playerId &&
                                 <CustomButton
-                                    label="Bắt đầu"
+                                    label={t("start")}
                                     className=""
                                     onClick={() => handleStartGame()}
                                     disabled={loading || !player1 || !player2}

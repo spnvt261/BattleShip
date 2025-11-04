@@ -1,6 +1,6 @@
 // src/context/GameContext.tsx
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
-import type { Room, Player, Game } from "../types/game";
+import type { Room, Player, Game, PlayerState } from "../types/game";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../hooks/useSocket";
 import { useNotification } from "./NotifycationContext";
@@ -9,6 +9,7 @@ import { useAppSettings } from "./appSetting";
 type GameContextType = {
     setRoomId: (id: string) => void;
     room: Room | null;
+    playerState: PlayerState | null;
     setRoom: (r: Room | null) => void;
     player1: Player | null;
     player2: Player | null;
@@ -25,24 +26,31 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [room, setRoom] = useState<Room | null>(null);
     const navigate = useNavigate()
     const { notify } = useNotification()
-    const { t } = useAppSettings();
+    const { t, playerId } = useAppSettings();
     const [player1, setPlayer1] = useState<Player | null>(null);
     const [player2, setPlayer2] = useState<Player | null>(null);
     const [game, setGame] = useState<Game | null>(null);
+    const [playerState, setPlayerState] = useState<PlayerState | null>(null)
     const [roomId, setRoomId] = useState<string | null>(null);
-    const { getRoom, onRoomUpdate, onHit, onMiss } = useSocket()
+    // const [connected,setConnected] = useState<boolean>(false);
+    const { getRoom, onRoomUpdate, onPlayerStateUpdate } = useSocket()
 
-    const fetchRoom = useCallback(() => {
+    const fetchData = useCallback(() => {
         if (!roomId) return;
 
-        getRoom(roomId, (res) => {
+        getRoom(roomId, playerId, (res) => {
             if (!res.room) {
                 notify(t(`Room not found`), 'error')
                 navigate("/")
                 return;
             }
             setRoom(res.room)
+            if(res.room.game?.players){
+                setPlayerState( playerId===res.room.game.players[0].playerId? res.room.game.players[0]:res.room.game.players[1])
+            }
         });
+
+        
     }, [roomId]);
 
     useEffect(() => {
@@ -50,11 +58,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!player2 && room) setPlayer2(room.players[1])
         if (!game && room?.game) setGame(room.game)
     }, [room])
-
+    
     // Lắng nghe update từ server
     useEffect(() => {
-        fetchRoom();
+        fetchData();
+        if (player1 && player2 && player1.id !== playerId && player2.id !== playerId) {
+            notify(t("Room is full"), "warning");
+            cleanRoom()
+            navigate("/")
+        }
         const unsubscribe = onRoomUpdate((res) => {
+            
             if (room && res.room.players.length === 1 && room.players.length === 2) {
                 const playerLeaveRoom: Player = room.players.filter(p => p.id !== res.room.players[0].id)[0]
                 notify(t("player_left", { player: playerLeaveRoom?.name || "" }), 'warning')
@@ -69,32 +83,50 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             unsubscribe?.();
         };
     }, [roomId, onRoomUpdate, player2, player1, game]);
-
+    
     useEffect(() => {
-        const unsubscribe1 = onHit((res) => {
-            console.log(res);
-            
-        });
-        const unsubscribe2 = onMiss((res) => {
-            console.log(res);
-            
+        const unsubscribe = onPlayerStateUpdate((res) => {
+            setPlayerState(res.playerState)
         });
         return () => {
-            unsubscribe1?.();
-            unsubscribe2?.();
+            unsubscribe?.();
         };
     }, [])
+    
+    // useEffect(() => {
+    //     const unsubscribe1 = onHit((res) => {
+    //         console.log(res);
+
+    //     });
+    //     const unsubscribe2 = onMiss((res) => {
+    //         console.log(res);
+
+    //     });
+    //     return () => {
+    //         unsubscribe1?.();
+    //         unsubscribe2?.();
+    //     };
+    // }, [])
 
     const cleanRoom = () => {
         setPlayer1(null)
         setPlayer2(null)
+        setPlayerState(null)
         setGame(null)
         setRoom(null)
         setRoomId(null)
     }
 
     return (
-        <GameContext.Provider value={{ setRoomId, room, setRoom, player1, setPlayer1, player2, setPlayer2, game, setGame, cleanRoom }}>
+        <GameContext.Provider value={{
+            setRoomId,
+            room, setRoom,
+            player1, setPlayer1,
+            player2, setPlayer2,
+            playerState,
+            game, setGame,
+            cleanRoom
+        }}>
             {children}
         </GameContext.Provider>
     );

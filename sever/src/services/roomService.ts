@@ -1,4 +1,4 @@
-import { Room, Player } from "../types";
+import { Room, Player, PlayerState } from "../types";
 import { createGameForRoom } from "./gameService";
 import { Server } from "socket.io";
 
@@ -29,13 +29,14 @@ export function createRoom(hostName: string, hostId: string): Room {
 
 export function getRoom(roomId: string): Room | undefined {
     // console.log(rooms);
-    
+
     return rooms[roomId];
 }
 
 export function joinRoom(roomId: string, name: string, playerId: string): { room?: Room; error?: string } {
     const room = rooms[roomId];
     if (!room) return { error: "Room not found" };
+
     if (room.players.length >= 2) return { error: "Room is full" };
     const player: Player = { id: playerId, name, isReady: false };
     room.players.push(player);
@@ -63,7 +64,7 @@ export function startGame(roomId: string, requesterPlayerId: string, io?: Server
     // 
     if (!room) return { error: "Room not found" };
     // console.log(2);
-    
+
     if (room.players[0].id !== requesterPlayerId) return { error: "Only host can start the game" };
     // console.log(3);
     if (room.players.length !== 2) return { error: "Need 2 players to start" };
@@ -77,31 +78,79 @@ export function startGame(roomId: string, requesterPlayerId: string, io?: Server
 
     // notify room: clients should switch to placing-mode (place ships)
     if (io) {
-        io.to(roomId).emit("room_update", { room, players: room.players });
+        io.to(roomId).emit("room_update", {
+            room: getSafeRoom(room),
+            players: room.players
+        });
         io.to(roomId).emit("game_start", { game }); // game.status === 'placing'
     }
 
     return { game };
 }
 
-export function setReady(roomId: string, playerId: string, isReady: boolean, io?: Server) {
+export function setReady(roomId: string, playerState: PlayerState, isReady: boolean, io?: Server) {
     const room = rooms[roomId];
     if (!room) return;
-    const p = room.players.find(pl => pl.id === playerId);
+    const p = room.players.find(pl => pl.id === playerState.playerId);
     if (p) p.isReady = isReady;
+
+    if (room.game) {
+        room.game.players[0].playerId === playerState.playerId ? room.game.players[0] = { ...playerState, isReady: true } : room.game.players[1] = { ...playerState, isReady: true }
+
+        // console.log(room.game.players);
+
+    }
+
 
 
     // if both players ready => start game
     if (room.players.length === 2 && room.players.every(pl => pl.isReady)) {
         room.status = "playing";
-        if(room.game) room.game.status = "playing";
+        if (room.game) room.game.status = "playing";
+        // if(room.game) room.game.turn = Math.random()<0.5 ? room.game.players[0].playerId : room.game.players[1].playerId  
+        if (io && room.game) io.to(roomId).emit("turn_update", { playerId: Math.random() < 0.5 ? room.game.players[0].playerId : room.game.players[1].playerId })
     }
     // broadcast room update
-    if (io) io.to(roomId).emit("room_update", { room, players: room.players });
+    if (io) io.to(roomId).emit("room_update", {
+        room: getSafeRoom(room),
+        players: room.players
+    });
 }
 
 export function broadcastRoomUpdate(roomId: string, io: Server) {
     const room = rooms[roomId];
     if (!room) return;
-    io.to(roomId).emit("room_update", { room, players: room.players });
+    io.to(roomId).emit("room_update", {
+        room: getSafeRoom(room),
+        players: room.players
+    });
+}
+
+export const getSafeRoom = (room: Room, playerId?: string): Room => ({
+    ...room,
+    game: room.game && {
+        ...room.game,
+        players: room.game.players.map(player => ({
+            ...player,
+            ships:
+                playerId && player.playerId === playerId
+                    ? player.ships // giữ nguyên nếu là chính mình
+                    : player.ships.map(({ coordinates, ...rest }) => rest) // ẩn tọa độ đối thủ
+        })) as [PlayerState, PlayerState],
+    },
+});
+
+export function kickPlayer(roomId: string, playerId: string) {
+    const room = getRoom(roomId);
+    if (!room) return { error: "Room not found" };
+
+    const index = room.players.findIndex(p => p.id === playerId);
+    if (index === -1) return { error: "Player not found in room" };
+
+    room.players.splice(index, 1);
+
+    // nếu bạn có field hostId hoặc turn, nhớ cập nhật lại logic
+    // ví dụ: nếu host bị kick thì chuyển host sang người còn lại
+
+    return { ok: true, room };
 }
