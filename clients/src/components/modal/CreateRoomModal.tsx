@@ -31,10 +31,10 @@ const CreateRoomModal = ({ label, onCancel,onClose }: Props) => {
                 return;
             }
             // console.log(res);
-            
+            nagigate(`/room/${res.room.id}`)
             setRoomId(res.room.id)
             // console.log(res.roomId);
-            nagigate(`/room/${res.room.id}`)
+            
             notify(t("createRoomSuccess"),'success');
         })
 
