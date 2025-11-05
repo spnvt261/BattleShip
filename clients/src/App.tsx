@@ -7,6 +7,7 @@ import NotFoundPage from './pages/NotFoundPage'
 const RoomPage = lazy(() => import('./pages/RoomPage'));
 const SetupPage = lazy(() => import('./pages/SetupPage'));
 const GamePage = lazy(() => import('./pages/GamePage'));
+const CheckPage = lazy(()=> import("./pages/CheckPage"))
 
 const FallbackLoading = () => {
     return (
@@ -27,6 +28,7 @@ function App() {
                 <Routes>
                     <Route path='/' element={<HomePage />} />
                     <Route path='/room/:roomId' element={<RoomPage />} />
+                    <Route path='/:roomId' element={<CheckPage />} />
                     <Route path='/room/:roomId/setup' element={<SetupPage />} />
                     <Route path='/room/:roomId/fight' element={<GamePage />} />
                     {/* <Route path='/fight' element={<GamePage />} /> */}

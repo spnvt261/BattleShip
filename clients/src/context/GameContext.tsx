@@ -63,7 +63,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fetchData();
         const unsubscribe = onRoomUpdate((res) => {
             
-            if (room && res.room.players.length === 1 && room.players.length === 2) {
+            if (room && res.room.players.length === 1 && room.players.length === 2 && room.status!=='waiting') {
                 const playerLeaveRoom: Player = room.players.filter(p => p.id !== res.room.players[0].id)[0]
                 notify(t("player_left", { player: playerLeaveRoom?.name || "" }), 'warning')
                 cleanRoom()

@@ -51,15 +51,13 @@ const JoinRoomModal = ({ }: Props) => {
                             const text = await navigator.clipboard.readText();
                             console.log("Clipboard content:", text);
 
-                            // Regex tìm roomId từ link dạng: .../room/123456
-                            const match = text.match(/\/room\/(\d{6})$/);
+                            // Regex mới: bắt cả dạng /room/123456 hoặc /123456
+                            const match = text.match(/(?:\/room\/|\/)(\d{6})$/);
 
                             let id = null;
                             if (match) {
-                                // Nếu là URL hợp lệ -> lấy phần roomId
                                 id = match[1];
                             } else if (/^\d{6}$/.test(text)) {
-                                // Nếu chỉ là 6 số (roomId thuần)
                                 id = text;
                             }
 
@@ -72,6 +70,7 @@ const JoinRoomModal = ({ }: Props) => {
                             console.error("Failed to read clipboard", err);
                         }
                     }}
+
 
                 >
                     <FiClipboard className="text-text w-5 h-5" />

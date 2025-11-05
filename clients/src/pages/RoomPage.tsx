@@ -17,8 +17,8 @@ const RoomPage = () => {
     const { roomId } = useParams<{ roomId: string }>()
     usePlayerChangeNotify(player1, player2);
     const [copied, setCopied] = useState(false);
-    const { leaveRoom, joinRoom, startGame, kickPlayer, onKicked } = useSocket();
-    const { t, playerId, playerName } = useAppSettings()
+    const { leaveRoom, startGame, kickPlayer, onKicked } = useSocket();
+    const { t, playerId } = useAppSettings()
     const navigate = useNavigate();
     const { notify } = useNotification();
     const [loading, setLoading] = useState<boolean>(false);
@@ -27,7 +27,7 @@ const RoomPage = () => {
         if (!roomId) return;
 
         // Tạo URL đầy đủ
-        const link = `${roomId}`;
+        const link = `${window.location.origin}/${roomId}`;
 
         // Modern Clipboard API (Chrome, Edge, Safari mới)
         if (navigator.clipboard && window.isSecureContext) {
@@ -74,22 +74,22 @@ const RoomPage = () => {
     }, [roomId])
 
 
-    useEffect(() => {
-        if (!roomId || (!player1 && !player2)) return;
-        const currentPlayerInRoom = playerId === player1?.id || player2?.id === playerId;
+    // useEffect(() => {
+    //     if (!roomId || (!player1 && !player2)) return;
+    //     const currentPlayerInRoom = playerId === player1?.id || player2?.id === playerId;
 
-        if (!currentPlayerInRoom) {
-            if (!player1 || !player2) {
-                joinRoom(roomId, playerName, playerId, (res) => {
-                    if (res.ok) {
+    //     if (!currentPlayerInRoom) {
+    //         if (!player1 || !player2) {
+    //             joinRoom(roomId, playerName, playerId, (res) => {
+    //                 if (res.ok) {
 
-                    }
+    //                 }
 
-                });
-            }
-        }
+    //             });
+    //         }
+    //     }
 
-    }, [player1])
+    // }, [player1])
 
     useEffect(() => {
         const unsubscribe = onKicked((res) => {
