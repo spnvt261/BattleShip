@@ -27,7 +27,7 @@ const RoomPage = () => {
         if (!roomId) return;
 
         // Tạo URL đầy đủ
-        const link = `${window.location.origin}/room/${roomId}`;
+        const link = `${roomId}`;
 
         // Modern Clipboard API (Chrome, Edge, Safari mới)
         if (navigator.clipboard && window.isSecureContext) {
@@ -46,7 +46,7 @@ const RoomPage = () => {
         }
     };
 
-    // 👇 fallback cho Safari / HTTP
+    //fallback cho Safari / HTTP
     const fallbackCopy = (text: string) => {
         const textarea = document.createElement("textarea");
         textarea.value = text;

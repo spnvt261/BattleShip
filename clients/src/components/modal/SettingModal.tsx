@@ -95,7 +95,7 @@ const SettingModal: React.FC<Props> = ({ onClose }) => {
                     onClick={handleCancel}
                 />
                 <CustomButton
-                    label={t("save")}
+                    label={t("Save")}
                     className=""
                     onClick={handleSave}
                 />

@@ -56,6 +56,7 @@ const HomePage = ({ }: Props) => {
                         btnLabel={t("settings")}
                         formTitle={t("settings")}
                         children={<SettingModal />}
+                        classNameBtn="bg-transparent text-text border-2 border-border hover:bg-bg2 active:bg-bg2"
                     />
                 </div>
             </div>

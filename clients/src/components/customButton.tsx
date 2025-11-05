@@ -21,7 +21,7 @@ const CustomButton = ({
 }: Props) => {
     return (
         <button
-            className={`px-3 py-2 rounded-[.5rem] bg-btn-bg text-btn-text hover:bg-btn-hover active:bg-btn-active shadow-[0_0_10px_var(--color-btn-shadow)] ${className} ${disabled ? "cursor-not-allowed bg-gray-500 hover:bg-gray-500 active:bg-gray-500" : ""}`}
+            className={`px-3 py-2 rounded-[.5rem] bg-btn-bg text-btn-text hover:bg-btn-hover active:scale-[0.95] active:bg-btn-active shadow-[0_0_10px_var(--color-btn-shadow)] ${className} ${disabled ? "cursor-not-allowed bg-gray-500 hover:bg-gray-500 active:bg-gray-500" : ""}`}
             onClick={onClick}
             style={{ padding, width }}
             disabled={disabled}

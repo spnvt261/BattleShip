@@ -12,6 +12,7 @@ export default {
             },
             colors: {
                 bg: 'var(--color-bg)',
+                bg2: 'var(--color-bg-2)',
                 text: 'var(--color-text)',
                 board: 'var(--color-board)',
                 'border-cell': 'var(--color-cell-border)',

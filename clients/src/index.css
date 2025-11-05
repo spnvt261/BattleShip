@@ -20,6 +20,7 @@ body{
         --color-cell-border: #000;
 
         --color-bg: #e8f9fd;
+        --color-bg-2: #ccf6ff;
         --color-text: #0f172a;
         --color-board: #95ecf3;
         --color-ship: #3b82f6;
@@ -57,6 +58,7 @@ body{
         --color-cell-border: #fff;
         
         --color-bg: #0f172a;
+        --color-bg-2: #19243a;
         --color-text: #f8fafc;
         --color-board: #1e293b;
         --color-ship: #0284c7;
