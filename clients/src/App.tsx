@@ -22,7 +22,7 @@ function App() {
     document.documentElement.setAttribute("data-theme", savedTheme);
 
     return (
-        <div className='min-h-screen w-full bg-bg text-text px-2'>
+        <div className='min-h-screen w-full text-text px-2'>
             <Suspense fallback={<FallbackLoading />}>
                 <Routes>
                     <Route path='/' element={<HomePage />} />

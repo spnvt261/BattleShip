@@ -1,7 +1,7 @@
 import { cloneElement, useState, type ReactElement, type ReactNode } from "react";
 import CustomButton from "../customButton";
 import { AiOutlineClose } from "react-icons/ai";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface Props {
     btnLabel: string;
@@ -41,7 +41,7 @@ const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children, showIconC
                     Icon = {Icon}
                 />
             </div>
-            <AnimatePresence>
+            {/* <AnimatePresence> */}
                 {showModal && (
                     <>
                         <div
@@ -88,7 +88,7 @@ const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children, showIconC
                         </motion.div>
                     </>
                 )}
-            </AnimatePresence>
+            {/* </AnimatePresence> */}
         </div>
     );
 };

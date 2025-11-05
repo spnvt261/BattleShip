@@ -12,6 +12,7 @@ body{
     margin: 0;
     font-family: 'Orbitron', sans-serif;
     box-sizing: border-box;
+    background-color: var(--color-bg);
 }
 @layer base {
     /* 🌞 LIGHT THEME */

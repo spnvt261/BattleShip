@@ -104,7 +104,7 @@ const GamePage = ({
                     btnLabel=""
                     formTitle={t("confirm_out")}
                     btnWidth="fit"
-                    classNameBtn="bg-transparent border border-gray-700 hover:bg-transparent hover:scale-[1.05] transition-all duration-200 rotate-180"
+                    classNameBtn="ml-2 bg-transparent border border-gray-700 hover:bg-transparent hover:scale-[1.05] transition-all duration-200 rotate-180"
                     Icon={<RxExit className="text-text" />}
                     children={
                         <ConfirmModal
