@@ -34,7 +34,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [roomId, setRoomId] = useState<string | null>(null);
     // const [connected,setConnected] = useState<boolean>(false);
     const { getRoom, onRoomUpdate, onPlayerStateUpdate } = useSocket()
-
     const fetchData = useCallback(() => {
         if (!roomId) return;
 
@@ -45,7 +44,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 return;
             }
             setRoom(res.room)
-            if(res.room.game?.players){
+            if(res.room.game?.players && (res.room.players[0].id===playerId || res.room.players[1].id===playerId)){
                 setPlayerState( playerId===res.room.game.players[0].playerId? res.room.game.players[0]:res.room.game.players[1])
             }
         });
@@ -62,11 +61,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Lắng nghe update từ server
     useEffect(() => {
         fetchData();
-        if (player1 && player2 && player1.id !== playerId && player2.id !== playerId) {
-            notify(t("Room is full"), "warning");
-            cleanRoom()
-            navigate("/")
-        }
         const unsubscribe = onRoomUpdate((res) => {
             
             if (room && res.room.players.length === 1 && room.players.length === 2) {
@@ -92,21 +86,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             unsubscribe?.();
         };
     }, [])
-    
-    // useEffect(() => {
-    //     const unsubscribe1 = onHit((res) => {
-    //         console.log(res);
-
-    //     });
-    //     const unsubscribe2 = onMiss((res) => {
-    //         console.log(res);
-
-    //     });
-    //     return () => {
-    //         unsubscribe1?.();
-    //         unsubscribe2?.();
-    //     };
-    // }, [])
 
     const cleanRoom = () => {
         setPlayer1(null)

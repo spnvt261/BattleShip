@@ -47,5 +47,6 @@
   "win":"Win",
   "loose":"Loose",
   "back_to_home":"Back to home",
-  "match_finish":"Match finished"
+  "match_finish":"Match finished",
+  "ship_sunk":"Ship Sunk!"
 }

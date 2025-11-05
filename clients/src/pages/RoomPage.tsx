@@ -8,11 +8,12 @@ import CustomButton from "../components/customButton";
 import { usePlayerChangeNotify } from "../hooks/usePlayerChangeNotify";
 import { useGame } from "../context/GameContext";
 import { IoClose } from "react-icons/io5";
+import { useAuth } from "../hooks/useAuth";
 
 
 
 const RoomPage = () => {
-    const { room, player1, player2, setRoomId, cleanRoom, game } = useGame();
+    const { room, player1, player2, setRoomId, cleanRoom,game } = useGame();
     const { roomId } = useParams<{ roomId: string }>()
     usePlayerChangeNotify(player1, player2);
     const [copied, setCopied] = useState(false);
@@ -21,7 +22,7 @@ const RoomPage = () => {
     const navigate = useNavigate();
     const { notify } = useNotification();
     const [loading, setLoading] = useState<boolean>(false);
-
+    useAuth(room,game);
     const handleCopy= () => {
         if (!roomId) return;
 
@@ -72,14 +73,6 @@ const RoomPage = () => {
         if (!room) setRoomId(roomId)
     }, [roomId])
 
-    useEffect(() => {
-        if (!roomId) return
-        if (game) {
-            if (game.status == 'placing') {
-                navigate(`/room/${roomId}/setup`)
-            }
-        }
-    }, [game])
 
     useEffect(() => {
         if (!roomId || (!player1 && !player2)) return;
@@ -97,8 +90,11 @@ const RoomPage = () => {
         }
 
     }, [player1])
+
     useEffect(() => {
         const unsubscribe = onKicked((res) => {
+            console.log(res);
+            
             if (res) {
                 cleanRoom()
                 notify(res.message, 'warning')
@@ -109,7 +105,7 @@ const RoomPage = () => {
             unsubscribe?.()
         }
     }, [player2])
-
+    
     const handleStartGame = () => {
         setLoading(true)
         if (!player1 || !player2) {
@@ -118,7 +114,6 @@ const RoomPage = () => {
             return;
         }
         roomId && playerId && startGame(roomId, playerId, (res) => {
-            // console.log(res);
             if (res.error) {
 
             } else if (res.ok) {

@@ -3,23 +3,24 @@ import { useNotification } from "../context/NotifycationContext";
 import { useAppSettings } from "../context/appSetting";
 import { type Player } from "../types/game";
 import { useNavigate } from "react-router-dom";
+// import { useGame } from "../context/GameContext";
 
 export function usePlayerChangeNotify(player1: Player | null, player2: Player | null) {
     const { playerId } = useAppSettings()
-    const navigate = useNavigate()
     const prevPlayers = useRef<{ p1: Player | null; p2: Player | null }>({
         p1: null,
         p2: null,
     });
-
+    // const {cleanRoom} = useGame()
     const { notify } = useNotification();
     const { t } = useAppSettings();
+    const navigate = useNavigate()
     useEffect(() => {
         if (!player1) {
             return
         }
         const { p1: prev1, p2: prev2 } = prevPlayers.current;
-        if(prev2===player2){
+        if(prev2===player2 && player2?.id===playerId){
             navigate("/")
         }
         // ---- Player 2 Join ----

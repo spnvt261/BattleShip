@@ -7,11 +7,18 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
+const server = http.createServer(app); // ✅ dùng http để truyền cho socket.io
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: [
+      "https://battleship-ie9w.onrender.com",
+      "http://localhost:5173",
+      "https://battle-ship-gamma.vercel.app",
+      "http://192.168.0.101:5173",
+      "http://192.168.0.102:5173",
+      "https://stats.uptimerobot.com",
+    ],
   },
 });
 
@@ -21,6 +28,5 @@ app.get("/", (req, res) => res.send({ ok: true }));
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`✅ Server listening on port ${PORT}`);
 });

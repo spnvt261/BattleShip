@@ -156,23 +156,23 @@ export function initSockets(io: IOServer) {
 
             const targetSocketId = [...socketToPlayer.entries()]
                 .find(([sockId, pId]) => pId === playerId)?.[0];
-
-            if (targetSocketId) {
+            console.log("Kick target socket123:", targetSocketId);
+            if (targetSocketId) {   
                 const targetSocket = io.sockets.sockets.get(targetSocketId);
                 if (targetSocket) {
-                    targetSocket.leave(roomId);
                     // 👇 gửi thông báo riêng cho người bị kick
                     targetSocket.emit("kicked", {
                         roomId,
                         message: "You have been kicked from the room by the host."
                     });
+                    targetSocket.leave(roomId);
                 }
             }
-            if(res.room)
-            io.to(roomId).emit("room_update", {
-                room: getSafeRoom(res.room),
-                players: res.room.players
-            });
+            if (res.room)
+                io.to(roomId).emit("room_update", {
+                    room: getSafeRoom(res.room),
+                    players: res.room.players
+                });
 
             cb && cb({ ok: true });
         });
@@ -183,6 +183,8 @@ export function initSockets(io: IOServer) {
             // chỉ log hoặc đánh dấu disconnected
             const playerId = socketToPlayer.get(socket.id) || socket.id;
             console.log(`${playerId} disconnected but still in room`);
+             // ❗ Xóa socket cũ khỏi map
+            socketToPlayer.delete(socket.id);
         });
 
     });

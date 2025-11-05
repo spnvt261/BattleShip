@@ -1,9 +1,14 @@
+import { useEffect } from "react";
 import { HiHome, HiRefresh, HiExclamation } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
+import { useGame } from "../context/GameContext";
 
 const NotFoundPage = () => {
     const navigate = useNavigate();
-
+    const {cleanRoom} = useGame()
+    useEffect(()=>{
+        cleanRoom()
+    },[])
     const onGoHome = () => {
         navigate("/"); 
     };

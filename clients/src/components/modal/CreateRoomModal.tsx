@@ -30,11 +30,11 @@ const CreateRoomModal = ({ label, onCancel,onClose }: Props) => {
                 notify(`${t("createRoomFail") + res?.error}`,'error');
                 return;
             }
+            
             // console.log(res);
             nagigate(`/room/${res.room.id}`)
             setRoomId(res.room.id)
             // console.log(res.roomId);
-            
             notify(t("createRoomSuccess"),'success');
         })
 

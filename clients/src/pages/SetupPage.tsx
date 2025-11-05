@@ -13,6 +13,7 @@ import ConfirmModal from "../components/modal/ConfirmModal";
 import { RxExit } from "react-icons/rx";
 import type { PlayerState } from "../types/game";
 import CustomButton from "../components/customButton";
+import { useAuth } from "../hooks/useAuth";
 const SetupPage = () => {
     const { t, playerId } = useAppSettings();
     const { roomId } = useParams<{ roomId: string }>()
@@ -21,10 +22,9 @@ const SetupPage = () => {
     const { notify } = useNotification();
     const navigate = useNavigate();
     const boardRef = useRef<BoardSetupRef>(null);
-    
+    useAuth(room, game, { suppressNavigate: true });
     const handleReady = () => {
         if (!boardRef.current) return;
-        // console.log("Ships:", boardRef.current?.getShips())
         const playerState: PlayerState = {
             playerId: playerId,
             isReady: false,
@@ -42,25 +42,12 @@ const SetupPage = () => {
         if (typeof window === "undefined") return 40;
         return window.innerWidth <= 512 ? 30 : 40;
     }, []);
-    // const handleShipsChange = (ships: Record<string, { x: number; y: number; isVertical: boolean }>) => {
-    //    
-    //     // console.log("Ships updated:", ships);
-    // };
     useEffect(() => {
         if (!roomId) {
             return
         }
         if (!room) setRoomId(roomId)
     }, [roomId])
-
-    // useEffect(() => {
-    //     if (game && game.status !== 'placing'&& (playerId === player1?.id || playerId === player2?.id)) {
-    //         notify(t('error'), 'error')
-    //         cleanRoom()
-    //         navigate("/")
-    //         return;
-    //     }
-    // }, [game])
 
     useEffect(() => {
         if (!roomId) {
@@ -75,7 +62,7 @@ const SetupPage = () => {
         if (player1?.isReady && player2?.isReady && (playerId === player1.id || playerId === player2.id)) {
             setTimeout(() => {
                 navigate(`/room/${roomId}/fight`)
-            }, 3500)
+            }, 3000)
             return;
         }
         if (game && game.status !== 'placing'&& (playerId === player1?.id || playerId === player2?.id)) {

@@ -92,6 +92,7 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
 
     const isDisabled = (x: number, y: number) =>
         disabledCells.some((c) => c.x === x && c.y === y);
+    
     return (
         <div className={`inline-block ${className}`}
             style={{ position: "relative" }}
@@ -129,6 +130,7 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
                             {numbers.map((_, col) => {
                                 const hit = shots?.some(shot => shot.x == row && shot.y == col && shot.hit)
                                 const miss = shots?.some(shot => shot.x == row && shot.y == col)
+                                
                                 const hasMyShip = listShipShow?.some(ship => ship.coordinates.some(coord => coord.x == row && coord.y == col))
                                 console.log();
 
