@@ -65,12 +65,6 @@ const SetupPage = () => {
             }, 3000)
             return;
         }
-        if (game && game.status !== 'placing'&& (playerId === player1?.id || playerId === player2?.id)) {
-            notify(t('error'), 'error')
-            cleanRoom()
-            navigate("/")
-            return;
-        }
         
     }, [player1, player2,game])
 

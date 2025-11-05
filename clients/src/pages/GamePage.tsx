@@ -306,6 +306,7 @@ const GamePage = ({
                                             <CustomButton
                                                 label={t("back_to_home")}
                                                 onClick={() => {
+                                                    roomId&& leaveRoom(roomId,playerId)
                                                     cleanRoom()
                                                     navigate("/")
                                                 }}
