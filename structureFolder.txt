@@ -1,0 +1,100 @@
+﻿├── assets
+├── clients
+│   ├── public
+│   │   ├── images
+│   │   │   ├── ships
+│   │   │   │   ├── battleship.png
+│   │   │   │   ├── carrier.png
+│   │   │   │   ├── cruiser.png
+│   │   │   │   ├── destroyer.png
+│   │   │   │   └── submarine.png
+│   │   │   ├── icon.jpg
+│   │   │   └── icon.png
+│   │   └── vite.svg
+│   ├── src
+│   │   ├── components
+│   │   │   ├── gameEntity
+│   │   │   │   ├── BoardBattle.tsx
+│   │   │   │   ├── BoardSetup.tsx
+│   │   │   │   ├── Cell.tsx
+│   │   │   │   └── Ship.tsx
+│   │   │   ├── HOC
+│   │   │   │   └── WithLoading.tsx
+│   │   │   ├── modal
+│   │   │   │   ├── ConfirmModal.tsx
+│   │   │   │   ├── CreateRoomModal.tsx
+│   │   │   │   ├── JoinRoomModal.tsx
+│   │   │   │   ├── ModalToggle.tsx
+│   │   │   │   └── SettingModal.tsx
+│   │   │   ├── notifycation
+│   │   │   │   └── Notifycation.tsx
+│   │   │   ├── customButton.tsx
+│   │   │   ├── CustomKeyField.tsx
+│   │   │   ├── CustomSelectTab.tsx
+│   │   │   ├── CustomTextField.tsx
+│   │   │   └── test.tsx
+│   │   ├── context
+│   │   │   ├── appSetting.tsx
+│   │   │   ├── GameContext.tsx
+│   │   │   └── NotifycationContext.tsx
+│   │   ├── data
+│   │   │   └── shipList.ts
+│   │   ├── hooks
+│   │   │   ├── useAuth.tsx
+│   │   │   ├── usePlayerChangeNotify.tsx
+│   │   │   └── useSocket.tsx
+│   │   ├── locales
+│   │   │   ├── en.json
+│   │   │   └── vi.json
+│   │   ├── pages
+│   │   │   ├── GamePage.tsx
+│   │   │   ├── HomePage.tsx
+│   │   │   ├── NotFoundPage.tsx
+│   │   │   ├── RoomPage.tsx
+│   │   │   └── SetupPage.tsx
+│   │   ├── services
+│   │   │   └── gameSocketService.ts
+│   │   ├── types
+│   │   │   ├── game.ts
+│   │   │   └── socket.ts
+│   │   ├── App.css
+│   │   ├── App.tsx
+│   │   ├── index.css
+│   │   ├── main.tsx
+│   │   └── socketConfig.ts
+│   ├── .env
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.js
+│   ├── README.md
+│   ├── tailwind.config.js
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   ├── vercel.json
+│   └── vite.config.ts
+├── sever
+│   ├── src
+│   │   ├── services
+│   │   │   ├── chatService.ts
+│   │   │   ├── gameService.ts
+│   │   │   └── roomService.ts
+│   │   ├── utils
+│   │   │   ├── boardHelpers.ts
+│   │   │   └── gameHelpers.ts
+│   │   ├── index.ts
+│   │   ├── socket.ts
+│   │   └── types.ts
+│   ├── .env
+│   ├── .gitignore
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── README.md
+│   ├── tsconfig.json
+│   └── vercel.json
+├── .gitignore
+├── Readme.md
+└── structure.txt

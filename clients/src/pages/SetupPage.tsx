@@ -75,7 +75,7 @@ const SetupPage = () => {
     }, [player1, player2,game])
 
     return (
-        <div className="relative flex justify-center items-center px-2 py-10 [@media(max-width:512px)]:flex-col">
+        <div className="relative min-h-screen flex justify-center items-center px-2 py-10 [@media(max-width:512px)]:flex-col">
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between gap-2 mt-4">
                     <ModalToggle
