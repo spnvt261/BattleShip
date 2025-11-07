@@ -10,6 +10,7 @@
   "Save": "Lưu",
   "exit": "Rời phòng",
   "start": "Bắt đầu",
+  "wait_start" :"Chờ chủ phòng bắt đầu...",
   "confirm": "Xác nhận",
   "light": "Sáng",
   "dark": "Tối",
@@ -48,5 +49,6 @@
   "loose":"Loose",
   "back_to_home":"Trở về trang chủ",
   "match_finish":"Trận đấu đã kết thúc",
-  "ship_sunk":"Thuyền chìm!"
+  "ship_sunk":"Thuyền chìm!",
+  "You have been kicked from the room by the host.":"Bạn bị đá khỏi phòng."
 }

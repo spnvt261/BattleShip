@@ -12,7 +12,7 @@ export function useSocket() {
 
     useEffect(() => {
         socket.on("connect", () => {
-            console.log("✅ Socket connected:", socket.id);
+            console.log("Socket connected:", socket.id);
             notifiedRef.current = false; 
         });
 

@@ -13,6 +13,8 @@ import { useAuth } from "../hooks/useAuth";
 
 
 const RoomPage = () => {
+    console.log('RoomPage');
+    
     const { room, player1, player2, setRoomId, cleanRoom,game } = useGame();
     const { roomId } = useParams<{ roomId: string }>()
     usePlayerChangeNotify(player1, player2);
@@ -27,7 +29,7 @@ const RoomPage = () => {
         if (!roomId) return;
 
         // Tạo URL đầy đủ
-        const link = `${window.location.origin}/${roomId}`;
+        const link = `${window.location.origin}/join/${roomId}`;
 
         // Modern Clipboard API (Chrome, Edge, Safari mới)
         if (navigator.clipboard && window.isSecureContext) {
@@ -74,22 +76,14 @@ const RoomPage = () => {
     }, [roomId])
 
 
-    // useEffect(() => {
-    //     if (!roomId || (!player1 && !player2)) return;
-    //     const currentPlayerInRoom = playerId === player1?.id || player2?.id === playerId;
+    useEffect(() => {
+        if (!roomId) return;
+        if(!player1)return;
+        if(!player2 && player1.id!==playerId) {
+            navigate(`/join/${roomId}`)
+        }
 
-    //     if (!currentPlayerInRoom) {
-    //         if (!player1 || !player2) {
-    //             joinRoom(roomId, playerName, playerId, (res) => {
-    //                 if (res.ok) {
-
-    //                 }
-
-    //             });
-    //         }
-    //     }
-
-    // }, [player1])
+    }, [player1,player2])
 
     useEffect(() => {
         const unsubscribe = onKicked((res) => {
@@ -97,7 +91,7 @@ const RoomPage = () => {
             
             if (res) {
                 cleanRoom()
-                notify(res.message, 'warning')
+                notify(t(res.message), 'warning')
                 navigate("/")
             }
         })
@@ -197,12 +191,12 @@ const RoomPage = () => {
                                 disabled={loading}
                             />
                             {
-                                player1?.id === playerId &&
+                                // player1?.id === playerId &&
                                 <CustomButton
-                                    label={t("start")}
+                                    label={playerId===player1?.id? t("start"):t("wait_start")}
                                     className=""
                                     onClick={() => handleStartGame()}
-                                    disabled={loading || !player1 || !player2}
+                                    disabled={loading || !player1 || !player2 || playerId!==player1.id}
                                 />
                             }
 

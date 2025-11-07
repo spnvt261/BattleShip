@@ -10,6 +10,7 @@
   "Save": "Save",
   "exit": "Exit",
   "start": "Start",
+  "wait_start" :"Waiting for the host to start...",
   "confirm": "Confirm",
   "light": "Light",
   "dark": "Dark",
@@ -48,5 +49,6 @@
   "loose":"Loose",
   "back_to_home":"Back to home",
   "match_finish":"Match finished",
-  "ship_sunk":"Ship Sunk!"
+  "ship_sunk":"Ship Sunk!",
+  "You have been kicked from the room by the host.":"You have been kicked from the room by the host."
 }

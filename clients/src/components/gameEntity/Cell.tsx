@@ -9,7 +9,7 @@ interface Props {
     y: number;
     hasShip?: boolean;
     hit?: boolean;
-    shot: (x: number, y: number) => void;
+    shot?: (x: number, y: number) => void;
     className?: string;
     isFocus?: boolean;
     disabled?: boolean;
@@ -34,9 +34,11 @@ const Cell = ({
     const handleClick = () => {
         
         if (!hit && !disabled) {
-            shot(x, y);
+            shot?.(x, y);
         }
     };
+    console.log('cell');
+    
     
     return (
         <div

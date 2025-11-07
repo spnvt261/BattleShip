@@ -15,29 +15,33 @@ import type { PlayerState } from "../types/game";
 import CustomButton from "../components/customButton";
 import { useAuth } from "../hooks/useAuth";
 const SetupPage = () => {
+    console.log('Setup Page');
+    
     const { t, playerId } = useAppSettings();
     const { roomId } = useParams<{ roomId: string }>()
     const { ready, leaveRoom } = useSocket()
-    const { player1, player2, setRoomId, room, cleanRoom, game } = useGame();
+    const { player1, player2, setRoomId, room, cleanRoom, game,playerState } = useGame();
     const { notify } = useNotification();
     const navigate = useNavigate();
     const boardRef = useRef<BoardSetupRef>(null);
     useAuth(room, game, { suppressNavigate: true });
     const handleReady = () => {
         if (!boardRef.current) return;
+        
         const playerState: PlayerState = {
             playerId: playerId,
             isReady: false,
             ships: boardRef.current?.getShips(),
             shotsFired: [],
-            shotsReceived:[],
-            sunkEnemyShips:[]
+            shotsReceived: [],
+            sunkEnemyShips: []
         }
         roomId && ready(roomId, playerState)
     };
     // const handleUnReady = () => {
 
     // }
+    
     const gridSize = useMemo(() => {
         if (typeof window === "undefined") return 40;
         return window.innerWidth <= 512 ? 30 : 40;
@@ -65,11 +69,11 @@ const SetupPage = () => {
             }, 3000)
             return;
         }
-        
-    }, [player1, player2,game])
 
+    }, [player1, player2, game])
+    
     return (
-        <div className="relative min-h-screen flex justify-center items-center px-2 py-10 [@media(max-width:512px)]:flex-col">
+        <div className="relative min-h-screen flex justify-center py-8 px-2 [@media(max-width:512px)]:flex-col">
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between gap-2 mt-4">
                     <ModalToggle
@@ -140,7 +144,8 @@ const SetupPage = () => {
                     gridCount={10}
                     className="mt-10"
                     gridSize={gridSize}
-
+                    disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady)?true:false}
+                    myListShip={playerState?playerState.ships:undefined}
                 />
                 <div className="w-full flex justify-center items-center mt-4">
                     {/* <CustomButton
@@ -184,10 +189,12 @@ const SetupPage = () => {
                         <FaRotateLeft size={40} />
                     </div>
                 </div>
-                <div className=" flex items-center justify-center mx-10 w-[60px] h-[60px] mt-4 bg-btn-bg2 text-btn-text rounded-full hover:bg-btn-hover">
-                    <button onClick={() => {
+                <div className=" flex items-center justify-center mx-10 w-[60px] h-[60px] mt-4 bg-btn-bg2 text-btn-text rounded-full hover:bg-btn-hover cursor-pointer active:scale-[0.9]"
+                    onClick={() => {
                         boardRef.current?.randomizeShips()
-                    }}>
+                    }}
+                >
+                    <button>
                         <FaRandom size={30} />
                     </button>
                 </div>

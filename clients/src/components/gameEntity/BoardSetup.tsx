@@ -3,7 +3,7 @@ import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { createSnapModifier } from "@dnd-kit/modifiers";
 import { ListShip } from "../../data/shipList";
 import Cell from "./Cell";
-import type {Ship as ShipType } from "../../types/game";
+import type { Ship as ShipType } from "../../types/game";
 import Ship from "./Ship";
 
 interface Props {
@@ -13,6 +13,8 @@ interface Props {
     onSetupChange?: (
         ships: Record<string, { x: number; y: number; isVertical: boolean }>
     ) => void;
+    disabled?: boolean;
+    myListShip?: ShipType[]
 }
 
 export interface BoardSetupRef {
@@ -25,12 +27,15 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
     gridSize = 40,
     className,
     onSetupChange,
+    disabled,
+    myListShip,
 }, ref) => {
+    console.log("Board setup");
+
     const letters = "ABCDEFGHIJ".split("").slice(0, gridCount);
     const numbers = Array.from({ length: gridCount }, (_, i) => i + 1);
     const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize]);
     const listShips = useRef<ShipType[]>([])
-
 
     const getCoordinatesShip = (cellFirstPosition: number, rowFirstPosition: number, size: number, isVertical: boolean): { x: number; y: number }[] => {
         return Array.from({ length: size }, (_, i) => ({
@@ -44,7 +49,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
         gridSize: number
     ): Record<string, { x: number; y: number; isVertical: boolean }> => {
         const result: Record<string, { x: number; y: number; isVertical: boolean }> = {};
-        listShips.current=[]
+        listShips.current = []
         const getOccupiedCells = (
             pos: { x: number; y: number; isVertical: boolean },
             size: number
@@ -111,30 +116,46 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                 console.warn(`Kh├┤ng thß╗â ─æß║╖t t├áu ${ship.id} sau ${attempts} lß║ºn thß╗¡`);
             }
         }
-        // console.log(listShips);
 
+        // console.log(listShips.current);
 
         return result;
     };
 
+    const generateCurrentPositions = (listShip: ShipType[]): Record<string, { x: number; y: number; isVertical: boolean }> => {
+        // console.log(listShips.current);
+        return listShip.reduce((acc, ship) => {
+            acc[ship.id] = {
+                x: ship.coordinates[0].y * gridSize,
+                y: ship.coordinates[0].x * gridSize,
+                isVertical: ship.coordinates[0].x === ship.coordinates[1].x ? false : true
+            };
+            return acc
+        }, {} as Record<string, { x: number; y: number; isVertical: boolean }>)
+    }
+
     const [ships, setShips] = useState<
         Record<string, { x: number; y: number; isVertical: boolean }>
     >(
-        () => generateRandomPositions(gridCount, gridSize)
+        () => {
+            if ((!myListShip || myListShip.length === 0)) return generateRandomPositions(gridCount, gridSize)
+            return generateCurrentPositions(myListShip)
+        }
     );
+
 
 
     const updateShip = useCallback(
         (id: string, data: { x: number; y: number; isVertical: boolean }) => {
-            let ship = listShips.current.find(p=>p.id === id)
-            if(ship) ship.coordinates = getCoordinatesShip(data.x/gridSize,data.y/gridSize,ship.size,data.isVertical)
+            let ship = listShips.current.find(p => p.id === id)
+            if (ship) ship.coordinates = getCoordinatesShip(data.x / gridSize, data.y / gridSize, ship.size, data.isVertical)
             setShips(prev => {
                 const newData = { ...prev, [id]: { ...prev[id], ...data } };
                 onSetupChange?.(newData);
                 return newData;
             });
             // console.log(listShips);
-            
+
         },
         [onSetupChange]
     );
@@ -247,6 +268,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
         [ships, gridSize, gridCount, checkCollision, updateShip]
     );
 
+
     /** Xoay t├áu (double click) */
     const handleRotate = useCallback(
         (id: string) => {
@@ -296,74 +318,76 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                 </div>
             )}
 
-            <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid]}>
-                <div style={{ display: "flex", position: "relative" }}>
-                    {/* Trß╗Ñc Y */}
-                    {letters.map((letter, idx) => (
-                        <div
-                            key={letter}
-                            style={{
-                                position: "absolute",
-                                top: offset + (idx - 1) * gridSize,
-                                left: -1 * gridSize,
-                                width: gridSize,
-                                height: gridSize,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontWeight: "bold",
-                            }}
-                        >
-                            {letter}
-                        </div>
-                    ))}
 
-                    {/* Board ch├¡nh */}
-                    <div style={{ position: "relative" }}>
-                        {/* Grid */}
-                        <div
-                            className="grid"
-                            style={{
-                                gridTemplateColumns: `repeat(${gridCount}, ${gridSize}px)`,
-                                gridTemplateRows: `repeat(${gridCount}, ${gridSize}px)`,
-                            }}
-                        >
-                            {Array.from({ length: gridCount * gridCount }).map((_, idx) => (
-                                <Cell
-                                    key={idx}
-                                    x={0}
-                                    y={0}
-                                    hasShip={false}
-                                    hit={false}
-                                    disabled
-                                    shot={() => { }}
-                                    gridSize={gridSize}
-                                />
-                            ))}
-                        </div>
+            <div style={{ display: "flex", position: "relative" }}>
+                {/* Trß╗Ñc Y */}
+                {letters.map((letter, idx) => (
+                    <div
+                        key={letter}
+                        style={{
+                            position: "absolute",
+                            top: offset + (idx - 1) * gridSize,
+                            left: -1 * gridSize,
+                            width: gridSize,
+                            height: gridSize,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        {letter}
+                    </div>
+                ))}
 
-                        {/* Ships */}
-                        {ListShip.map(ship => {
-                            const pos = ships[ship.id];
-                            return (
-                                <Ship
-                                    key={ship.id}
-                                    id={ship.id}
-                                    shipame={ship.type}
-                                    image={ship.image}
-                                    gridSize={gridSize}
-                                    size={ship.size}
-                                    gridCount={gridCount}
-                                    positionFirstBlock={pos}
-                                    isVertical={pos.isVertical}
-                                    onRotate={handleRotate}
-
-                                />
-                            );
-                        })}
+                {/* Board ch├¡nh */}
+                <div style={{ position: "relative" }}>
+                    {/* Grid */}
+                    <div
+                        className="grid"
+                        style={{
+                            gridTemplateColumns: `repeat(${gridCount}, ${gridSize}px)`,
+                            gridTemplateRows: `repeat(${gridCount}, ${gridSize}px)`,
+                        }}
+                    >
+                        {Array.from({ length: gridCount * gridCount }).map((_, idx) => (
+                            <Cell
+                                key={idx}
+                                x={0}
+                                y={0}
+                                hasShip={false}
+                                hit={false}
+                                disabled
+                                gridSize={gridSize}
+                            />
+                        ))}
                     </div>
                 </div>
-            </DndContext>
+                {/* <DndContext> */}
+                {/* Ships */}
+                {ListShip.map(ship => {
+                    const pos = ships[ship.id];
+                    return (
+                        <DndContext key={ship.id} onDragEnd={handleDragEnd} modifiers={[snapToGrid]}>
+                            <Ship
+                                key={ship.id}
+                                id={ship.id}
+                                shipame={ship.type}
+                                image={ship.image}
+                                gridSize={gridSize}
+                                size={ship.size}
+                                gridCount={gridCount}
+                                positionFirstBlock={pos}
+                                isVertical={pos.isVertical}
+                                onRotate={handleRotate}
+                                onlyView={disabled}
+                            />
+                        </DndContext>
+
+                    );
+                })}
+                {/* </DndContext> */}
+            </div>
         </div>
     );
 });

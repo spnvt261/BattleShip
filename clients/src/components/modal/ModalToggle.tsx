@@ -14,6 +14,8 @@ interface Props {
 }
 
 const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children, showIconClose,Icon,classNameBtn, btnWidth = "100%" }) => {
+    console.log('Modal');
+    
     const [showModal, setShowModal] = useState(false);
     const renderChildren = () => {
         if (!children) return null;

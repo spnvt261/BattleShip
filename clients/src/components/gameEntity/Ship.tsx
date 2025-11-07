@@ -17,10 +17,16 @@ interface Props {
     showOpacity?:boolean
 }
 
-const Ship = ({ id, positionFirstBlock, isVertical, size, gridSize, gridCount, image, shipame, onRotate, small, onlyView, isSunk,showOpacity }: Props) => {
+const Ship = ({ 
+    id, positionFirstBlock, isVertical, size, 
+    gridSize, gridCount, image, shipame, onRotate, 
+    small, onlyView, isSunk,showOpacity 
+}: Props) => {
     // console.log(positionFirstBlock);
+    // console.log(shipame);
+    
 
-    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id });
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({id,disabled:onlyView});
     const shipRef = useRef<HTMLDivElement>(null);
     const lastTapRef = useRef(0);
 
@@ -37,6 +43,7 @@ const Ship = ({ id, positionFirstBlock, isVertical, size, gridSize, gridCount, i
     };
     useEffect(() => {
         const node = shipRef.current;
+        
         if (!node) return;
 
         const handleTouch = (e: TouchEvent) => {
@@ -122,5 +129,4 @@ const Ship = ({ id, positionFirstBlock, isVertical, size, gridSize, gridCount, i
         </div>
     );
 };
-
 export default React.memo(Ship);

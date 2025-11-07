@@ -35,6 +35,8 @@ interface ViewProps extends BaseProps {
 type Props = CanShotProps | ViewProps;
 
 const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, gridSize = 40, roomId, shotsFired, shotsRecevied, listShipShow }: Props) => {
+    console.log('Board Battle');
+    
     // const { type, showAxisLabels, small, className, gridCount = 10, gridSize = 40, roomId } = props
     const { attack } = useSocket()
     const { playerId } = useAppSettings();

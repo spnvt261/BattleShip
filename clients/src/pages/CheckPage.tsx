@@ -6,6 +6,8 @@ import { useNotification } from "../context/NotifycationContext"
 import { useSocket } from "../hooks/useSocket"
 
 const CheckPage = () => {
+    console.log('CheckPage');
+    
     const { roomId } = useParams<{ roomId: string }>()
     const { playerId, t, playerName } = useAppSettings();
     const { setRoomId, player1, player2 } = useGame()

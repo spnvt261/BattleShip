@@ -19,6 +19,8 @@ interface Props {
 const GamePage = ({
 
 }: Props) => {
+    console.log('GamePage');
+    
     const { roomId } = useParams<{ roomId: string }>();
     const { leaveRoom, onGameOver } = useSocket()
     const { notify } = useNotification()
