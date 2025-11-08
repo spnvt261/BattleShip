@@ -5,45 +5,38 @@ import { useSocket } from "../../hooks/useSocket";
 import CustomButton from "../customButton";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../context/NotifycationContext";
-import { useGame } from "../../context/GameContext";
 
 interface Props {
     label?: string;
     onCancel?: () => void;
-    onClose?:()=>void
+    onClose?: () => void
 }
 
-const CreateRoomModal = ({ label, onCancel,onClose }: Props) => {
-    const { t ,playerName,playerId} = useAppSettings();
-    const [loading,setLoading] = useState<boolean>(false)
-    const {createRoom } = useSocket();
-    
-    const {setRoomId} = useGame();
+const CreateRoomModal = ({ label, onCancel, onClose }: Props) => {
+    const { t, playerName, playerId } = useAppSettings();
+    const [loading, setLoading] = useState<boolean>(false)
+    const { createRoom } = useSocket();
+
+    // const {loadRoom} = useGame();
     const nagigate = useNavigate()
-    const {notify} = useNotification()
-    const handleCreateRoom = ()=>{
+    const { notify } = useNotification()
+    const handleCreateRoom = () => {
         setLoading(true)
-        notify(t("creatingRoom"),'loading');
-        createRoom(playerName,playerId,(res)=>{
-            if(!res.room){
+        const timeout = setTimeout(() => {
+            notify(t("connect_error"), "error");
+            setLoading(false)
+        }, 3000)
+        notify(t("creatingRoom"), 'loading');
+        createRoom(playerName, playerId, (res) => {
+            clearTimeout(timeout)
+            if (!res.room) {
                 setLoading(false)
-                notify(`${t("createRoomFail") + res?.error}`,'error');
+                notify(`${t("createRoomFail") + res?.error}`, 'error');
                 return;
             }
-            
-            // console.log(res);
             nagigate(`/room/${res.room.id}`)
-            setRoomId(res.room.id)
-            // console.log(res.roomId);
-            notify(t("createRoomSuccess"),'success');
+            notify(t("createRoomSuccess"), 'success');
         })
-
-        setTimeout(()=>{
-            if(loading) {
-                notify(t("connect_error"), "error");
-                setLoading(false)
-            }
-        },3000)
     }
     return (
         <div>
@@ -53,7 +46,7 @@ const CreateRoomModal = ({ label, onCancel,onClose }: Props) => {
             <div className="flex gap-2 justify-end mt-10">
                 <CustomButton
                     label={t("cancel")}
-                    onClick={onCancel?onCancel:onClose}
+                    onClick={onCancel ? onCancel : onClose}
                     className="bg-red-500 hover:bg-red-600"
                     disabled={loading}
                 />

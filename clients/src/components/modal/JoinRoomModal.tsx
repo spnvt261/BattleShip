@@ -6,7 +6,6 @@ import { useSocket } from "../../hooks/useSocket"
 import { useNotification } from "../../context/NotifycationContext"
 import { useNavigate } from "react-router-dom"
 import { FiClipboard } from "react-icons/fi"
-import { useGame } from "../../context/GameContext"
 
 interface Props {
 
@@ -15,7 +14,6 @@ const JoinRoomModal = ({ }: Props) => {
     const { t, playerName, playerId } = useAppSettings()
     const [roomId, setRoomId] = useState<string | undefined>(undefined);
     const { notify } = useNotification();
-    const { setRoomId: setRoomIdProvider } = useGame()
     const { joinRoom } = useSocket();
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -31,9 +29,7 @@ const JoinRoomModal = ({ }: Props) => {
                 setLoading(false)
                 return
             }
-            setRoomIdProvider(roomId);
             navigate(`/room/${roomId}`);
-            // notify(t("success"),'success')
         })
     }
     return (

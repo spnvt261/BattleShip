@@ -53,8 +53,11 @@ export const onKicked= (cb: (payload: { roomId:string, message:string}) => void)
     socket.on("kicked", cb);
     return () => socket.off("kicked", cb); 
 }
-export const onGameStart = (cb: (payload: { game: Game }) => void) =>
+export const onGameStart = (cb: (payload: { game: Game }) => void) => {
     socket.on("game_start", cb);
+    return ()=> socket.off("game_start",cb)
+}
+    
 
 export const onHit = (cb: (payload: { x: number; y: number; attackerId:string; targetId:string}) => void) => {
      socket.on("hit", cb);

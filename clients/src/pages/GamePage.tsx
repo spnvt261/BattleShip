@@ -11,6 +11,7 @@ import { useNotification } from "../context/NotifycationContext";
 import { AnimatePresence, motion } from "framer-motion";
 import CustomButton from "../components/customButton";
 import { useAuth } from "../hooks/useAuth";
+import { useGameResource } from "../hooks/useGameResource";
 
 
 interface Props {
@@ -22,10 +23,12 @@ const GamePage = ({
     console.log('GamePage');
     
     const { roomId } = useParams<{ roomId: string }>();
+    const room = useGameResource(roomId!)
+
     const { leaveRoom, onGameOver } = useSocket()
     const { notify } = useNotification()
     const navigate = useNavigate();
-    const { cleanRoom, setRoomId, room, playerState, game } = useGame()
+    const { cleanRoom, playerState, game } = useGame()
     const { t, playerId } = useAppSettings()
     const [isMyTurn, setIsMyTurn] = useState<boolean | undefined>(undefined)
     const [showTurnNotice, setShowTurnNotice] = useState(false);
@@ -39,13 +42,6 @@ const GamePage = ({
         if (typeof window === "undefined") return 40;
         return window.innerWidth <= 512 ? 30 : 40;
     }, []);
-
-    useEffect(() => {
-        if (!roomId) {
-            return
-        }
-        if (!room) setRoomId(roomId)
-    }, [roomId])
 
     useEffect(() => {
         if (!game || !playerId) return;

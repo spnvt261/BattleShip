@@ -78,10 +78,10 @@ export function startGame(roomId: string, requesterPlayerId: string, io?: Server
 
     // notify room: clients should switch to placing-mode (place ships)
     if (io) {
-        io.to(roomId).emit("room_update", {
-            room: getSafeRoom(room),
-            players: room.players
-        });
+        // io.to(roomId).emit("room_update", {
+        //     room: getSafeRoom(room),
+        //     players: room.players
+        // });
         io.to(roomId).emit("game_start", { game }); // game.status === 'placing'
     }
 

@@ -112,9 +112,9 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             }
 
 
-            if (!placed) {
-                console.warn(`Kh├┤ng thß╗â ─æß║╖t t├áu ${ship.id} sau ${attempts} lß║ºn thß╗¡`);
-            }
+            // if (!placed) {
+            //     console.warn(`Kh├┤ng thß╗â ─æß║╖t t├áu ${ship.id} sau ${attempts} lß║ºn thß╗¡`);
+            // }
         }
 
         // console.log(listShips.current);

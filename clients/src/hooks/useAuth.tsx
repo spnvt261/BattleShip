@@ -3,13 +3,11 @@ import { useAppSettings } from "../context/appSetting";
 import type { Game, Room } from "../types/game";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../context/NotifycationContext";
-import { useGame } from "../context/GameContext";
 
 export const useAuth = (room: Room | null, game: Game | null, options?: { suppressNavigate?: boolean }) => {
     const { playerId, t } = useAppSettings();
     const navigate = useNavigate()
     const { notify } = useNotification();
-    const { cleanRoom } = useGame();
 
     useEffect(() => {
         if (!room) return
@@ -19,7 +17,6 @@ export const useAuth = (room: Room | null, game: Game | null, options?: { suppre
         
         if (player1&&player2&& player1.id !== playerId && player2.id !== playerId) {
             notify(t("Room is full"), "warning");
-            cleanRoom()
             navigate("/")
             return;
         }
@@ -32,7 +29,6 @@ export const useAuth = (room: Room | null, game: Game | null, options?: { suppre
                 navigate(`/room/${room.id}/fight`)
             } else {
                 notify(t("match_finish"), "error")
-                cleanRoom();
                 navigate("/");
             }
         }

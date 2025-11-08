@@ -9,22 +9,24 @@ import { usePlayerChangeNotify } from "../hooks/usePlayerChangeNotify";
 import { useGame } from "../context/GameContext";
 import { IoClose } from "react-icons/io5";
 import { useAuth } from "../hooks/useAuth";
+import { useGameResource } from "../hooks/useGameResource";
 
 
 
 const RoomPage = () => {
-    console.log('RoomPage');
-    
-    const { room, player1, player2, setRoomId, cleanRoom,game } = useGame();
     const { roomId } = useParams<{ roomId: string }>()
+    const room = useGameResource(roomId!);
+    console.log('RoomPage');
+    const {player1, player2,game } = useGame();
+    useAuth(room,game);
     usePlayerChangeNotify(player1, player2);
     const [copied, setCopied] = useState(false);
-    const { leaveRoom, startGame, kickPlayer, onKicked } = useSocket();
+    const { leaveRoom, startGame, kickPlayer, onKicked, onGameStart } = useSocket();
     const { t, playerId } = useAppSettings()
     const navigate = useNavigate();
     const { notify } = useNotification();
     const [loading, setLoading] = useState<boolean>(false);
-    useAuth(room,game);
+    
     const handleCopy= () => {
         if (!roomId) return;
 
@@ -67,15 +69,6 @@ const RoomPage = () => {
         document.body.removeChild(textarea);
     };
 
-
-    useEffect(() => {
-        if (!roomId) {
-            return
-        }
-        if (!room) setRoomId(roomId)
-    }, [roomId])
-
-
     useEffect(() => {
         if (!roomId) return;
         if(!player1)return;
@@ -86,19 +79,25 @@ const RoomPage = () => {
     }, [player1,player2])
 
     useEffect(() => {
-        const unsubscribe = onKicked((res) => {
+        const unsubscribeKick= onKicked((res) => {
             console.log(res);
             
             if (res) {
-                cleanRoom()
                 notify(t(res.message), 'warning')
                 navigate("/")
             }
         })
+        const unsubstartgame = onGameStart((res)=>{
+            if(res.game){
+                navigate(`/room/${room.id}/setup`)
+            }
+            
+        })
         return () => {
-            unsubscribe?.()
+            unsubscribeKick?.()
+            unsubstartgame?.();
         }
-    }, [player2])
+    }, [])
     
     const handleStartGame = () => {
         setLoading(true)
@@ -107,18 +106,11 @@ const RoomPage = () => {
             setLoading(false)
             return;
         }
-        roomId && playerId && startGame(roomId, playerId, (res) => {
-            if (res.error) {
-
-            } else if (res.ok) {
-
-            }
-        })
+        startGame(room.id, playerId)
     }
 
     const handleLeaveRoom = () => {
-        roomId && leaveRoom(roomId, playerId)
-        cleanRoom();
+        leaveRoom(room.id, playerId)
         notify(t("leave"), 'warning')
         navigate("/")
     }
@@ -193,7 +185,7 @@ const RoomPage = () => {
                             {
                                 // player1?.id === playerId &&
                                 <CustomButton
-                                    label={playerId===player1?.id? t("start"):t("wait_start")}
+                                    label={loading?t("starting"): playerId===player1?.id? t("start"):t("wait_start")}
                                     className=""
                                     onClick={() => handleStartGame()}
                                     disabled={loading || !player1 || !player2 || playerId!==player1.id}

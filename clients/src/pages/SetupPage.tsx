@@ -14,20 +14,22 @@ import { RxExit } from "react-icons/rx";
 import type { PlayerState } from "../types/game";
 import CustomButton from "../components/customButton";
 import { useAuth } from "../hooks/useAuth";
+import { useGameResource } from "../hooks/useGameResource";
 const SetupPage = () => {
-    console.log('Setup Page');
-    
-    const { t, playerId } = useAppSettings();
     const { roomId } = useParams<{ roomId: string }>()
+    const room = useGameResource(roomId!)
+    console.log('Setup Page');
+    const { t, playerId } = useAppSettings();
+
     const { ready, leaveRoom } = useSocket()
-    const { player1, player2, setRoomId, room, cleanRoom, game,playerState } = useGame();
+    const { player1, player2, game, playerState } = useGame();
     const { notify } = useNotification();
     const navigate = useNavigate();
     const boardRef = useRef<BoardSetupRef>(null);
     useAuth(room, game, { suppressNavigate: true });
     const handleReady = () => {
         if (!boardRef.current) return;
-        
+
         const playerState: PlayerState = {
             playerId: playerId,
             isReady: false,
@@ -41,17 +43,11 @@ const SetupPage = () => {
     // const handleUnReady = () => {
 
     // }
-    
+
     const gridSize = useMemo(() => {
         if (typeof window === "undefined") return 40;
         return window.innerWidth <= 512 ? 30 : 40;
     }, []);
-    useEffect(() => {
-        if (!roomId) {
-            return
-        }
-        if (!room) setRoomId(roomId)
-    }, [roomId])
 
     useEffect(() => {
         if (!roomId) {
@@ -71,7 +67,7 @@ const SetupPage = () => {
         }
 
     }, [player1, player2, game])
-    
+
     return (
         <div className="relative min-h-screen flex justify-center py-8 px-2 [@media(max-width:512px)]:flex-col">
             <div className="flex flex-col gap-4">
@@ -84,7 +80,6 @@ const SetupPage = () => {
                         children={
                             <ConfirmModal onConfirm={() => {
                                 roomId && leaveRoom(roomId, playerId)
-                                cleanRoom();
                                 notify(t("leave"), 'warning')
                                 navigate("/")
                             }}
@@ -144,8 +139,8 @@ const SetupPage = () => {
                     gridCount={10}
                     className="mt-10"
                     gridSize={gridSize}
-                    disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady)?true:false}
-                    myListShip={playerState?playerState.ships:undefined}
+                    disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady) ? true : false}
+                    myListShip={playerState ? playerState.ships : undefined}
                 />
                 <div className="w-full flex justify-center items-center mt-4">
                     {/* <CustomButton
@@ -189,15 +184,15 @@ const SetupPage = () => {
                         <FaRotateLeft size={40} />
                     </div>
                 </div>
-                <div className=" flex items-center justify-center mx-10 w-[60px] h-[60px] mt-4 bg-btn-bg2 text-btn-text rounded-full hover:bg-btn-hover cursor-pointer active:scale-[0.9]"
-                    onClick={() => {
+                <CustomButton
+                    label=""
+                    Icon={<FaRandom size={30} />}
+                    className="flex items-center justify-center mx-10 w-[60px] h-[60px] mt-4 bg-btn-bg2 text-btn-text rounded-full active:scale-[0.9]"
+                    disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady)}
+                     onClick={() => {
                         boardRef.current?.randomizeShips()
                     }}
-                >
-                    <button>
-                        <FaRandom size={30} />
-                    </button>
-                </div>
+                />
             </div>
             {
                 player1?.isReady && player2?.isReady &&

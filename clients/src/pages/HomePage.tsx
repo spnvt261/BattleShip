@@ -5,7 +5,7 @@ import JoinRoomModal from "../components/modal/JoinRoomModal";
 import ModalToggle from "../components/modal/ModalToggle";
 import SettingModal from "../components/modal/SettingModal";
 import { useAppSettings } from "../context/appSetting";
-import { useGame } from "../context/GameContext";
+import {useGameActions } from "../context/GameContext";
 
 interface Props { }
 
@@ -13,7 +13,7 @@ const HomePage = ({ }: Props) => {
     console.log('HomePage');
     
     const { t } = useAppSettings();
-    const {cleanRoom} = useGame();
+    const {cleanRoom} = useGameActions();
     useEffect(()=>{
         cleanRoom()
     },[])

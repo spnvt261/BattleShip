@@ -71,7 +71,7 @@ const Ship = ({
     y = Math.max(0, Math.min(y, maxY));
 
     const handleDoubleClick = () => {
-        onRotate?.(id);
+        if(!onlyView) onRotate?.(id);
     };
 
 
