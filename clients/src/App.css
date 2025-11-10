@@ -1,39 +1,66 @@
 .blinking {
-    animation: blink 1s infinite;
+  animation: blink 1s infinite;
 }
 
 @keyframes blink {
 
-    0%,
-    50%,
-    100% {
-        opacity: 1;
-    }
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
 
-    25%,
-    75% {
-        opacity: 0;
-    }
+  25%,
+  75% {
+    opacity: 0;
+  }
 }
 
 /* Tạo class custom cho Tailwind */
 .clip-hexagon {
-  clip-path: polygon(
-    15% 0%,   /* trên trái */
-    85% 0%,   /* trên phải */
-    100% 50%, /* giữa phải nhọn */
-    85% 100%, /* dưới phải */
-    15% 100%, /* dưới trái */
-    0% 50%    /* giữa trái nhọn */
-  );
+  clip-path: polygon(15% 0%,
+      /* trên trái */
+      85% 0%,
+      /* trên phải */
+      100% 50%,
+      /* giữa phải nhọn */
+      85% 100%,
+      /* dưới phải */
+      15% 100%,
+      /* dưới trái */
+      0% 50%
+      /* giữa trái nhọn */
+    );
 }
 
 @keyframes countdown {
-  0% { content: "3"; opacity: 1; transform: scale(1); }
-  16.6% { content: "2"; opacity: 1; transform: scale(1); }
-  33.3% { content: "1"; opacity: 1; transform: scale(1); }
-  50% { opacity: 0; transform: scale(0.5); }
-  100% { opacity: 0; transform: scale(0.5); }
+  0% {
+    content: "3";
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  16.6% {
+    content: "2";
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  33.3% {
+    content: "1";
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 }
 
 .countdown::after {
@@ -48,21 +75,43 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  background: 
-    repeating-linear-gradient(
-      45deg,
+  background:
+    repeating-linear-gradient(45deg,
       rgba(0, 0, 0, 0.4) 0px,
       rgba(0, 0, 0, 0.4) 1px,
       transparent 1px,
-      transparent 8px
-    ),
-    repeating-linear-gradient(
-      -45deg,
+      transparent 8px),
+    repeating-linear-gradient(-45deg,
       rgba(0, 0, 0, 0.4) 0px,
       rgba(0, 0, 0, 0.4) 1px,
       transparent 1px,
-      transparent 8px
-    );
+      transparent 8px);
   backdrop-filter: brightness(0.8) contrast(1.2);
   border-radius: 6px;
+}
+
+.board-not-disabled .cell-in-board {
+  &:hover {
+    z-index: 20;
+    border-color: rgb(220 38 38);
+    /* red-600 */
+    box-shadow: 0 0 0 2px rgb(220 38 38 / 1);
+    /* ring-2 ring-red-600 */
+    cursor: pointer;
+  }
+
+  &.cell-disabled {
+    &:hover {
+      border-color: black;
+      box-shadow: none;
+      cursor: default;
+      z-index: auto;
+    }
+
+  }
+}
+
+.board-disabled .cell-in-board {
+  cursor: default;
+  opacity: 0.6;
 }
