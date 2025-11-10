@@ -133,15 +133,18 @@ const SetupPage = () => {
                 <div className="flex justify-center w-full p-2 border-2 border-border">
                     <p>{t("deployFleet")}</p>
                 </div>
-                <BoardSetup
-                    ref={boardRef}
-                    // onSetupChange={handleShipsChange}
-                    gridCount={10}
-                    className="mt-10"
-                    gridSize={gridSize}
-                    disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady) ? true : false}
-                    myListShip={playerState ? playerState.ships : undefined}
-                />
+                <div className="flex justify-center">
+                    <BoardSetup
+                        ref={boardRef}
+                        // onSetupChange={handleShipsChange}
+                        gridCount={10}
+                        className="mt-10"
+                        gridSize={gridSize}
+                        disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady) ? true : false}
+                        myListShip={playerState ? playerState.ships : undefined}
+                    />
+                </div>
+
                 <div className="w-full flex justify-center items-center mt-4">
                     {/* <CustomButton
                                 onClick={handleUnReady}
@@ -189,7 +192,7 @@ const SetupPage = () => {
                     Icon={<FaRandom size={30} />}
                     className="flex items-center justify-center mx-10 w-[60px] h-[60px] mt-4 bg-btn-bg2 text-btn-text rounded-full active:scale-[0.9]"
                     disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady)}
-                     onClick={() => {
+                    onClick={() => {
                         boardRef.current?.randomizeShips()
                     }}
                 />

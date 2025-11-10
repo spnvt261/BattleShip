@@ -24,7 +24,7 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
     const { notify } = useNotification();
     const { t, playerId } = useAppSettings();
-    const { getRoom, onRoomUpdate, onPlayerStateUpdate } = useSocket();
+    const { getRoom, onRoomUpdate,onPlayerStateUpdate } = useSocket();
     const [room, setRoom] = useState<Room | null>(null);
     const [player1, setPlayer1] = useState<Player | null>(null);
     const [player2, setPlayer2] = useState<Player | null>(null);
@@ -68,7 +68,7 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 cleanRoom()
                 navigate("/")
             }
-            
+
             setRoom(res.room)
             setPlayer1(res.room.players[0] ?? null)
             setPlayer2(res.room.players[1] ?? null)
@@ -76,7 +76,20 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
         })
 
         const unsubplayerstate = onPlayerStateUpdate((res) => {
-            setPlayerState(res.playerState)
+            setPlayerState(prev => {
+                if (!prev) return res.playerState;
+
+                return {
+                    ...prev,
+                    // chỉ cập nhật những field thay đổi
+                    shotsFired: res.playerState.shotsFired ?? prev.shotsFired,
+                    shotsReceived: res.playerState.shotsReceived ?? prev.shotsReceived,
+                    sunkEnemyShips: res.playerState.sunkEnemyShips ?? prev.sunkEnemyShips,
+                    isReady: res.playerState.isReady ?? prev.isReady,
+                    // giữ nguyên ships nếu không có thay đổi
+                    ships: res.playerState.ships?.length ? res.playerState.ships : prev.ships,
+                };
+            });
         })
         return () => {
             unsubroom?.();

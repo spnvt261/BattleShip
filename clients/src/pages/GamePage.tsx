@@ -20,17 +20,15 @@ interface Props {
 const GamePage = ({
 
 }: Props) => {
-    console.log('GamePage');
-    
     const { roomId } = useParams<{ roomId: string }>();
     const room = useGameResource(roomId!)
-
+    console.log('GamePage');
     const { leaveRoom, onGameOver } = useSocket()
     const { notify } = useNotification()
     const navigate = useNavigate();
-    const { cleanRoom, playerState, game } = useGame()
+    const { playerState, game } = useGame()
     const { t, playerId } = useAppSettings()
-    const [isMyTurn, setIsMyTurn] = useState<boolean | undefined>(undefined)
+    const [isMyTurn, setIsMyTurn] = useState<boolean>(game?.turn === playerId ? true : false)
     const [showTurnNotice, setShowTurnNotice] = useState(false);
     // const [winnerId, setWinnerId] = useState<string | undefined>(undefined);
     const [shipSunk, setShipSunk] = useState<number>(0);
@@ -42,7 +40,6 @@ const GamePage = ({
         if (typeof window === "undefined") return 40;
         return window.innerWidth <= 512 ? 30 : 40;
     }, []);
-
     useEffect(() => {
         if (!game || !playerId) return;
         setShowTurnNotice(true);
@@ -74,7 +71,6 @@ const GamePage = ({
 
         setShipSunk(shipSunk + 1);
     }, [playerState?.sunkEnemyShips.length, JSON.stringify(playerState?.ships)])
-
     useEffect(() => {
         if (!game || !playerId) return
         if (isFirstTurnRender.current) {
@@ -95,6 +91,7 @@ const GamePage = ({
             unsubscribe?.()
         }
     }, [game])
+
     return (
         <div className="w-full min-h-[100dvh] flex flex-col items-center overflow-y-auto">
             <div className="w-full max-w-[700px] flex justify-between mt-8">
@@ -108,92 +105,46 @@ const GamePage = ({
                         <ConfirmModal
                             onConfirm={() => {
                                 roomId && leaveRoom(roomId, playerId)
-                                cleanRoom();
                                 notify(t("leave"), 'warning')
                                 navigate("/")
 
                             }}
                         />}
                 />
-                <button
-                    onClick={() => setIsMyTurn(!isMyTurn)}
-                >
-
-                </button>
             </div>
-            <AnimatePresence mode="wait">
-                {
-                    isMyTurn ?
-                        <motion.div
-                            key="myTurn"
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -50 }}
-                            transition={{ duration: 0.5 }}
-                            className="flex gap-10 [@media(max-width:512px)]:flex-col mt-8"
-                        >
-                            <div className="w-fit flex flex-col  justify-center items-center">
-                                <span className={`w-full p-2 text-center border-2 border-btn-bg`}>{t("your_turn")}</span>
-                                <BoardBattle
-                                    key='enemyBoard'
-                                    type= {game?.status==='ended'?"view":"canShot"}
-                                    gridSize={gridSize}
-                                    roomId={roomId ?? ""}
-                                    shotsFired={playerState?.shotsFired}
-                                    listShipShow={playerState?.sunkEnemyShips}
-                                    showAxisLabels
-                                />
-                            </div>
-
-                            <div className="flex flex-col items-center mb-8">
-                                <span className="w-full p-2 text-center border-2 border-btn-bg">{t("your_fleet")}</span>
-                                <BoardBattle
-                                    key='myBoard'
-                                    type="view"
-                                    className="mt-[40px] [@media(max-width:512px)]:mt-4"
-                                    roomId={roomId}
-                                    shotsRecevied={playerState?.shotsReceived}
-                                    listShipShow={playerState?.ships}
-                                    small
-                                />
-                            </div>
-                        </motion.div> :
-                        <motion.div
-                            key="enemyTurn"
-                            initial={{ opacity: 0, x: -50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 50 }}
-                            transition={{ duration: 0.5 }}
-                            className="flex gap-10 [@media(max-width:512px)]:flex-col mt-8"
-                        >
-                            <div className="w-fit flex flex-col  justify-center items-center">
-                                <span className="w-full p-2 text-center border-2 border-red-500">{t("enemy_turn")}</span>
-                                <BoardBattle
-                                    key='myBoard2'
-                                    type="view"
-                                    gridSize={gridSize}
-                                    roomId={roomId ?? ""}
-                                    shotsFired={playerState?.shotsReceived}
-                                    listShipShow={playerState?.ships}
-                                    showAxisLabels
-                                />
-                            </div>
-
-                            <div className="flex flex-col items-center mb-8">
-                                <span className="w-full p-2 text-center border-2 border-red-500">{t("enemy_fleet")}</span>
-                                <BoardBattle
-                                    key='enemyBoard2'
-                                    type="view"
-                                    className="mt-[40px] [@media(max-width:512px)]:mt-4"
-                                    roomId={roomId}
-                                    shotsRecevied={playerState?.shotsFired}
-                                    listShipShow={playerState?.sunkEnemyShips}
-                                    small
-                                />
-                            </div>
-                        </motion.div>
-                }
-            </AnimatePresence>
+            <div className={`flex gap-10 [@media(max-width:512px)]:flex-col mt-8  [@media(max-width:512px)]:items-center`}>
+                <div
+                    className="w-fit flex flex-col items-center transition-all duration-500"
+                >
+                    <span className={`w-full p-2 text-center border-2 border-btn-bg`} style={!isMyTurn ? { borderColor: 'red' } : {}}>{isMyTurn ? t("your_turn") : t("enemy_fleet")}</span>
+                    <BoardBattle
+                        key='enemyBoard'
+                        type={game?.status === 'ended' || !isMyTurn ? "view" : "canShot"}
+                        gridSize={gridSize}
+                        roomId={roomId ?? ""}
+                        shotsFired={playerState?.shotsFired}
+                        listShipShow={playerState?.sunkEnemyShips}
+                        className={!isMyTurn ? "mt-[40px] [@media(max-width:512px)]:mt-4" : ""}
+                        showAxisLabels={isMyTurn}
+                        small={!isMyTurn}
+                    />
+                </div>
+                <div
+                    className="w-fit flex flex-col items-center"
+                >
+                    <span className="w-full p-2 text-center border-2 border-btn-bg" style={!isMyTurn ? { borderColor: 'red' } : {}}>{isMyTurn ? t("your_fleet") : t("enemy_turn")}</span>
+                    <BoardBattle
+                        key='myBoard'
+                        type="view"
+                        roomId={roomId}
+                        shotsRecevied={playerState?.shotsReceived}
+                        listShipShow={playerState?.ships}
+                        className={isMyTurn ? "mt-[40px] [@media(max-width:512px)]:mt-4" : ""}
+                        showAxisLabels={!isMyTurn}
+                        small={isMyTurn}
+                    />
+                </div>
+            </div>
 
             <AnimatePresence>
                 {showTurnNotice && (
@@ -271,7 +222,7 @@ const GamePage = ({
 
             <AnimatePresence>
                 {
-                    game && game.winnerId && game.status==="ended" &&
+                    game && game.winnerId && game.status === "ended" &&
                     (
                         <>
                             <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -304,8 +255,7 @@ const GamePage = ({
                                             <CustomButton
                                                 label={t("back_to_home")}
                                                 onClick={() => {
-                                                    roomId&& leaveRoom(roomId,playerId)
-                                                    cleanRoom()
+                                                    roomId && leaveRoom(roomId, playerId)
                                                     navigate("/")
                                                 }}
                                             />

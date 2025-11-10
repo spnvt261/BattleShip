@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Cell from "./Cell";
 import type { Ship, Shot } from "../../types/game";
 import { useSocket } from "../../hooks/useSocket";
@@ -22,22 +22,18 @@ interface BaseProps {
 interface CanShotProps extends BaseProps {
     type: "canShot";
     roomId: string; // bắt buộc
-    // shotsFired: Shot[] | undefined;
 }
 
 // Khi type === "view", roomId optional
 interface ViewProps extends BaseProps {
     type: "view";
     roomId?: string;
-    // shotsRecevied: Shot[] | undefined;
 }
 
 type Props = CanShotProps | ViewProps;
 
 const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, gridSize = 40, roomId, shotsFired, shotsRecevied, listShipShow }: Props) => {
     console.log('Board Battle');
-    
-    // const { type, showAxisLabels, small, className, gridCount = 10, gridSize = 40, roomId } = props
     const { attack } = useSocket()
     const { playerId } = useAppSettings();
     const letters = "ABCDEFGHIJ".slice(0, gridCount).split("");
@@ -46,8 +42,7 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
     const [focusedCell, setFocusedCell] = useState<{ x: number; y: number } | null>(null);
     const [disabledCells, setDisabledCells] = useState<{ x: number; y: number }[]>([]);
 
-    const shots = shotsFired ?? shotsRecevied ?? undefined
-
+    const shots:Shot[] = shotsFired ?? shotsRecevied ?? []
     const disableAround = (x: number, y: number) => {
         const radius = 1;
         const toDisable: { x: number; y: number }[] = [];
@@ -80,24 +75,35 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
         setFocusedCell(null);
     };
 
+    const focusedCellRef = useRef<{ x: number; y: number } | null>(null)
+    const typeRef = useRef<"canShot" | "view">("view")
+    useEffect(() => {
+        focusedCellRef.current = focusedCell
+    }, [focusedCell])
 
-    const handleClick = (x: number, y: number) => {
-        if (type !== "canShot") return;
+    useEffect(()=>{
+        typeRef.current = type
+    },[type])
 
-        if (focusedCell?.x === x && focusedCell?.y === y) {
+    const handleClick = useCallback((x: number, y: number) => {
+        if (typeRef.current !== "canShot") return;
+        if (focusedCellRef.current?.x === x && focusedCellRef.current?.y === y) {
             shot(x, y);
         } else {
             setFocusedCell({ x, y });
         }
-    };
-    // console.log(listShipShow);
+    }, []);
 
     const isDisabled = (x: number, y: number) =>
         disabledCells.some((c) => c.x === x && c.y === y);
-    
+
     return (
         <div className={`inline-block ${className}`}
-            style={{ position: "relative" }}
+            style={{
+                position: "relative",
+                zoom: small ? 0.6 : 1, 
+                transformOrigin: "top left",
+            }}
         >
 
             {showAxisLabels && (
@@ -115,7 +121,9 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
                     ))}
                 </div>
             )}
-            <div className="flex flex-col relative">
+            <div className={`flex flex-col relative ${type!=='canShot'?'board-disabled':'board-not-disabled'}`}
+
+            >
                 {letters.map((letter, row) => {
 
                     return (
@@ -130,12 +138,9 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
                             )}
 
                             {numbers.map((_, col) => {
-                                const hit = shots?.some(shot => shot.x == row && shot.y == col && shot.hit)
-                                const miss = shots?.some(shot => shot.x == row && shot.y == col)
-                                
+                                const hit = shots?.some((shot:Shot) => shot.x == row && shot.y == col && shot.hit)
+                                const miss = shots?.some((shot:Shot) => shot.x == row && shot.y == col)
                                 const hasMyShip = listShipShow?.some(ship => ship.coordinates.some(coord => coord.x == row && coord.y == col))
-                                console.log();
-
                                 return (
                                     <Cell
                                         key={`${row}-${col}`}
@@ -145,8 +150,8 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
                                         hit={miss}
                                         shot={handleClick}
                                         isFocus={focusedCell?.x === row && focusedCell?.y === col}
-                                        disabled={isDisabled(row, col) || type !== "canShot"}
-                                        small={small}
+                                        disabled={isDisabled(row, col)}
+                                        // small={small}
                                         gridSize={gridSize}
                                         hasMyShip={hasMyShip}
                                     />
@@ -156,16 +161,13 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
                     )
                 })}
                 <div className="absolute"
-                    style={{top:0,left:showAxisLabels? gridSize*0.8:0}}
+                    style={{ top: 0, left: showAxisLabels ? gridSize * 0.8 : 0 }}
                 >
                     {listShipShow && listShipShow.map(ship => {
-                        // const pos = ships[ship.id];
                         const positionFirstBlock = {
                             x: ship.coordinates[0].y * gridSize,
                             y: ship.coordinates[0].x * gridSize
                         }
-                        // if(!ship.sunk) return
-
                         return (
                             <ShipComponent
                                 key={ship.id}
@@ -177,12 +179,9 @@ const BoardBattle = ({ type, showAxisLabels, small, className, gridCount = 10, g
                                 gridCount={gridCount}
                                 positionFirstBlock={positionFirstBlock}
                                 isVertical={ship.coordinates[0].x === ship.coordinates[1].x ? false : true}
-                                small={small}
                                 onlyView={type === "view"}
                                 isSunk={ship.sunk}
                                 showOpacity
-                            // onRotate={handleRotate}
-
                             />
                         );
                     })}

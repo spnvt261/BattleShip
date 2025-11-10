@@ -14,19 +14,19 @@ interface Props {
     small?: boolean;
     onlyView?: boolean;
     isSunk?: boolean;
-    showOpacity?:boolean
+    showOpacity?: boolean
 }
 
-const Ship = ({ 
-    id, positionFirstBlock, isVertical, size, 
-    gridSize, gridCount, image, shipame, onRotate, 
-    small, onlyView, isSunk,showOpacity 
+const Ship = ({
+    id, positionFirstBlock, isVertical, size,
+    gridSize, gridCount, image, shipame, onRotate,
+    small, onlyView, isSunk, showOpacity
 }: Props) => {
     // console.log(positionFirstBlock);
     // console.log(shipame);
-    
 
-    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({id,disabled:onlyView});
+
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id, disabled: onlyView });
     const shipRef = useRef<HTMLDivElement>(null);
     const lastTapRef = useRef(0);
 
@@ -43,7 +43,7 @@ const Ship = ({
     };
     useEffect(() => {
         const node = shipRef.current;
-        
+
         if (!node) return;
 
         const handleTouch = (e: TouchEvent) => {
@@ -71,7 +71,7 @@ const Ship = ({
     y = Math.max(0, Math.min(y, maxY));
 
     const handleDoubleClick = () => {
-        if(!onlyView) onRotate?.(id);
+        if (!onlyView) onRotate?.(id);
     };
 
 
@@ -100,7 +100,7 @@ const Ship = ({
         border: `${isDragging ? "2px solid red" : ""}`,
         transformOrigin: "top left",
         transition: isDragging ? "none" : "transform 0.15s ease-out",
-        opacity:showOpacity?"0.9":"1"
+        opacity: showOpacity ? "0.9" : "1"
     };
 
 
@@ -120,9 +120,9 @@ const Ship = ({
         >
             <img alt={shipame} src={image} className={`w-full h-full select-none pointer-events-none`} />
             {
-                isSunk && 
+                isSunk &&
                 <div className="damage">
-                    
+
                 </div>
             }
 

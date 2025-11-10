@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback, useImperativeHandle, forwardRef, useRef } from "react";
-import { DndContext, type DragEndEvent } from "@dnd-kit/core";
+import { useState, useMemo, useCallback, useImperativeHandle, forwardRef, useRef, useEffect } from "react";
+import { DndContext, type DragEndEvent, type Modifier } from "@dnd-kit/core";
 import { createSnapModifier } from "@dnd-kit/modifiers";
 import { ListShip } from "../../data/shipList";
 import Cell from "./Cell";
@@ -10,9 +10,9 @@ interface Props {
     gridCount?: number;
     gridSize?: number;
     className?: string;
-    onSetupChange?: (
-        ships: Record<string, { x: number; y: number; isVertical: boolean }>
-    ) => void;
+    // onSetupChange?: (
+    //     ships: Record<string, { x: number; y: number; isVertical: boolean }>
+    // ) => void;
     disabled?: boolean;
     myListShip?: ShipType[]
 }
@@ -26,7 +26,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
     gridCount = 10,
     gridSize = 40,
     className,
-    onSetupChange,
+    // onSetupChange,
     disabled,
     myListShip,
 }, ref) => {
@@ -34,7 +34,8 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
     const letters = "ABCDEFGHIJ".split("").slice(0, gridCount);
     const numbers = Array.from({ length: gridCount }, (_, i) => i + 1);
-    const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize]);
+    const snapToGrid:Modifier = useMemo(() => createSnapModifier(gridSize), [gridSize]);
+    
     const listShips = useRef<ShipType[]>([])
 
     const getCoordinatesShip = (cellFirstPosition: number, rowFirstPosition: number, size: number, isVertical: boolean): { x: number; y: number }[] => {
@@ -143,6 +144,12 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
         }
     );
 
+    const shipRef = useRef<Record<string, { x: number; y: number; isVertical: boolean }>>(ships)
+
+    useEffect(() => {
+        shipRef.current = ships
+    }, [ships])
+
 
 
     const updateShip = useCallback(
@@ -150,14 +157,11 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             let ship = listShips.current.find(p => p.id === id)
             if (ship) ship.coordinates = getCoordinatesShip(data.x / gridSize, data.y / gridSize, ship.size, data.isVertical)
             setShips(prev => {
-                const newData = { ...prev, [id]: { ...prev[id], ...data } };
-                onSetupChange?.(newData);
-                return newData;
+                const newData = { ...prev, [id]: { ...prev[id], ...data } }
+                return newData
             });
-            // console.log(listShips);
-
         },
-        [onSetupChange]
+        []
     );
 
     // Expose h├ám random cho cha
@@ -165,7 +169,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
         randomizeShips: () => {
             const newPositions = generateRandomPositions(gridCount, gridSize);
             setShips(newPositions);
-            onSetupChange?.(newPositions);
+            // onSetupChange?.(newPositions);
         },
         getShips: () => listShips.current,
     }));
@@ -207,7 +211,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                 return true;
 
             // Va chß║ím vß╗¢i t├áu kh├íc
-            for (const [otherId, otherPos] of Object.entries(ships)) {
+            for (const [otherId, otherPos] of Object.entries(shipRef.current)) {
                 if (otherId === id) continue;
                 const otherShip = ListShip.find(s => s.id === otherId);
                 if (!otherShip) continue;
@@ -222,7 +226,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             }
             return false;
         },
-        [ships, gridCount, getOccupiedCells]
+        [gridCount, getOccupiedCells]
     );
 
 
@@ -236,6 +240,8 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             const shipData = ListShip.find(s => s.id === id);
             if (!shipData) return;
 
+            const threshold = 15; // px
+            if (Math.abs(delta.x) < threshold && Math.abs(delta.y) < threshold) return;
 
             // T├¡nh vß╗ï tr├¡ mß╗¢i theo delta, snap vß╗ü l╞░ß╗¢i
             let newPos = {
@@ -272,7 +278,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
     /** Xoay t├áu (double click) */
     const handleRotate = useCallback(
         (id: string) => {
-            const current = ships[id];
+            const current = shipRef.current[id];
             const shipData = ListShip.find(s => s.id === id);
             if (!current || !shipData) return;
 
@@ -285,7 +291,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
             if (checkCollision(id, newPos)) return;
             updateShip(id, newPos);
         },
-        [ships, checkCollision, updateShip]
+        []
     );
 
     const offset = gridSize;
@@ -365,6 +371,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                 </div>
                 {/* <DndContext> */}
                 {/* Ships */}
+                {/* <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid]}> */}
                 {ListShip.map(ship => {
                     const pos = ships[ship.id];
                     return (
