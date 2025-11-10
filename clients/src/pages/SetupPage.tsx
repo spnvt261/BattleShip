@@ -18,7 +18,7 @@ import { useGameResource } from "../hooks/useGameResource";
 const SetupPage = () => {
     const { roomId } = useParams<{ roomId: string }>()
     const room = useGameResource(roomId!)
-    console.log('Setup Page');
+    // console.log('Setup Page');
     const { t, playerId } = useAppSettings();
 
     const { ready, leaveRoom } = useSocket()
@@ -137,7 +137,7 @@ const SetupPage = () => {
                     <BoardSetup
                         ref={boardRef}
                         // onSetupChange={handleShipsChange}
-                        gridCount={10}
+                        // gridCount={11}
                         className="mt-10"
                         gridSize={gridSize}
                         disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady) ? true : false}

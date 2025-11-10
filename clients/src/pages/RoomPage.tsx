@@ -16,7 +16,7 @@ import { useGameResource } from "../hooks/useGameResource";
 const RoomPage = () => {
     const { roomId } = useParams<{ roomId: string }>()
     const room = useGameResource(roomId!);
-    console.log('RoomPage');
+    // console.log('RoomPage');
     const {player1, player2,game } = useGame();
     useAuth(room,game);
     usePlayerChangeNotify(player1, player2);

@@ -7,7 +7,7 @@ import { useSocket } from "../hooks/useSocket"
 import { useGameResource } from "../hooks/useGameResource"
 
 const CheckPage = () => {
-    console.log('CheckPage');
+    // console.log('CheckPage');
     const { roomId } = useParams<{ roomId: string }>()
     const room = useGameResource(roomId!);
     const { playerId, t, playerName } = useAppSettings();

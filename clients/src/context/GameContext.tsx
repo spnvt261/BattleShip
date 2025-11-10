@@ -76,6 +76,8 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
         })
 
         const unsubplayerstate = onPlayerStateUpdate((res) => {
+            // console.log(res.playerState);
+            
             setPlayerState(prev => {
                 if (!prev) return res.playerState;
 

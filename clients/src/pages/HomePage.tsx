@@ -10,7 +10,7 @@ import {useGameActions } from "../context/GameContext";
 interface Props { }
 
 const HomePage = ({ }: Props) => {
-    console.log('HomePage');
+    // console.log('HomePage');
     
     const { t } = useAppSettings();
     const {cleanRoom} = useGameActions();

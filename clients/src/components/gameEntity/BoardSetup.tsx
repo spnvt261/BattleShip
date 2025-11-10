@@ -30,9 +30,9 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
     disabled,
     myListShip,
 }, ref) => {
-    console.log("Board setup");
+    // console.log("Board setup");
 
-    const letters = "ABCDEFGHIJ".split("").slice(0, gridCount);
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".slice(0, gridCount).split("");
     const numbers = Array.from({ length: gridCount }, (_, i) => i + 1);
     const snapToGrid:Modifier = useMemo(() => createSnapModifier(gridSize), [gridSize]);
     

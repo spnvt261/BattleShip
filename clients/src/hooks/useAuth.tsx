@@ -8,13 +8,10 @@ export const useAuth = (room: Room | null, game: Game | null, options?: { suppre
     const { playerId, t } = useAppSettings();
     const navigate = useNavigate()
     const { notify } = useNotification();
-
     useEffect(() => {
         if (!room) return
         const [player1, player2] = room.players
         if (!player1 && !player2) return
-        // console.log(player1,player2);
-        
         if (player1&&player2&& player1.id !== playerId && player2.id !== playerId) {
             notify(t("Room is full"), "warning");
             navigate("/")
