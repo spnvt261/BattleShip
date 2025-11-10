@@ -1,5 +1,6 @@
+import { socketToPlayer } from "../socket";
 import { Room, Player, PlayerState } from "../types";
-import { createGameForRoom } from "./gameService";
+import { createGameForRoom, getPlayerState } from "./gameService";
 import { Server } from "socket.io";
 
 export const rooms: { [roomId: string]: Room } = {};
@@ -111,10 +112,24 @@ export function setReady(roomId: string, playerState: PlayerState, isReady: bool
         if (io && room.game) io.to(roomId).emit("turn_update", { playerId: Math.random() < 0.5 ? room.game.players[0].playerId : room.game.players[1].playerId })
     }
     // broadcast room update
-    if (io) io.to(roomId).emit("room_update", {
-        room: getSafeRoom(room),
-        players: room.players
-    });
+    if (io) {
+        io.to(roomId).emit("room_update", {
+            room: getSafeRoom(room),
+            players: room.players
+        });
+        ///////////////////////////////
+        const socketsInRoom = io.sockets.adapter.rooms.get(roomId) || new Set();
+        // console.log(socketsInRoom);
+
+        for (const socketId of socketsInRoom) {
+            const playerId = socketToPlayer.get(socketId);
+            if (!playerId) continue;
+            if(!room.game) continue;
+            const personalState = getPlayerState(room.game, playerId);
+            io.to(socketId).emit("player_state_update", { playerState: personalState });
+        }
+    }
+
 }
 
 export function broadcastRoomUpdate(roomId: string, io: Server) {
@@ -126,14 +141,14 @@ export function broadcastRoomUpdate(roomId: string, io: Server) {
     });
 }
 
-export const getSafeRoom = (room: Room, playerId?: string): Room => ({
+export const getSafeRoom = (room: Room, playerIdGet?: string): Room => ({
     ...room,
     game: room.game && {
         ...room.game,
         players: room.game.players.map(player => ({
             ...player,
             ships:
-                playerId && player.playerId === playerId
+                (playerIdGet && player.playerId === playerIdGet)
                     ? player.ships // giữ nguyên nếu là chính mình
                     : player.ships.map(({ coordinates, ...rest }) => rest) // ẩn tọa độ đối thủ
         })) as [PlayerState, PlayerState],
