@@ -5,6 +5,7 @@ import { ListShip } from "../../data/shipList";
 import Cell from "./Cell";
 import type { Ship as ShipType } from "../../types/game";
 import Ship from "./Ship";
+import { playMissSound } from "../../utils/playSound";
 
 interface Props {
     gridCount?: number;
@@ -160,6 +161,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                 const newData = { ...prev, [id]: { ...prev[id], ...data } }
                 return newData
             });
+            playMissSound()
         },
         []
     );

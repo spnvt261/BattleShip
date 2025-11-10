@@ -1,8 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
+import React, { useEffect } from "react";
 // import { FaWater } from "react-icons/fa";
 import { MdCircle } from "react-icons/md";
 import { TbBoom } from "react-icons/tb";
+import { playHitSound, playMissSound } from "../../utils/playSound";
 
 interface Props {
     x: number;
@@ -14,8 +15,8 @@ interface Props {
     isFocus?: boolean;
     disabled?: boolean;
     small?: boolean
-    gridSize:number;
-    hasMyShip?:boolean;
+    gridSize: number;
+    hasMyShip?: boolean;
     isNewHit?: boolean;
     isNewHitToShip?: boolean;
 }
@@ -32,10 +33,20 @@ const Cell = ({
     small,
     gridSize,
     hasMyShip,
-    isNewHit = false, isNewHitToShip=false
+    isNewHit = false, isNewHitToShip = false
 }: Props) => {
     // console.log('cell');
-    
+    useEffect(() => {
+        if (isNewHitToShip) {
+            playHitSound()
+            // vibrate()
+            return
+        }
+        if (isNewHit) {
+            playMissSound()
+            return
+        }
+    }, [isNewHit, isNewHitToShip])
     const handleClick = () => {
         if (!hit) {
             shot?.(x, y);
@@ -45,23 +56,23 @@ const Cell = ({
         <div
             onClick={handleClick}
             className={`
-                relative flex items-center justify-center cell-in-board ${hit || disabled?'cell-disabled':''}
+                relative flex items-center justify-center cell-in-board ${hit || disabled ? 'cell-disabled' : ''}
                 ${className}
-                ${(hit || isNewHit) ? ((hasShip || isNewHitToShip) ? "bg-ship-hit opacity-[0.6]" : "bg-water-miss") : `bg-water ${hasMyShip?"!bg-btn-bg":""}`}
+                ${(hit || isNewHit) ? ((hasShip || isNewHitToShip) ? "bg-ship-hit opacity-[0.6]" : "bg-water-miss") : `bg-water ${hasMyShip ? "!bg-btn-bg" : ""}`}
                 ${isFocus ? "ring-2 ring-accent border-accent z-10" : "border-border-cell"}
                 border transition-all duration-200 cursor-pointer select-none
             `}
-            style={!small ? { width: gridSize, height: gridSize } : {width:gridSize*0.6,height:gridSize*0.6}}
+            style={!small ? { width: gridSize, height: gridSize } : { width: gridSize * 0.6, height: gridSize * 0.6 }}
         >
             <AnimatePresence>
-                {(hit || isNewHit) &&(
+                {(hit || isNewHit) && (
                     <>
                         <motion.div
                             key={`effect-${x}-${y}`}
                             className={`absolute w-8 h-8 rounded-full ${(hasShip || isNewHitToShip) ? "bg-red-400" : "bg-blue-300"
                                 }`}
-                            initial={{ scale: 0, opacity: isNewHit?1:0 }}
-                            animate={{ scale: isNewHit?3:0, opacity: 0 }}
+                            initial={{ scale: 0, opacity: isNewHit ? 1 : 0 }}
+                            animate={{ scale: isNewHit ? 3 : 0, opacity: 0 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.8, ease: "easeOut" }}
                             onAnimationComplete={() => {
@@ -71,7 +82,7 @@ const Cell = ({
                                 if (el) {
                                     el.style.zIndex = "-11";
                                     el.style.display = 'none';
-                                } 
+                                }
                             }}
                             data-effect={`${x}-${y}`}
                         />
@@ -86,10 +97,10 @@ const Cell = ({
                             className="flex justify-center items-center w-full h-full"
                         >
                             {(hasShip || isNewHitToShip) ? (
-                                <TbBoom className="text-red-700 w-[90%] h-[90%]" stroke="currentColor"   />
+                                <TbBoom className="text-red-700 w-[90%] h-[90%]" stroke="currentColor" />
                             ) : (
                                 // <FaWater className="text-blue-700 w-[80%] h-[80%]" />
-                                <MdCircle 
+                                <MdCircle
                                     className="text-gray-700 w-[80%] h-[80%]"  // m├áu lavender
                                     stroke="currentColor"                        // ─æß║úm bß║úo lß║Ñy m├áu tß╗½ text color
                                 />
@@ -102,4 +113,4 @@ const Cell = ({
     );
 };
 
-export default React.memo(Cell) ;
+export default React.memo(Cell);
