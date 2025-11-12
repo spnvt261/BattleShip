@@ -50,5 +50,8 @@
   "back_to_home":"Trở về trang chủ",
   "match_finish":"Trận đấu đã kết thúc",
   "ship_sunk":"Thuyền chìm!",
-  "You have been kicked from the room by the host.":"Bạn bị đá khỏi phòng."
+  "You have been kicked from the room by the host.":"Bạn bị đá khỏi phòng.",
+
+  "send":"Gửi",
+  "send_message":"Nhập tin nhắn"
 }

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import React from "react";
 
 interface Props {
     label: string;
@@ -34,4 +35,4 @@ const CustomButton = ({
     )
 }
 
-export default CustomButton
+export default React.memo(CustomButton) 

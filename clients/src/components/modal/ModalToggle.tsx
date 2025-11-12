@@ -31,7 +31,7 @@ const ModalToggle: React.FC<Props> = ({ btnLabel, formTitle, children, showIconC
     };
     return (
         <div className="relative">
-            <div className="w-[200px]">
+            <div>
                 <CustomButton
                     label={btnLabel}
                     onClick={() => setShowModal(true)}

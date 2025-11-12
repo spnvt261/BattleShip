@@ -50,5 +50,8 @@
   "back_to_home":"Back to home",
   "match_finish":"Match finished",
   "ship_sunk":"Ship Sunk!",
-  "You have been kicked from the room by the host.":"You have been kicked from the room by the host."
+  "You have been kicked from the room by the host.":"You have been kicked from the room by the host.",
+
+  "send":"Send",
+  "send_message":"Send message"
 }

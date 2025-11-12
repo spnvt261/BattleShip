@@ -142,9 +142,9 @@ export function initSockets(io: IOServer) {
             cb && cb(res);
         });
 
-        socket.on("chat", (payload: { roomId: string; text: string; name: string; playerId?: string }, cb: any) => {
+        socket.on("chat", (payload: { roomId: string; text: string; name: string; playerId: string }, cb: any) => {
             const { roomId, text, name } = payload;
-            const playerId = payload?.playerId || socketToPlayer.get(socket.id) || socket.id;
+            const playerId = payload.playerId || socketToPlayer.get(socket.id) || socket.id;
             socketToPlayer.set(socket.id, playerId);
             addMessage(roomId, playerId, name, text, io);
             cb && cb({ ok: true });

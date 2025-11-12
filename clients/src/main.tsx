@@ -6,16 +6,18 @@ import { BrowserRouter } from 'react-router-dom'
 import { AppSettingsProvider } from './context/appSetting.tsx'
 import { NotificationProvider } from './context/NotifycationContext.tsx'
 import { GameProvider } from './context/GameContext.tsx'
+import { ChatProvider } from './context/ChatContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
     // <StrictMode>
     <BrowserRouter>
         <NotificationProvider>
-
             <AppSettingsProvider >
-                <GameProvider>
-                    <App />
-                </GameProvider>
+                <ChatProvider>
+                    <GameProvider>
+                        <App />
+                    </GameProvider>
+                </ChatProvider>
             </AppSettingsProvider>
 
         </NotificationProvider>

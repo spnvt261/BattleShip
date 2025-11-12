@@ -1,6 +1,6 @@
 // src/services/gameSocketService.ts
 import { socket } from "../socketConfig";
-import type { Player, Ship, Game, Room, PlayerState } from "../types/game";
+import type { Player, Ship, Game, Room, PlayerState, Message } from "../types/game";
 
 export const createRoom = (name: string, playerId:string, cb?: (res: { room: Room; playerId: string; error?:string }) => void) =>
     socket.emit("create_room", { name ,playerId}, cb);
@@ -30,8 +30,8 @@ export const attack = (roomId: string, x: number, y: number,attackerId:string, c
 export const kickPlayer = (roomId: string,playerId:string, cb?:any ) =>
     socket.emit("kick_player", { roomId,playerId }, cb);
 
-export const sendChat = (roomId: string, name: string, text: string, cb?: (res: { ok?: boolean }) => void) =>
-    socket.emit("chat", { roomId, name, text }, cb);
+export const sendChat = (roomId: string, name: string, text: string, playerId:string, cb?: (res: { ok?: boolean }) => void) =>
+    socket.emit("chat", { roomId, name, text,playerId }, cb);
 
 
 
@@ -76,7 +76,10 @@ export const onGameOver = (cb: (payload: { winnerId: string }) => void) => {
 }
     
 
-export const onChat = (cb: (msg: { roomId: string; name: string; text: string }) => void) =>
+export const onChat = (cb: (msg: Message) => void) =>{
     socket.on("chat", cb);
+    return ()=>socket.off("chat", cb);
+}
+    
 
 

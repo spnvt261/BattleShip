@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useNotification } from "./NotifycationContext";
 import { useAppSettings } from "./appSetting";
 import { useSocket } from "../hooks/useSocket";
+import { useChat } from "./ChatContext";
 
 type GameState = {
     room: Room | null;
@@ -30,6 +31,7 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [player2, setPlayer2] = useState<Player | null>(null);
     const [playerState, setPlayerState] = useState<PlayerState | null>(null);
     const [game, setGame] = useState<Game | null>(null);
+    const {setListMessages,listMessages} = useChat()
 
     const cleanRoom = useCallback(() => {
         setRoom(null);
@@ -37,6 +39,7 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setPlayer2(null);
         setPlayerState(null);
         setGame(null)
+        setListMessages([])
     }, [])
 
     const loadRoom = useCallback(async (roomId: string) => {
@@ -52,6 +55,7 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 setPlayer1(res.room.players[0] ?? null)
                 setPlayer2(res.room.players[1] ?? null)
                 setGame(res.room.game ?? null)
+                setListMessages(res.room.chat??[])
                 if (res.room.game?.players) {
                     setPlayerState(playerId === res.room.players[0].id ? res.room.game.players[0] : res.room.game.players[1])
                 }
@@ -67,6 +71,9 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 notify(t("player_left", { player: playerLeaveRoom?.name || "" }), 'warning')
                 cleanRoom()
                 navigate("/")
+            }
+            if(listMessages.length===0){
+                setListMessages(res.room.chat??[])
             }
 
             setRoom(res.room)

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { CustomSelectTab } from "../CustomSelectTab";
 import CustomButton from "../customButton";
 import { useAppSettings } from "../../context/appSetting";
@@ -31,7 +31,7 @@ const SettingModal: React.FC<Props> = ({ onClose }) => {
         return "";
     };
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
         const errorMsg = validateName(tempName);
         setNameError(errorMsg);
         if (errorMsg) return; // Dừng nếu lỗi
@@ -40,9 +40,9 @@ const SettingModal: React.FC<Props> = ({ onClose }) => {
         setTheme(tempTheme);
         setPlayerName(tempName.trim());
         onClose?.();
-    };
+    },[tempName,tempLanguage,tempTheme]);
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         setTempLanguage(language);
         setTempTheme(theme);
 
@@ -50,9 +50,7 @@ const SettingModal: React.FC<Props> = ({ onClose }) => {
         setTheme(theme);
         setLanguage(language);
         onClose?.();
-    };
-
-
+    },[theme,language]);
     return (
         <div className="flex flex-col gap-4">
             <CustomTextField

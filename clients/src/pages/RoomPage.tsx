@@ -10,6 +10,7 @@ import { useGame } from "../context/GameContext";
 import { IoClose } from "react-icons/io5";
 import { useAuth } from "../hooks/useAuth";
 import { useGameResource } from "../hooks/useGameResource";
+import ChatModal from "../components/modal/modalMatch/ChatModal";
 
 
 
@@ -17,8 +18,8 @@ const RoomPage = () => {
     const { roomId } = useParams<{ roomId: string }>()
     const room = useGameResource(roomId!);
     // console.log('RoomPage');
-    const {player1, player2,game } = useGame();
-    useAuth(room,game);
+    const { player1, player2, game } = useGame();
+    useAuth(room, game);
     usePlayerChangeNotify(player1, player2);
     const [copied, setCopied] = useState(false);
     const { leaveRoom, startGame, kickPlayer, onKicked, onGameStart } = useSocket();
@@ -26,8 +27,8 @@ const RoomPage = () => {
     const navigate = useNavigate();
     const { notify } = useNotification();
     const [loading, setLoading] = useState<boolean>(false);
-    
-    const handleCopy= () => {
+
+    const handleCopy = () => {
         if (!roomId) return;
 
         // Tạo URL đầy đủ
@@ -71,34 +72,34 @@ const RoomPage = () => {
 
     useEffect(() => {
         if (!roomId) return;
-        if(!player1)return;
-        if(!player2 && player1.id!==playerId) {
+        if (!player1) return;
+        if (!player2 && player1.id !== playerId) {
             navigate(`/join/${roomId}`)
         }
 
-    }, [player1,player2])
+    }, [player1, player2])
 
     useEffect(() => {
-        const unsubscribeKick= onKicked((res) => {
+        const unsubscribeKick = onKicked((res) => {
             console.log(res);
-            
+
             if (res) {
                 notify(t(res.message), 'warning')
                 navigate("/")
             }
         })
-        const unsubstartgame = onGameStart((res)=>{
-            if(res.game){
+        const unsubstartgame = onGameStart((res) => {
+            if (res.game) {
                 navigate(`/room/${room.id}/setup`)
             }
-            
+
         })
         return () => {
             unsubscribeKick?.()
             unsubstartgame?.();
         }
     }, [])
-    
+
     const handleStartGame = () => {
         setLoading(true)
         if (!player1 || !player2) {
@@ -114,7 +115,6 @@ const RoomPage = () => {
         notify(t("leave"), 'warning')
         navigate("/")
     }
-
     return (
         <div className="w-full min-h-[100vh] flex justify-center items-center">
             <div className="relative w-[95%] max-w-[600px]">
@@ -132,6 +132,12 @@ const RoomPage = () => {
                         clipPath: "polygon(20px 0%, 100% 0%, 100% 40px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% calc(100% - 20px), 0% 20px)",
                     }}
                 >
+                    <ChatModal
+                        className="absolute top-2 right-3"
+                        roomId={roomId!}
+                    />
+
+
                     <div className="flex flex-col gap-4">
                         <p className="mx-auto w-fit text-text flex items-center gap-3 [@media(max-width:512px)]:flex-col">
                             {t("room_of_player", { player: player1?.name || "" })}
@@ -185,10 +191,10 @@ const RoomPage = () => {
                             {
                                 // player1?.id === playerId &&
                                 <CustomButton
-                                    label={loading?t("starting"): playerId===player1?.id? t("start"):t("wait_start")}
+                                    label={loading ? t("starting") : playerId === player1?.id ? t("start") : t("wait_start")}
                                     className=""
                                     onClick={() => handleStartGame()}
-                                    disabled={loading || !player1 || !player2 || playerId!==player1.id}
+                                    disabled={loading || !player1 || !player2 || playerId !== player1.id}
                                 />
                             }
 

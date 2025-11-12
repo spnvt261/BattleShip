@@ -1,4 +1,4 @@
-import type { Game, Player, PlayerState, Room, Ship } from "./game";
+import type { Game, Message, Player, PlayerState, Room, Ship } from "./game";
 
 export interface InternalSocketEvents {
   reconnect_failed: () => void;
@@ -11,7 +11,7 @@ export type ServerToClientEvents = {
     hit: (payload: { x: number; y: number; attackerId:string; targetId:string}) => void;
     miss: (payload: { x: number; y: number; attackerId:string; targetId:string}) => void;
     game_over: (payload: { winnerId: string }) => void;
-    chat: (msg: { roomId: string; name: string; text: string }) => void;
+    chat: (msg: Message) => void;
     turn_update: (payload:{playerId:string}) =>void;
     player_state_update:(payload:{playerState:PlayerState})=>void
     kicked:(payload :{roomId:string, message:string})=>void
@@ -55,7 +55,7 @@ export type ClientToServerEvents = {
         cb?: any
     ) => void;
     chat: (
-        data: { roomId: string; name: string; text: string; playerId?: string },
+        data: { roomId: string; name: string; text: string; playerId: string },
         cb?: (res: { ok?: boolean }) => void
     ) => void;
 };

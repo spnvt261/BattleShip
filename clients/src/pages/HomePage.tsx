@@ -47,11 +47,13 @@ const HomePage = ({ }: Props) => {
                         btnLabel={t("create")}
                         formTitle={t("createLabel")}
                         children={<CreateRoomModal/>}
+                        btnWidth="200px"
                     />
                     <ModalToggle
                         btnLabel={t("join")}
                         formTitle={t("joinLabel")}
                         children={<JoinRoomModal />}
+                        btnWidth="200px"
                         showIconClose
                     />
                     <ModalToggle
@@ -59,6 +61,7 @@ const HomePage = ({ }: Props) => {
                         formTitle={t("settings")}
                         children={<SettingModal />}
                         classNameBtn="bg-transparent text-text border-2 border-border hover:bg-bg2 active:bg-bg2"
+                        btnWidth="200px"
                     />
                 </div>
             </div>

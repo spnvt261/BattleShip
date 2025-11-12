@@ -15,6 +15,7 @@ import type { PlayerState } from "../types/game";
 import CustomButton from "../components/customButton";
 import { useAuth } from "../hooks/useAuth";
 import { useGameResource } from "../hooks/useGameResource";
+import ChatModal from "../components/modal/modalMatch/ChatModal";
 const SetupPage = () => {
     const { roomId } = useParams<{ roomId: string }>()
     const room = useGameResource(roomId!)
@@ -67,11 +68,10 @@ const SetupPage = () => {
         }
 
     }, [player1, player2, game])
-
     return (
         <div className="relative min-h-screen flex justify-center py-8 px-2 [@media(max-width:512px)]:flex-col">
             <div className="flex flex-col gap-4">
-                <div className="flex justify-between gap-2 mt-4">
+                <div className="flex justify-between items-center gap-2 mt-4">
                     <ModalToggle
                         btnLabel=""
                         Icon={<RxExit className="text-text" />}
@@ -85,6 +85,10 @@ const SetupPage = () => {
                             }}
                             />}
                         btnWidth="fit"
+                    />
+                    <ChatModal 
+                        roomId={roomId!}
+                        className="mr-2"
                     />
                 </div>
                 <div className="flex justify-between gap-2 mb-4">

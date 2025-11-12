@@ -12,6 +12,7 @@ import CustomButton from "../components/customButton";
 import { useAuth } from "../hooks/useAuth";
 import { useGameResource } from "../hooks/useGameResource";
 import NotifyModal from "../components/modal/modalMatch/NotifiModal";
+import ChatModal from "../components/modal/modalMatch/ChatModal";
 
 
 interface Props {
@@ -64,7 +65,7 @@ const GamePage = ({
 
     return (
         <div className="w-full min-h-[100dvh] flex flex-col items-center overflow-y-auto">
-            <div className="w-full max-w-[700px] flex justify-between mt-8">
+            <div className="w-full max-w-[700px] flex justify-between items-center mt-8">
                 <ModalToggle
                     btnLabel=""
                     formTitle={t("confirm_out")}
@@ -80,6 +81,10 @@ const GamePage = ({
 
                             }}
                         />}
+                />
+                <ChatModal 
+                    roomId={roomId!}
+                    className="mr-2"
                 />
             </div>
             <div className={`relative w-full max-w-[750px] min-h-[40px] [@media(max-width:512px)]:flex-col mt-8 transition-all duration-500 `}>
