@@ -2,7 +2,7 @@ import { Server as IOServer, Socket } from "socket.io";
 import { createRoom, joinRoom, setReady, leaveRoom, getRoom, startGame, rooms, getSafeRoom, kickPlayer } from "./services/roomService";
 import { placeShips, attack, getPlayerState } from "./services/gameService";
 import { addMessage } from "./services/chatService";
-import { Player, PlayerState } from "./types";
+import { Player, PlayerState, RoomPlayerNumber, RoomType } from "./types";
 import { broadcastGameUpdate } from "./utils/boardHelpers";
 
 export const socketToPlayer: Map<string, string> = new Map();
@@ -14,11 +14,11 @@ export function initSockets(io: IOServer) {
         // mapping from socket.id -> stable playerId provided by client
         // when client sends payload.playerId we store it here so on disconnect we can find which player left
 
-        socket.on("create_room", (payload: { name: string, playerId?: string }, cb: any) => {
+        socket.on("create_room", (payload: { name: string, playerId: string, type:RoomType ,boardSize:number,roomPlayerNumber:RoomPlayerNumber }, cb: any) => {
             const playerId = payload?.playerId || socket.id;
             // store mapping
             socketToPlayer.set(socket.id, playerId);
-            const room = createRoom(payload.name, playerId);
+            const room = createRoom(payload.name, playerId,payload.type,payload.boardSize,payload.roomPlayerNumber);
             socket.join(room.id);
             // return roomId and confirmed playerId
             cb && cb({ room: room, playerId });
@@ -57,7 +57,7 @@ export function initSockets(io: IOServer) {
             // 1️⃣ Kiểm tra xem đang ở room khác không
             // const roomsOfSocket = Array.from(socket.rooms); // socket.rooms là Set
             // const oldRoomSocketId = roomsOfSocket.find(r => r !== socket.id); // loại bỏ room mặc định là socket.id
-            const oldRoomId = Object.entries(rooms).find(([roomId, room]) =>
+            const oldRoomId = Object.entries(rooms).find(([_roomId, room]) =>
                 room?.players[0]?.id === playerId || room?.players[1]?.id === playerId
             )?.[0]
             if (oldRoomId && oldRoomId !== roomId) {

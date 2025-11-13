@@ -3,12 +3,16 @@ export interface Player {
     name: string;
     isReady?: boolean;
 }
-
+export type RoomType="classic" | "one_board"
+export type RoomPlayerNumber = 2|3|4
 export interface Room {
     id: string;
     hostId: string;
     players: Player[];
     status: "waiting" | "playing" | "finished";
+    type:RoomType
+    boardSize:number;
+    roomPlayerNumber:RoomPlayerNumber
     createdAt: number;
     game?: Game;
     chat?: Message[];

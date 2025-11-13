@@ -5,22 +5,22 @@ import { useAppSettings } from "../context/appSetting";
 import { useSocket } from "../hooks/useSocket";
 import { useNotification } from "../context/NotifycationContext";
 import CustomButton from "../components/customButton";
-import { usePlayerChangeNotify } from "../hooks/usePlayerChangeNotify";
 import { useGame } from "../context/GameContext";
 import { IoClose } from "react-icons/io5";
 import { useAuth } from "../hooks/useAuth";
 import { useGameResource } from "../hooks/useGameResource";
 import ChatModal from "../components/modal/modalMatch/ChatModal";
+import { useRoomNotify } from "../hooks/useRoomNotify";
 
 
 
 const RoomPage = () => {
     const { roomId } = useParams<{ roomId: string }>()
     const room = useGameResource(roomId!);
-    // console.log('RoomPage');
-    const { player1, player2, game } = useGame();
+    const { player1, player2, player3, player4, game } = useGame();
     useAuth(room, game);
-    usePlayerChangeNotify(player1, player2);
+    // usePlayerChangeNotify(player1, player2);
+    useRoomNotify(room,player1,player2,player3,player4)
     const [copied, setCopied] = useState(false);
     const { leaveRoom, startGame, kickPlayer, onKicked, onGameStart } = useSocket();
     const { t, playerId } = useAppSettings()
@@ -73,11 +73,13 @@ const RoomPage = () => {
     useEffect(() => {
         if (!roomId) return;
         if (!player1) return;
-        if (!player2 && player1.id !== playerId) {
+
+        const players = [player1, player2, player3, player4];
+        if (players.filter(Boolean).length <= room.roomPlayerNumber && players.every(p=>p?.id!==playerId)) {
             navigate(`/join/${roomId}`)
         }
 
-    }, [player1, player2])
+    }, [player1, player2, player3, player4])
 
     useEffect(() => {
         const unsubscribeKick = onKicked((res) => {
@@ -151,8 +153,8 @@ const RoomPage = () => {
                                 </span>
                             </span>
                         </p>
-                        <div className="flex gap-3 items-stretch min-h-[100px] my-6">
-                            <div className="relative max-w-[50%] border rounded-[1rem] p-3 border-blue-500 flex-1 flex items-center justify-center">
+                        <div className="grid grid-cols-2 gap-3 min-h-[100px] my-6">
+                            <div className="relative min-h-[100px] border rounded-[1rem] overflow-hidden p-3 border-blue-500 flex-1 flex items-center justify-center">
                                 <p className="w-fit max-w-[100%] mx-auto break-words overflow-hidden text-center">
                                     {player1 ? `${player1.name}` : <span className="text-blue-500">{t("wating_player")}</span>}
                                 </p>
@@ -161,7 +163,7 @@ const RoomPage = () => {
                                 }
 
                             </div>
-                            <div className="relative max-w-[50%] border rounded-[1rem] overflow-hidden p-3 border-red-500 flex-1 flex items-center justify-center">
+                            <div className="relative min-h-[100px] border rounded-[1rem] overflow-hidden p-3 border-red-500 flex-1 flex items-center justify-center">
                                 <p className="w-fit max-w-[100%] mx-auto break-words overflow-hidden text-center">
                                     {player2 ? player2.name : <span className="text-red-500">{t("wating_player")}</span>}
                                 </p>
@@ -178,8 +180,49 @@ const RoomPage = () => {
                                         }}
                                     />
                                 }
-
                             </div>
+                            {
+                                room.roomPlayerNumber > 2 &&
+                                <div className="relative min-h-[100px] border rounded-[1rem] overflow-hidden p-3 border-green-500 flex-1 flex items-center justify-center">
+                                    <p className="w-fit max-w-[100%] mx-auto break-words overflow-hidden text-center">
+                                        {player3 ? player3.name : <span className="text-green-500">{t("wating_player")}</span>}
+                                    </p>
+                                    {
+                                        player3?.id === playerId && <span className="absolute bottom-1 left-1/2 -translate-x-1/2">[ {t("you")} ]</span>
+                                    }
+                                    {
+                                        player3 && player1?.id === playerId && <CustomButton
+                                            label=""
+                                            Icon={<IoClose className="text-text" />}
+                                            className="absolute top-1 right-1 bg-transparent shadow-0 border-none border-gray-700 hover:bg-transparent hover:scale-[1.05] transition-scale duration-200"
+                                            onClick={() => {
+                                                roomId && kickPlayer(roomId, player3.id)
+                                            }}
+                                        />
+                                    }
+                                </div>
+                            }
+                            {
+                                room.roomPlayerNumber === 4 &&
+                                <div className="relative min-h-[100px] border rounded-[1rem] overflow-hidden p-3 border-yellow-500 flex-1 flex items-center justify-center">
+                                    <p className="w-fit max-w-[100%] mx-auto break-words overflow-hidden text-center">
+                                        {player4 ? player4.name : <span className="text-yellow-500">{t("wating_player")}</span>}
+                                    </p>
+                                    {
+                                        player4?.id === playerId && <span className="absolute bottom-1 left-1/2 -translate-x-1/2">[ {t("you")} ]</span>
+                                    }
+                                    {
+                                        player4 && player1?.id === playerId && <CustomButton
+                                            label=""
+                                            Icon={<IoClose className="text-text" />}
+                                            className="absolute top-1 right-1 bg-transparent shadow-0 border-none border-gray-700 hover:bg-transparent hover:scale-[1.05] transition-scale duration-200"
+                                            onClick={() => {
+                                                roomId && kickPlayer(roomId, player4.id)
+                                            }}
+                                        />
+                                    }
+                                </div>
+                            }
                         </div>
                         <div className="flex gap-4 justify-end">
                             <CustomButton
@@ -194,7 +237,7 @@ const RoomPage = () => {
                                     label={loading ? t("starting") : playerId === player1?.id ? t("start") : t("wait_start")}
                                     className=""
                                     onClick={() => handleStartGame()}
-                                    disabled={loading || !player1 || !player2 || playerId !== player1.id}
+                                    disabled={loading || playerId !== player1?.id || [player1, player2, player3, player4].filter(Boolean).length!==room.roomPlayerNumber }
                                 />
                             }
 

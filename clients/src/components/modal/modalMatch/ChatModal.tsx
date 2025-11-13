@@ -18,7 +18,7 @@ const ChatModal = ({
 
 }: Props) => {
     const { t, playerId, playerName } = useAppSettings();
-    const { player1, player2 } = useGame();
+    const { player1, player2,player3,player4 } = useGame();
     const { sendMessage, listMessages } = useChat()
     const [showChatModal, setShowChatModal] = useState<boolean>(false)
     const [inputValue, setInputalue] = useState<string>("")
@@ -51,13 +51,15 @@ const ChatModal = ({
                     <div className={`w-fit absolute top-0 -left-1 -translate-x-full bg-water border-2 rounded-[.5rem] overflow-hidden shadow-[0_0_10px_var(--color-btn-shadow)]
                             ${newMessage?.senderId === player1?.id ? 'border-blue-500' : ''}
                             ${newMessage?.senderId === player2?.id ? 'border-red-500' : ''}
+                            ${newMessage?.senderId === player3?.id ? 'border-green-500' : ''}
+                            ${newMessage?.senderId === player4?.id ? 'border-yellow-500' : ''}
                         `}
                     >
                         <div className="flex items-center w-fit">
                             <span className="max-w-[80px] truncate flex bg-panel px-1 py-1">
                                 {newMessage?.senderName}
                             </span>
-                            <p className="border-l-2 min-w-[100px] px-2 py-1 w-fit overflow-hidden">{newMessage?.text}</p>
+                            <p className="border-l-2 w-[130px] px-2 py-1 w-fit overflow-hidden truncate">{newMessage?.text}</p>
                         </div>
                     </div>
                 }
@@ -110,6 +112,8 @@ const ChatModal = ({
                                                                 <span className={`max-w-[80px] truncate flex bg-water px-1 py-1 mr-1 rounded-[.5rem] border
                                                                      ${item.senderId === player1?.id ? "border-blue-500" : ""}
                                                                     ${item.senderId === player2?.id ? "border-red-500" : ""}
+                                                                    ${item.senderId === player3?.id ? "border-green-500" : ""}
+                                                                    ${item.senderId === player4?.id ? "border-yellow-500" : ""}
                                                                 `}>
                                                                     {item.senderName}
                                                                 </span>

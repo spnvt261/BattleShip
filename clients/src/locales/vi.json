@@ -1,6 +1,12 @@
 {
   "create": "Tạo phòng",
   "createLabel": "Xác nhận tạo phòng?",
+  "room_type":"Chế độ",
+  "board_size":"Kích thước lưới",
+  "room_player_number":"Số lượng người chơi",
+  "description_type":"Mô tả",
+  "type_classic_info":"2 người chơi, mỗi bên có một lưới 10x10",
+  "type_one_board_info":"Tất cả người chung một lưới. Nếu đặt thuyền trùng ô, xảy ra va chạm và ô đó bị coi là bắn trúng",
   "join": "Vào phòng",
   "joinLabel": "Nhập ID phòng gồm 6 số",
   "theme": "Tông màu",

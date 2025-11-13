@@ -1,9 +1,9 @@
 // src/services/gameSocketService.ts
 import { socket } from "../socketConfig";
-import type { Player, Ship, Game, Room, PlayerState, Message } from "../types/game";
+import type { Player, Ship, Game, Room, PlayerState, Message, RoomType, RoomPlayerNumber } from "../types/game";
 
-export const createRoom = (name: string, playerId:string, cb?: (res: { room: Room; playerId: string; error?:string }) => void) =>
-    socket.emit("create_room", { name ,playerId}, cb);
+export const createRoom = (name: string, playerId:string, type:RoomType,boardSize:number,roomPlayerNumber:RoomPlayerNumber, cb?: (res: { room: Room; playerId: string; error?:string }) => void) =>
+    socket.emit("create_room", { name ,playerId,type,boardSize,roomPlayerNumber}, cb);
 
 export const getRoom = (roomId: string,playerId:string, cb: (res: { room?: Room; players?: Player[];error?:string }) => void) =>
     socket.emit("get_room", { roomId,playerId }, cb);

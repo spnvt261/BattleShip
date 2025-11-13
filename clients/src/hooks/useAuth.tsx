@@ -12,11 +12,11 @@ export const useAuth = (room: Room | null, game: Game | null, options?: { suppre
         if (!room) return
         const [player1, player2] = room.players
         if (!player1 && !player2) return
-        if (player1&&player2&& player1.id !== playerId && player2.id !== playerId) {
-            notify(t("Room is full"), "warning");
-            navigate("/")
-            return;
-        }
+        // if (player1&&player2&& player1.id !== playerId && player2.id !== playerId) {
+        //     notify(t("Room is full"), "warning");
+        //     navigate("/")
+        //     return;
+        // }
         if (options?.suppressNavigate) return;
         if (game) {
             if (game.status === 'placing') {

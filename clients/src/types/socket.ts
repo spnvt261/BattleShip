@@ -1,4 +1,4 @@
-import type { Game, Message, Player, PlayerState, Room, Ship } from "./game";
+import type { Game, Message, Player, PlayerState, Room, RoomPlayerNumber, RoomType, Ship } from "./game";
 
 export interface InternalSocketEvents {
   reconnect_failed: () => void;
@@ -19,7 +19,7 @@ export type ServerToClientEvents = {
 
 export type ClientToServerEvents = {
     create_room: (
-        data: { name: string, playerId: string },
+        data: { name: string, playerId: string , type:RoomType,boardSize:number,roomPlayerNumber:RoomPlayerNumber},
         cb?: (res: { room: Room; playerId: string;error?:string }) => void
     ) => void;
     get_room: (

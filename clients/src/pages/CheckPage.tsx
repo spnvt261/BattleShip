@@ -11,29 +11,31 @@ const CheckPage = () => {
     const { roomId } = useParams<{ roomId: string }>()
     const room = useGameResource(roomId!);
     const { playerId, t, playerName } = useAppSettings();
-    const { player1, player2 } = useGame()
+    const { player1, player2, player3, player4 } = useGame()
     const { joinRoom } = useSocket()
     const { notify } = useNotification();
     const navigate = useNavigate()
     useEffect(() => {
         if (!room) return
-        if (player1 && player2) {
-            if (player1.id !== playerId && player2.id !== playerId) {
-                notify(t(`Room is full`), 'warning')
-                navigate("/")
-                return;
-            }
-            if(player1.id === playerId || player2.id === playerId){
+        const players = [player1, player2, player3, player4];
+        if (
+            players.every(p => p?.id !== playerId) &&
+            room.roomPlayerNumber <= players.filter(Boolean).length
+        ) {
+            notify(t(`Room is full`), 'warning')
+            navigate("/")
+            return;
+        }
+        if (players.some(p => p?.id === playerId)) {
+            navigate(`/room/${roomId}`)
+            return
+        }
+        joinRoom(room.id, playerName, playerId, (res) => {
+            if (res.ok) {
                 navigate(`/room/${roomId}`)
             }
-        } else {
-            joinRoom(room.id, playerName, playerId, (res) => {
-                if (res.ok) {
-                    navigate(`/room/${roomId}`)
-                }
-            })
-        }
-    }, [player1, player2])
+        })
+    }, [player1, player2, player3, player4])
     return (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-10 z-100">
             <div className="w-12 h-12 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>

@@ -1,5 +1,5 @@
 import { socketToPlayer } from "../socket";
-import { Room, Player, PlayerState } from "../types";
+import { Room, Player, PlayerState, RoomType, RoomPlayerNumber } from "../types";
 import { createGameForRoom, getPlayerState } from "./gameService";
 import { Server } from "socket.io";
 
@@ -13,7 +13,7 @@ function generate6DigitRoomId(): string {
     return id;
 }
 
-export function createRoom(hostName: string, hostId: string): Room {
+export function createRoom(hostName: string, hostId: string, type:RoomType,boardSize:number,roomPlayerNumber:RoomPlayerNumber): Room {
     const id = generate6DigitRoomId();
     const host: Player = { id: hostId, name: hostName, isReady: false };
     const room: Room = {
@@ -21,6 +21,9 @@ export function createRoom(hostName: string, hostId: string): Room {
         hostId: hostId,
         players: [host],
         status: "waiting",
+        type: type??"classic",
+        boardSize: boardSize??10,
+        roomPlayerNumber:roomPlayerNumber??2,
         createdAt: Date.now(),
         chat: []
     };
@@ -38,7 +41,18 @@ export function joinRoom(roomId: string, name: string, playerId: string): { room
     const room = rooms[roomId];
     if (!room) return { error: "Room not found" };
 
-    if (room.players.length >= 2) return { error: "Room is full" };
+    // nếu đã đủ 2 người, nhưng player đã trong room thì vẫn ok (rejoin)
+    const existingIndex = room.players.findIndex(p => p.id === playerId);
+
+    if (existingIndex !== -1) {
+        // player đã ở trong room -> cập nhật tên (nếu khác) và trả về room
+        if (room.players[existingIndex].name !== name) {
+            room.players[existingIndex].name = name;
+        }
+        return { room };
+    }
+
+    if (room.players.length >= room.roomPlayerNumber) return { error: "Room is full" };
     const player: Player = { id: playerId, name, isReady: false };
     room.players.push(player);
     return { room };
@@ -124,7 +138,7 @@ export function setReady(roomId: string, playerState: PlayerState, isReady: bool
         for (const socketId of socketsInRoom) {
             const playerId = socketToPlayer.get(socketId);
             if (!playerId) continue;
-            if(!room.game) continue;
+            if (!room.game) continue;
             const personalState = getPlayerState(room.game, playerId);
             io.to(socketId).emit("player_state_update", { playerState: personalState });
         }

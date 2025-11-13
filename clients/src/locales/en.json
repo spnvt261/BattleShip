@@ -1,6 +1,12 @@
 {
   "create": "Create",
   "createLabel": "Create Room ?",
+  "room_type":"Mode",
+  "board_size":"Board size",
+  "room_player_number":"Players",
+  "description_type":"Description",
+  "type_classic_info":"2 players, each has their own 10x10 board",
+  "type_one_board_info":"All players share a single board. If ships overlap, it counts as a hit on that cell",
   "join": "Join",
   "joinLabel": "Enter the 6-digit room ID",
   "theme": "Theme",

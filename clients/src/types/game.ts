@@ -3,11 +3,17 @@ export interface Player {
     name: string;             // Tên hiển thị của người chơi
     isReady?: boolean;        // Đã sẵn sàng bắt đầu trận chưa
 }
+
+export type RoomType="classic"|"one_board";
+export type RoomPlayerNumber = 2|3|4;
 export interface Room {
     id: string;                     // Mã phòng 
     hostId: string;                 // ID người tạo phòng
     players: Player[];              // Danh sách người chơi (tối đa 2)
     status: "waiting" | "playing" | "finished";
+    type:RoomType
+    boardSize:number;
+    roomPlayerNumber:RoomPlayerNumber;
     createdAt: number;              // Thời gian tạo (timestamp)
     game?: Game;                    // Dữ liệu game hiện tại (nếu có)
     chat?: Message[];               // Lưu lịch sử chat (tùy chọn)

@@ -10,6 +10,8 @@ type GameState = {
     room: Room | null;
     player1: Player | null;
     player2: Player | null;
+    player3: Player | null;
+    player4: Player | null;
     playerState: PlayerState | null;
     game: Game | null;
 }
@@ -29,6 +31,8 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [room, setRoom] = useState<Room | null>(null);
     const [player1, setPlayer1] = useState<Player | null>(null);
     const [player2, setPlayer2] = useState<Player | null>(null);
+    const [player3, setPlayer3] = useState<Player | null>(null);
+    const [player4, setPlayer4] = useState<Player | null>(null);
     const [playerState, setPlayerState] = useState<PlayerState | null>(null);
     const [game, setGame] = useState<Game | null>(null);
     const {setListMessages,listMessages} = useChat()
@@ -54,6 +58,8 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 setRoom(res.room)
                 setPlayer1(res.room.players[0] ?? null)
                 setPlayer2(res.room.players[1] ?? null)
+                setPlayer3(res.room.players[2] ?? null)
+                setPlayer4(res.room.players[3] ?? null)
                 setGame(res.room.game ?? null)
                 setListMessages(res.room.chat??[])
                 if (res.room.game?.players) {
@@ -79,6 +85,8 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
             setRoom(res.room)
             setPlayer1(res.room.players[0] ?? null)
             setPlayer2(res.room.players[1] ?? null)
+            setPlayer3(res.room.players[2] ?? null)
+            setPlayer4(res.room.players[3] ?? null)
             setGame(res.room.game ?? null)
         })
 
@@ -104,11 +112,13 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
             unsubroom?.();
             unsubplayerstate?.();
         }
-    }, [player2, player1])
+    }, [player2, player1,player3,player4])
     const stateValue = useMemo(() => ({
         game,
         player1,
         player2,
+        player3,
+        player4,
         playerState,
         room
     }), [game,
