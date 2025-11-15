@@ -63,17 +63,28 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 setGame(res.room.game ?? null)
                 setListMessages(res.room.chat??[])
                 if (res.room.game?.players) {
-                    setPlayerState(playerId === res.room.players[0].id ? res.room.game.players[0] : res.room.game.players[1])
+                    // setPlayerState(playerId === res.room.players[0].id ? res.room.game.players[0] : res.room.game.players[1])
+                    setPlayerState(()=>{
+                        if(!res.room?.game){
+                            return null
+                        }
+                        switch(playerId){
+                            case res.room.players[0].id: return res.room.game.players[0];
+                            case res.room.players[1].id: return res.room.game.players[1];
+                            case res.room.players[2].id: return res.room.game.players[2];
+                            case res.room.players[3].id: return res.room.game.players[3];
+                            default: return null
+                        }
+                    })
                 }
                 resolve();
             })
         })
     }, [playerId])
-
     useEffect(() => {
         const unsubroom = onRoomUpdate((res) => {
-            if (room && res.room.players.length === 1 && room.players.length === 2 && room.status !== 'waiting') {
-                const playerLeaveRoom: Player = room.players.filter(p => p.id !== res.room.players[0].id)[0]
+            if (room && res.room.players.length === (room.roomPlayerNumber-1)  && room.players.length === room.roomPlayerNumber && room.status !== 'waiting') {
+                const playerLeaveRoom: Player = room.players.filter((p,index)=> p.id !== res.room.players[index]?.id)[0]
                 notify(t("player_left", { player: playerLeaveRoom?.name || "" }), 'warning')
                 cleanRoom()
                 navigate("/")
@@ -81,7 +92,6 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
             if(listMessages.length===0){
                 setListMessages(res.room.chat??[])
             }
-
             setRoom(res.room)
             setPlayer1(res.room.players[0] ?? null)
             setPlayer2(res.room.players[1] ?? null)
@@ -91,20 +101,18 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
         })
 
         const unsubplayerstate = onPlayerStateUpdate((res) => {
-            // console.log(res.playerState);
-            
             setPlayerState(prev => {
                 if (!prev) return res.playerState;
 
                 return {
                     ...prev,
                     // chỉ cập nhật những field thay đổi
-                    shotsFired: res.playerState.shotsFired ?? prev.shotsFired,
-                    shotsReceived: res.playerState.shotsReceived ?? prev.shotsReceived,
-                    sunkEnemyShips: res.playerState.sunkEnemyShips ?? prev.sunkEnemyShips,
+                    shotsFired: res.playerState.shotsFired ?? prev.shotsFired??[],
+                    shotsReceived: res.playerState.shotsReceived ?? prev.shotsReceived??[],
+                    sunkEnemyShips: res.playerState.sunkEnemyShips ?? prev.sunkEnemyShips??[],
                     isReady: res.playerState.isReady ?? prev.isReady,
                     // giữ nguyên ships nếu không có thay đổi
-                    ships: res.playerState.ships?.length ? res.playerState.ships : prev.ships,
+                    ships: res.playerState.ships?.length ? res.playerState.ships : prev.ships??[],
                 };
             });
         })

@@ -90,6 +90,16 @@
   border-radius: 6px;
 }
 
+/* tailwind.css hoặc global.css */
+.fade-slide-enter {
+  @apply opacity-0 translate-y-2;
+}
+
+.fade-slide-enter-active {
+  @apply opacity-100 translate-y-0 transition-all duration-300;
+}
+
+
 .board-not-disabled .cell-in-board {
   &:hover {
     z-index: 20;

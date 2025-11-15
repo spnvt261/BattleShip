@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { PlayerState, Ship } from "../../../types/game";
 
 interface Props {
-    showIf: boolean | number | string | undefined;
+    showIf: boolean | number | string | undefined|Ship|null|PlayerState;
     children?: ReactNode;
     msShow?: number;
     msDelay?: number;
-    color: 'red' | 'blue';
+    color: 'red' | 'blue'|'green' | 'yellow';
     title?: string
 }
 
@@ -25,6 +26,7 @@ const NotifyModal = ({
         if (isFirstRender.current) {
             delay = 0
             isFirstRender.current = false
+            return
         }
         const delayShow = setTimeout(() => {
             setShow(true);
@@ -46,7 +48,7 @@ const NotifyModal = ({
                             className="absolute -inset-[2px] bg-transparent pointer-events-none"
                             style={{
                                 clipPath: "polygon(21px 0%, 100% 0%, 100% 42.8px, 100% calc(100% - 21px), calc(100% - 21px) 100%, 0% 100%, 0% calc(100% - 21px), 0% 21px)",
-                                background: color === 'blue' ? 'var(--color-accent)' : 'red',
+                                background: color==='red'?'red':color==='blue'?'var(--color-accent)':color==='green'?'green':'yellow',
                             }}
                         />
                         <div

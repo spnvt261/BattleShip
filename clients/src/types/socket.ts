@@ -58,4 +58,8 @@ export type ClientToServerEvents = {
         data: { roomId: string; name: string; text: string; playerId: string },
         cb?: (res: { ok?: boolean }) => void
     ) => void;
+    check_collision:(
+        data:{roomId: string;},
+        cb?:(res:{ok?:boolean}) =>void
+    ) =>void
 };

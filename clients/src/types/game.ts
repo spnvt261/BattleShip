@@ -22,7 +22,7 @@ export interface Room {
 export interface Game {
     id: string;                       // ID trận đấu
     roomId: string;                   // ID phòng chứa trận này
-    players: [PlayerState, PlayerState]; // Trạng thái 2 người chơi
+    players: [PlayerState, PlayerState, PlayerState, PlayerState]; // Trạng thái 2 người chơi
     turn: string;                     // ID của người đang có lượt
     status: "placing" | "playing" | "ended";
     winnerId?: string;                // ID người thắng (sau khi end)
@@ -38,6 +38,7 @@ export interface PlayerState {
     shotsReceived:Shot[];             //Các ô bị bắn
     sunkEnemyShips:Ship[]             //Các tàu mình đã hạ gục
     isReady: boolean;                 // Đã đặt tàu xong chưa
+    isDie:boolean
 }
 
 export interface Cell {
@@ -49,6 +50,7 @@ export interface Cell {
 
 export interface Ship {
     id: string;                       // ID duy nhất cho mỗi tàu
+    playerId?:string; 
     type: "carrier" | "battleship" | "cruiser" | "submarine" | "destroyer";
     size: number;                     // Số ô mà tàu chiếm (5, 4, 3, 3, 2)
     coordinates: { x: number; y: number }[]; // Danh sách ô mà tàu chiếm

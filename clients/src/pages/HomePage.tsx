@@ -30,7 +30,7 @@ const HomePage = ({ }: Props) => {
                         `
                     }}
                 >
-                    <h1 className="text-4xl md:text-6xl mb-10 font-battle tracking-widest text-text  animate-pulse"
+                    <h1 className="text-4xl md:text-6xl mb-10 font-battle tracking-widest text-text  animate-pulse text-center"
                         // style={{
                         //     textShadow: `
                         //     2px 2px 4px rgba(0, 0, 0, 0.2),

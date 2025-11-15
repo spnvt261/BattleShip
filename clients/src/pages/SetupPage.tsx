@@ -23,17 +23,20 @@ const SetupPage = () => {
     const { t, playerId } = useAppSettings();
 
     const { ready, leaveRoom } = useSocket()
-    const { player1, player2, game, playerState } = useGame();
+    const { player1, player2, player3, player4, game, playerState } = useGame();
     const { notify } = useNotification();
     const navigate = useNavigate();
     const boardRef = useRef<BoardSetupRef>(null);
     useAuth(room, game, { suppressNavigate: true });
     const handleReady = () => {
+        // console.log(boardRef.current?.getShips());
+
         if (!boardRef.current) return;
 
         const playerState: PlayerState = {
             playerId: playerId,
             isReady: false,
+            isDie:false,
             ships: boardRef.current?.getShips(),
             shotsFired: [],
             shotsReceived: [],
@@ -50,6 +53,8 @@ const SetupPage = () => {
         return window.innerWidth <= 512 ? 30 : 40;
     }, []);
 
+     const players = [player1, player2, player3, player4].filter(Boolean)
+
     useEffect(() => {
         if (!roomId) {
             return
@@ -58,16 +63,22 @@ const SetupPage = () => {
 
             return
         }
-
-
-        if (player1?.isReady && player2?.isReady && (playerId === player1.id || playerId === player2.id)) {
+        if (players.every(p => p?.isReady) && players.some(p => p?.id === playerId)) {
             setTimeout(() => {
-                navigate(`/room/${roomId}/fight`)
+                if(room.type==='classic'){
+                    navigate(`/room/${roomId}/fight`)
+                    return
+                }
+                if(room.type==='one_board'){
+                    navigate(`/room/${roomId}/fight-mode`)
+                    return
+                }
+                
             }, 3000)
             return;
         }
 
-    }, [player1, player2, game])
+    }, [player1, player2, player3, player4, game])
     return (
         <div className="relative min-h-screen flex justify-center py-8 px-2 [@media(max-width:512px)]:flex-col">
             <div className="flex flex-col gap-4">
@@ -86,17 +97,19 @@ const SetupPage = () => {
                             />}
                         btnWidth="fit"
                     />
-                    <ChatModal 
+                    <ChatModal
                         roomId={roomId!}
                         className="mr-2"
                     />
                 </div>
-                <div className="flex justify-between gap-2 mb-4">
-                    <div className="relative px-2 flex items-center justify-center w-1/2 py-5 border-2 border-blue-500 rounded-[0.5rem] overflow-hidden h-8">
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                    <div className="relative px-2 flex items-center justify-center py-5 border-2 border-blue-500 rounded-[0.5rem] overflow-hidden h-8">
                         <span
                             className={`absolute flex text-blue-500 transition-all duration-500 ease-in-out ${player1?.isReady ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
                         >
-                            <span className="block max-w-[80px] truncate">
+                            <span className="block truncate"
+                                style={{ maxWidth: player1?.id === playerId ? '80px' : '120px' }}
+                            >
                                 {player1?.name}
                             </span>
                             {
@@ -113,11 +126,13 @@ const SetupPage = () => {
                         </span>
 
                     </div>
-                    <div className="relative px-2 flex items-center justify-center w-1/2 py-5 border-2 border-red-500 rounded-[0.5rem] overflow-hidden h-8">
+                    <div className="relative px-2 flex items-center justify-center py-5 border-2 border-red-500 rounded-[0.5rem] overflow-hidden h-8">
                         <span
                             className={`absolute flex text-red-500 transition-all duration-500 ease-in-out ${player2?.isReady ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
                         >
-                            <span className="block max-w-[80px] truncate">
+                            <span className="block truncate"
+                                style={{ maxWidth: player2?.id === playerId ? '80px' : '120px' }}
+                            >
                                 {player2?.name}
                             </span>
                             {
@@ -133,6 +148,56 @@ const SetupPage = () => {
                             {t("ready")}
                         </span>
                     </div>
+                    {
+                        room.roomPlayerNumber > 2 &&
+                        <div className="relative px-2 flex items-center justify-center py-5 border-2 border-green-500 rounded-[0.5rem] overflow-hidden h-8">
+                            <span
+                                className={`absolute flex text-green-500 transition-all duration-500 ease-in-out ${player3?.isReady ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
+                            >
+                                <span className="block truncate"
+                                    style={{ maxWidth: player3?.id === playerId ? '80px' : '120px' }}
+                                >
+                                    {player3?.name}
+                                </span>
+                                {
+                                    player3?.id === playerId && <span className="ml-2">({t("you")})</span>
+                                }
+                            </span>
+                            <span
+                                className={`absolute transition-all duration-500 ease-in-out ${player3?.isReady
+                                    ? 'translate-y-0 opacity-100 animate-rainbow'
+                                    : 'translate-y-full opacity-0'
+                                    }`}
+                            >
+                                {t("ready")}
+                            </span>
+                        </div>
+                    }
+                    {
+                        room.roomPlayerNumber === 4 &&
+                        <div className="relative px-2 flex items-center justify-center py-5 border-2 border-yellow-500 rounded-[0.5rem] overflow-hidden h-8">
+                            <span
+                                className={`absolute flex text-yellow-500 transition-all duration-500 ease-in-out ${player4?.isReady ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}
+                            >
+                                <span className="block truncate"
+                                    style={{ maxWidth: player4?.id === playerId ? '80px' : '120px' }}
+                                >
+                                    {player4?.name}
+                                </span>
+                                {
+                                    player4?.id === playerId && <span className="ml-2">({t("you")})</span>
+                                }
+                            </span>
+                            <span
+                                className={`absolute transition-all duration-500 ease-in-out ${player4?.isReady
+                                    ? 'translate-y-0 opacity-100 animate-rainbow'
+                                    : 'translate-y-full opacity-0'
+                                    }`}
+                            >
+                                {t("ready")}
+                            </span>
+                        </div>
+                    }
                 </div>
                 <div className="flex justify-center w-full p-2 border-2 border-border">
                     <p>{t("deployFleet")}</p>
@@ -141,8 +206,8 @@ const SetupPage = () => {
                     <BoardSetup
                         ref={boardRef}
                         // onSetupChange={handleShipsChange}
-                        // gridCount={11}
-                        className="mt-10"
+                        gridCount={room.boardSize}
+                        // className="mt-10"
                         gridSize={gridSize}
                         disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady) ? true : false}
                         myListShip={playerState ? playerState.ships : undefined}
@@ -156,14 +221,14 @@ const SetupPage = () => {
                                 label={t("cancel")}
                             />  */}
                     {
-                        (player1?.isReady && player2?.isReady) ?
+                        players.every(p=>p?.isReady) ?
                             <CustomButton
                                 onClick={() => { }}
                                 className="px-8 py-2 bg-btn-bg2 text-btn-text"
                                 label={t("starting")}
                                 disabled
                             />
-                            : (player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady) ?
+                            : players.some(p=>p?.isReady&&p.id===playerId) ?
                                 <CustomButton
                                     onClick={() => { }}
                                     className="px-8 py-2 bg-btn-bg2 text-btn-text"
@@ -195,14 +260,14 @@ const SetupPage = () => {
                     label=""
                     Icon={<FaRandom size={30} />}
                     className="flex items-center justify-center mx-10 w-[60px] h-[60px] mt-4 bg-btn-bg2 text-btn-text rounded-full active:scale-[0.9]"
-                    disabled={(player1?.id === playerId && player1.isReady) || (player2?.id === playerId && player2.isReady)}
+                    disabled={players.some(p=>p?.isReady&&p.id===playerId)}
                     onClick={() => {
                         boardRef.current?.randomizeShips()
                     }}
                 />
             </div>
             {
-                player1?.isReady && player2?.isReady &&
+                players.every(p=>p?.isReady) &&
                 <div className="fixed top-0 left-0 w-full h-full bg-black/30 flex items-center justify-center">
                     <span className="countdown text-white text-8xl font-bold"></span>
                 </div>

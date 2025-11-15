@@ -58,7 +58,7 @@ const Cell = ({
             className={`
                 relative flex items-center justify-center cell-in-board ${hit || disabled ? 'cell-disabled' : ''}
                 ${className}
-                ${(hit || isNewHit) ? ((hasShip || isNewHitToShip) ? "bg-ship-hit opacity-[0.6]" : "bg-water-miss") : `bg-water ${hasMyShip ? "!bg-btn-bg" : ""}`}
+                ${(hit || isNewHit) ? ((hasShip || isNewHitToShip) ? "bg-ship-hit opacity-[0.6]" : "bg-water-miss") : `bg-water ${hasMyShip ? "!bg-btn-bg opacity-[0.6]" : ""}`}
                 ${isFocus ? "ring-2 ring-accent border-accent z-10" : "border-border-cell"}
                 border transition-all duration-200 cursor-pointer select-none
             `}

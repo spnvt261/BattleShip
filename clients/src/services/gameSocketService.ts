@@ -32,6 +32,8 @@ export const kickPlayer = (roomId: string,playerId:string, cb?:any ) =>
 
 export const sendChat = (roomId: string, name: string, text: string, playerId:string, cb?: (res: { ok?: boolean }) => void) =>
     socket.emit("chat", { roomId, name, text,playerId }, cb);
+export const checkCollision = (roomId: string, cb?: (res: { ok?: boolean }) => void) =>
+    socket.emit("check_collision", { roomId}, cb);
 
 
 

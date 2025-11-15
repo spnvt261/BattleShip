@@ -1,6 +1,8 @@
 {
   "create": "Create",
   "createLabel": "Create Room ?",
+  "classic": "Classic",
+  "one_board": "Common board",
   "room_type":"Mode",
   "board_size":"Board size",
   "room_player_number":"Players",
@@ -49,6 +51,8 @@
   "enemy_turn":"Enemy's turn",
   "your_fleet":"Your fleet",
   "your_turn":"Your turn",
+  "player_turn":"{{player}}'s Turn",
+  "player_die":"'{{player}}' Die",
   "wating_for_enemy":"Waiting for enemy...",
   "starting":"Starting...",
   "win":"Win",
@@ -56,6 +60,7 @@
   "back_to_home":"Back to home",
   "match_finish":"Match finished",
   "ship_sunk":"Ship Sunk!",
+  "ship_sunk_player":"Ship's {{player}} Sunk!",
   "You have been kicked from the room by the host.":"You have been kicked from the room by the host.",
 
   "send":"Send",

@@ -6,6 +6,7 @@ import Cell from "./Cell";
 import type { Ship as ShipType } from "../../types/game";
 import Ship from "./Ship";
 import { playMissSound } from "../../utils/playSound";
+import { useAppSettings } from "../../context/appSetting";
 
 interface Props {
     gridCount?: number;
@@ -32,11 +33,11 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
     myListShip,
 }, ref) => {
     // console.log("Board setup");
-
+    const {playerId} = useAppSettings();
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".slice(0, gridCount).split("");
     const numbers = Array.from({ length: gridCount }, (_, i) => i + 1);
-    const snapToGrid:Modifier = useMemo(() => createSnapModifier(gridSize), [gridSize]);
-    
+    const snapToGrid: Modifier = useMemo(() => createSnapModifier(gridSize), [gridSize]);
+
     const listShips = useRef<ShipType[]>([])
 
     const getCoordinatesShip = (cellFirstPosition: number, rowFirstPosition: number, size: number, isVertical: boolean): { x: number; y: number }[] => {
@@ -108,7 +109,8 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
                     listShips.current.push({
                         ...ship,
-                        coordinates: getCoordinatesShip(gx, gy, ship.size, isVertical)
+                        coordinates: getCoordinatesShip(gx, gy, ship.size, isVertical),
+                        playerId:playerId
                     })
                 }
             }
@@ -296,61 +298,50 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
         []
     );
 
-    const offset = gridSize;
+    // const offset = gridSize;
     return (
         <div
-            className={`inline-block ${className || ""}`}
-            style={{ position: "relative" }}
+            className={`flex ${className || ""}`}
+            style={{ position: "relative", zoom:'1' }}
         >
-            {/* Trß╗Ñc X */}
-            {(
-                <div className="flex ml-[40px] mb-1">
-                    {numbers.map((num, idx) => (
-                        <div
-                            key={num}
-                            style={{
-                                position: "absolute",
-                                top: -1 * gridSize,
-                                left: offset + (idx - 1) * gridSize,
-                                width: gridSize,
-                                height: gridSize,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontWeight: "bold",
-                            }}
-                        >
-                            {num}
-                        </div>
-                    ))}
-                </div>
-            )}
-
-
-            <div style={{ display: "flex", position: "relative" }}>
-                {/* Trß╗Ñc Y */}
-                {letters.map((letter, idx) => (
+            {/* Cột chữ Y (cố định) */}
+            <div className="flex flex-col border-r"
+                style={{ marginTop: `${gridSize}px` }}
+            >
+                {letters.map((letter) => (
                     <div
                         key={letter}
+                        className="flex items-center justify-center font-bold"
                         style={{
-                            position: "absolute",
-                            top: offset + (idx - 1) * gridSize,
-                            left: -1 * gridSize,
                             width: gridSize,
                             height: gridSize,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontWeight: "bold",
                         }}
                     >
                         {letter}
                     </div>
                 ))}
+            </div>
 
-                {/* Board ch├¡nh */}
-                <div style={{ position: "relative" }}>
-                    {/* Grid */}
+            <div className="h-full flex flex-col overflow-x-auto max-w-[86vw] relative">
+                {/* Numbers — TRƯỢT THEO BOARD */}
+                <div className="flex"
+                >
+                    {numbers.map((num) => (
+                        <div
+                            key={num}
+                            className="flex items-center justify-center font-bold"
+                            style={{
+                                minWidth: gridSize,
+                                height: gridSize,
+                            }}
+                        >
+                            {num}
+                        </div>
+                    ))}
+
+                </div>
+                {/* BOARD */}
+                <div className="relative">
                     <div
                         className="grid"
                         style={{
@@ -370,32 +361,32 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                             />
                         ))}
                     </div>
-                </div>
-                {/* <DndContext> */}
-                {/* Ships */}
-                {/* <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid]}> */}
-                {ListShip.map(ship => {
-                    const pos = ships[ship.id];
-                    return (
-                        <DndContext key={ship.id} onDragEnd={handleDragEnd} modifiers={[snapToGrid]}>
-                            <Ship
-                                key={ship.id}
-                                id={ship.id}
-                                shipame={ship.type}
-                                image={ship.image}
-                                gridSize={gridSize}
-                                size={ship.size}
-                                gridCount={gridCount}
-                                positionFirstBlock={pos}
-                                isVertical={pos.isVertical}
-                                onRotate={handleRotate}
-                                onlyView={disabled}
-                            />
-                        </DndContext>
+                    {/* <DndContext> */}
+                    {/* Ships */}
+                    {/* <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid]}> */}
+                    {ListShip.map(ship => {
+                        const pos = ships[ship.id];
+                        return (
+                            <DndContext key={ship.id} onDragEnd={handleDragEnd} modifiers={[snapToGrid]}>
+                                <Ship
+                                    key={ship.id}
+                                    id={ship.id}
+                                    shipame={ship.type}
+                                    image={ship.image}
+                                    gridSize={gridSize}
+                                    size={ship.size}
+                                    gridCount={gridCount}
+                                    positionFirstBlock={pos}
+                                    isVertical={pos.isVertical}
+                                    onRotate={handleRotate}
+                                    onlyView={disabled}
+                                />
+                            </DndContext>
 
-                    );
-                })}
-                {/* </DndContext> */}
+                        );
+                    })}
+                    {/* </DndContext> */}
+                </div>
             </div>
         </div>
     );

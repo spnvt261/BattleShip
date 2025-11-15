@@ -1,5 +1,6 @@
 import { socketToPlayer } from "../socket";
 import { Room, Player, PlayerState, RoomType, RoomPlayerNumber } from "../types";
+import { checkCollision } from "../utils/boardHelpers";
 import { createGameForRoom, getPlayerState } from "./gameService";
 import { Server } from "socket.io";
 
@@ -82,7 +83,7 @@ export function startGame(roomId: string, requesterPlayerId: string, io?: Server
 
     if (room.players[0].id !== requesterPlayerId) return { error: "Only host can start the game" };
     // console.log(3);
-    if (room.players.length !== 2) return { error: "Need 2 players to start" };
+    if (room.players.length !== room.roomPlayerNumber) return { error: "Need full players to start" };
     // console.log(4);
     // create game (gameService will prepare player states / boards)
     const game = createGameForRoom(room);
@@ -93,10 +94,10 @@ export function startGame(roomId: string, requesterPlayerId: string, io?: Server
 
     // notify room: clients should switch to placing-mode (place ships)
     if (io) {
-        // io.to(roomId).emit("room_update", {
-        //     room: getSafeRoom(room),
-        //     players: room.players
-        // });
+        io.to(roomId).emit("room_update", {
+            room: getSafeRoom(room),
+            players: room.players
+        });
         io.to(roomId).emit("game_start", { game }); // game.status === 'placing'
     }
 
@@ -108,22 +109,25 @@ export function setReady(roomId: string, playerState: PlayerState, isReady: bool
     if (!room) return;
     const p = room.players.find(pl => pl.id === playerState.playerId);
     if (p) p.isReady = isReady;
-
-    if (room.game) {
-        room.game.players[0].playerId === playerState.playerId ? room.game.players[0] = { ...playerState, isReady: true } : room.game.players[1] = { ...playerState, isReady: true }
-
-        // console.log(room.game.players);
-
+    const game=room.game;
+    if (game) {
+        // room.game.players[0].playerId === playerState.playerId ? room.game.players[0] = { ...playerState, isReady: true } : room.game.players[1] = { ...playerState, isReady: true }
+        const playerIndex = game.players.findIndex(p=>p.playerId===playerState.playerId)
+        game.players[playerIndex] = {
+            ...playerState,
+            isReady:true
+        }
     }
 
 
 
-    // if both players ready => start game
-    if (room.players.length === 2 && room.players.every(pl => pl.isReady)) {
+    // if all players ready => start game
+    if (room.players.length === room.roomPlayerNumber && room.players.every(pl => pl.isReady)) {
         room.status = "playing";
         if (room.game) room.game.status = "playing";
+        if(io) checkCollision(roomId,io)
         // if(room.game) room.game.turn = Math.random()<0.5 ? room.game.players[0].playerId : room.game.players[1].playerId  
-        if (io && room.game) io.to(roomId).emit("turn_update", { playerId: Math.random() < 0.5 ? room.game.players[0].playerId : room.game.players[1].playerId })
+        // if (io && room.game) io.to(roomId).emit("turn_update", { playerId: Math.random() < 0.5 ? room.game.players[0].playerId : room.game.players[1].playerId })
     }
     // broadcast room update
     if (io) {
@@ -165,7 +169,7 @@ export const getSafeRoom = (room: Room, playerIdGet?: string): Room => ({
                 (playerIdGet && player.playerId === playerIdGet)
                     ? player.ships // giữ nguyên nếu là chính mình
                     : player.ships.map(({ coordinates, ...rest }) => rest) // ẩn tọa độ đối thủ
-        })) as [PlayerState, PlayerState],
+        })) as PlayerState[],
     },
 });
 

@@ -58,7 +58,7 @@ const CreateRoomModal = ({ label, onCancel, onClose }: Props) => {
                     onChange={val => {
                         setRoomType(val as RoomType)
                     }}
-                    renderLabel={(val) => (val === "classic" ? "Classic" : "Một Board")}
+                    renderLabel={(val) => (val === "classic" ? t("classic") : t("one_board") )}
                     className="mb-1"
                 />
                 <p className="text-[.9rem] text-text">

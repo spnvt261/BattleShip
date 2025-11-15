@@ -1,4 +1,4 @@
-import { Game, Shot } from "../types";
+import { Game, Room, Shot } from "../types";
 
 export function nextTurn(game: Game, currentPlayerId: string): string {
   const [p1, p2] = game.players;
@@ -25,8 +25,27 @@ export function checkEndGame(game: Game): { ended: boolean; winnerId?: string } 
   return { ended: false };
 }
 
+export function checkEndGameOneBoardMode(game: Game,room:Room): { ended: boolean; winnerId?: string } {
+  // if any player's ships are all sunk -> game ends
+  if(game.players.filter(p=>p.isDie).length===(room.roomPlayerNumber-1)){
+    return {ended:true,winnerId:game.players.find(p=>!p.isDie)?.playerId}
+  }
+  return { ended: false };
+}
 
-export function recordShot(shots: Shot[], x: number, y: number, hit: boolean, targetPlayerId: string) {
+export function checkPlayerOut(game:Game,playerId:string){
+  const player = game.players.find(p=>p.playerId===playerId);
+  if(!player){
+    throw "Player Not Found"
+  }
+  const playerAllSunk = player.ships.every(s => s.sunk);
+  if(playerAllSunk){
+    player.isDie=true;
+    console.log('playerOut:',playerId);
+  }
+}
+
+
+export function recordShot(shots: Shot[], x: number, y: number, hit: boolean, targetPlayerId?: string) {
   shots.push({ x, y, hit, targetPlayerId, firedAt: Date.now() });
-  
 }

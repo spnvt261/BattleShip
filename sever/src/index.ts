@@ -16,8 +16,10 @@ const io = new Server(server, {
       "http://localhost:5173",
       "https://battle-ship-gamma.vercel.app",
       "http://192.168.0.101:5173",
+      "http://192.168.0.103:5173",
       "http://192.168.0.102:5173",
       "https://stats.uptimerobot.com",
+      "http://192.168.1.13:5173"
     ],
   },
 });

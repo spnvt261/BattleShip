@@ -21,7 +21,7 @@ export interface Room {
 export interface Game {
     id: string;
     roomId: string;
-    players: [PlayerState, PlayerState];
+    players: PlayerState[];
     turn: string;
     status: "placing" | "playing" | "ended";
     winnerId?: string;
@@ -37,6 +37,7 @@ export interface PlayerState {
     shotsReceived: Shot[];
     sunkEnemyShips:Ship[]
     isReady: boolean;
+    isDie:boolean;
 }
 
 export interface Cell {
@@ -48,6 +49,7 @@ export interface Cell {
 
 export interface Ship {
     id: string;
+    playerId?:string
     type: "carrier" | "battleship" | "cruiser" | "submarine" | "destroyer";
     size: number;
     coordinates: { x: number; y: number }[];
@@ -59,7 +61,7 @@ export interface Shot {
     x: number;
     y: number;
     hit: boolean;
-    targetPlayerId: string;
+    targetPlayerId?: string;
     firedAt: number;
 }
 

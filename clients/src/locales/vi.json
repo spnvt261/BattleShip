@@ -1,6 +1,8 @@
 {
   "create": "Tạo phòng",
   "createLabel": "Xác nhận tạo phòng?",
+  "classic": "Cổ điển",
+  "one_board": "Chung lưới",
   "room_type":"Chế độ",
   "board_size":"Kích thước lưới",
   "room_player_number":"Số lượng người chơi",
@@ -47,6 +49,8 @@
   "confirm_out": "Xác nhận rời khỏi phòng?",
   "enemy_fleet":"Hạm đội của đối thủ",
   "enemy_turn":"Lượt của đối thủ",
+  "player_turn":"Lượt của {{player}}",
+  "player_die":"'{{player}}' Thua cuộc",
   "your_fleet":"Hạm đội của bạn",
   "your_turn":"Lượt của bạn",
   "wating_for_enemy":"Chờ đối thủ...",
@@ -56,6 +60,7 @@
   "back_to_home":"Trở về trang chủ",
   "match_finish":"Trận đấu đã kết thúc",
   "ship_sunk":"Thuyền chìm!",
+  "ship_sunk_player":"Thuyền của {{player}} chìm!",
   "You have been kicked from the room by the host.":"Bạn bị đá khỏi phòng.",
 
   "send":"Gửi",

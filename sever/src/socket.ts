@@ -3,7 +3,7 @@ import { createRoom, joinRoom, setReady, leaveRoom, getRoom, startGame, rooms, g
 import { placeShips, attack, getPlayerState } from "./services/gameService";
 import { addMessage } from "./services/chatService";
 import { Player, PlayerState, RoomPlayerNumber, RoomType } from "./types";
-import { broadcastGameUpdate } from "./utils/boardHelpers";
+import { broadcastGameUpdate, checkCollision } from "./utils/boardHelpers";
 
 export const socketToPlayer: Map<string, string> = new Map();
 // const socketToPlayer: Map<string, string> = new Map();
@@ -14,11 +14,11 @@ export function initSockets(io: IOServer) {
         // mapping from socket.id -> stable playerId provided by client
         // when client sends payload.playerId we store it here so on disconnect we can find which player left
 
-        socket.on("create_room", (payload: { name: string, playerId: string, type:RoomType ,boardSize:number,roomPlayerNumber:RoomPlayerNumber }, cb: any) => {
+        socket.on("create_room", (payload: { name: string, playerId: string, type: RoomType, boardSize: number, roomPlayerNumber: RoomPlayerNumber }, cb: any) => {
             const playerId = payload?.playerId || socket.id;
             // store mapping
             socketToPlayer.set(socket.id, playerId);
-            const room = createRoom(payload.name, playerId,payload.type,payload.boardSize,payload.roomPlayerNumber);
+            const room = createRoom(payload.name, playerId, payload.type, payload.boardSize, payload.roomPlayerNumber);
             socket.join(room.id);
             // return roomId and confirmed playerId
             cb && cb({ room: room, playerId });
@@ -132,7 +132,11 @@ export function initSockets(io: IOServer) {
             setReady(payload.roomId, payload.playerState, true, io);
             cb && cb({ ok: true });
         });
-
+        socket.on("check_collision", (payload: { roomId: string }, cb: any) => {
+            const { roomId } = payload
+            checkCollision(roomId, io)
+            cb && cb({ ok: true })
+        })
         socket.on("attack", (payload: { roomId: string; x: number; y: number; playerId: string }, cb: any) => {
             const { roomId, x, y } = payload;
             const playerId = payload.playerId || socketToPlayer.get(socket.id) || socket.id;
@@ -157,7 +161,7 @@ export function initSockets(io: IOServer) {
             const targetSocketId = [...socketToPlayer.entries()]
                 .find(([sockId, pId]) => pId === playerId)?.[0];
             console.log("Kick target socket123:", targetSocketId);
-            if (targetSocketId) {   
+            if (targetSocketId) {
                 const targetSocket = io.sockets.sockets.get(targetSocketId);
                 if (targetSocket) {
                     // 👇 gửi thông báo riêng cho người bị kick
@@ -183,7 +187,7 @@ export function initSockets(io: IOServer) {
             // chỉ log hoặc đánh dấu disconnected
             const playerId = socketToPlayer.get(socket.id) || socket.id;
             console.log(`${playerId} disconnected but still in room`);
-             // ❗ Xóa socket cũ khỏi map
+            // ❗ Xóa socket cũ khỏi map
             socketToPlayer.delete(socket.id);
         });
 

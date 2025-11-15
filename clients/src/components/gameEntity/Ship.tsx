@@ -14,13 +14,15 @@ interface Props {
     small?: boolean;
     onlyView?: boolean;
     isSunk?: boolean;
-    showOpacity?: boolean
+    showOpacity?: boolean;
+    className?:string;
+    hideShip?:boolean;
 }
 
 const Ship = ({
     id, positionFirstBlock, isVertical, size,
     gridSize, gridCount, image, shipame, onRotate,
-    small, onlyView, isSunk, showOpacity
+    small, onlyView, isSunk, showOpacity, className, hideShip
 }: Props) => {
     // console.log(positionFirstBlock);
     // console.log(shipame);
@@ -82,7 +84,7 @@ const Ship = ({
     const style: React.CSSProperties = {
         position: "absolute",
         top: 0,
-        left: 1,
+        left: 0,
         width: small ? size * gridSize * 0.6 : size * gridSize,
         height: small ? gridSize * 0.6 : gridSize,
         background: "transparent",
@@ -117,8 +119,12 @@ const Ship = ({
             {...attributes}
             onDoubleClick={handleDoubleClick}
             onTouchEnd={handleTouchEnd}
+            className={`${className}`}
         >
-            <img alt={shipame} src={image} className={`w-full h-full select-none pointer-events-none`} />
+            {
+                !hideShip &&  <img alt={shipame} src={image} className={`w-full h-full select-none pointer-events-none`} />
+            }
+           
             {
                 isSunk &&
                 <div className="damage">
