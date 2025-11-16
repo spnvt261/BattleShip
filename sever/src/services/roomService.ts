@@ -1,10 +1,37 @@
 import { socketToPlayer } from "../socket";
 import { Room, Player, PlayerState, RoomType, RoomPlayerNumber } from "../types";
 import { checkCollision } from "../utils/boardHelpers";
+import { checkEndGameOneBoardMode, playerDie } from "../utils/gameHelpers";
 import { createGameForRoom, getPlayerState } from "./gameService";
 import { Server } from "socket.io";
 
 export const rooms: { [roomId: string]: Room } = {};
+
+// Xoá room nếu game đã end hơn 2 tiếng
+export function cleanupRooms() {
+    const TWO_HOURS = 2 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    for (const roomId in rooms) {
+        const room = rooms[roomId];
+        if (!room) continue;
+
+        // Chỉ xoá room đã kết thúc
+        if (room.status !== "finished") continue;
+
+        // Room chưa có game hoặc game chưa end => bỏ qua
+        const game = room.game;
+        if (!game) continue;
+        if (game.status !== "ended") continue;
+        if (!game.endedAt) continue;
+
+        // Nếu đã end > 2 tiếng thì xoá
+        if (now - game.endedAt >= TWO_HOURS) {
+            delete rooms[roomId];
+            console.log(`[CLEANUP] Removed room ${roomId} (ended more than 2 hours ago)`);
+        }
+    }
+}
 
 function generate6DigitRoomId(): string {
     let id: string;
@@ -14,7 +41,8 @@ function generate6DigitRoomId(): string {
     return id;
 }
 
-export function createRoom(hostName: string, hostId: string, type:RoomType,boardSize:number,roomPlayerNumber:RoomPlayerNumber): Room {
+export function createRoom(hostName: string, hostId: string, type: RoomType, boardSize: number, roomPlayerNumber: RoomPlayerNumber): Room {
+    cleanupRooms()
     const id = generate6DigitRoomId();
     const host: Player = { id: hostId, name: hostName, isReady: false };
     const room: Room = {
@@ -22,9 +50,9 @@ export function createRoom(hostName: string, hostId: string, type:RoomType,board
         hostId: hostId,
         players: [host],
         status: "waiting",
-        type: type??"classic",
-        boardSize: boardSize??10,
-        roomPlayerNumber:roomPlayerNumber??2,
+        type: type ?? "classic",
+        boardSize: boardSize ?? 10,
+        roomPlayerNumber: roomPlayerNumber ?? 2,
         createdAt: Date.now(),
         chat: []
     };
@@ -59,17 +87,41 @@ export function joinRoom(roomId: string, name: string, playerId: string): { room
     return { room };
 }
 
-export function leaveRoom(roomId: string, playerId: string) {
+export function leaveRoom(roomId: string, playerId: string, io?: Server) {
     const room = rooms[roomId];
     if (!room) return;
-    room.players = room.players.filter(p => p.id !== playerId);
+    if (room.type === 'classic' || (room.type === 'one_board' && room.game?.status==='placing')
+        || (room.type === 'one_board' && room.status==='waiting')
+    ) room.players = room.players.filter(p => p.id !== playerId);
     // if room empty, delete
     if (room.players.length === 0) delete rooms[roomId];
     else {
         // if game was playing, mark finished
         if (room.game) {
-            room.game.status = "ended";
-            room.status = "finished";
+            if (room.type === 'classic' || (room.type === 'one_board' && room.game.status==='placing')) {
+                room.game.status = "ended";
+                room.status = "finished";
+            } else if (room.type === 'one_board') {
+                const playerOut = room.game.players.find(p => p.playerId === playerId)
+                if (!playerOut) {
+                    throw "Player Not Found"
+                }
+                playerDie(room, playerId)
+
+
+                const end = checkEndGameOneBoardMode(room.game, room);
+                if (end.ended) {
+                    room.game.status = "ended";
+                    room.game.endedAt = Date.now();
+                    room.game.winnerId = end.winnerId;
+                    room.status = "finished";
+
+                    if (io) {
+                        io.to(roomId).emit("game_over", { winnerId: end.winnerId });
+                    }
+                }
+            }
+
         }
     }
 }
@@ -109,13 +161,13 @@ export function setReady(roomId: string, playerState: PlayerState, isReady: bool
     if (!room) return;
     const p = room.players.find(pl => pl.id === playerState.playerId);
     if (p) p.isReady = isReady;
-    const game=room.game;
+    const game = room.game;
     if (game) {
         // room.game.players[0].playerId === playerState.playerId ? room.game.players[0] = { ...playerState, isReady: true } : room.game.players[1] = { ...playerState, isReady: true }
-        const playerIndex = game.players.findIndex(p=>p.playerId===playerState.playerId)
+        const playerIndex = game.players.findIndex(p => p.playerId === playerState.playerId)
         game.players[playerIndex] = {
             ...playerState,
-            isReady:true
+            isReady: true
         }
     }
 
@@ -125,7 +177,7 @@ export function setReady(roomId: string, playerState: PlayerState, isReady: bool
     if (room.players.length === room.roomPlayerNumber && room.players.every(pl => pl.isReady)) {
         room.status = "playing";
         if (room.game) room.game.status = "playing";
-        if(io) checkCollision(roomId,io)
+        if (io && room.type === 'one_board') checkCollision(roomId, io)
         // if(room.game) room.game.turn = Math.random()<0.5 ? room.game.players[0].playerId : room.game.players[1].playerId  
         // if (io && room.game) io.to(roomId).emit("turn_update", { playerId: Math.random() < 0.5 ? room.game.players[0].playerId : room.game.players[1].playerId })
     }

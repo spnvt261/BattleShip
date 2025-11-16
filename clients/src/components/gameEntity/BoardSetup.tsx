@@ -33,10 +33,12 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
     myListShip,
 }, ref) => {
     // console.log("Board setup");
-    const {playerId} = useAppSettings();
+    const { playerId } = useAppSettings();
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".slice(0, gridCount).split("");
     const numbers = Array.from({ length: gridCount }, (_, i) => i + 1);
     const snapToGrid: Modifier = useMemo(() => createSnapModifier(gridSize), [gridSize]);
+
+    const [zoom,setZoom] = useState<number>(1)
 
     const listShips = useRef<ShipType[]>([])
 
@@ -110,7 +112,7 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
                     listShips.current.push({
                         ...ship,
                         coordinates: getCoordinatesShip(gx, gy, ship.size, isVertical),
-                        playerId:playerId
+                        playerId: playerId
                     })
                 }
             }
@@ -300,95 +302,120 @@ const BoardSetup = forwardRef<BoardSetupRef, Props>(({
 
     // const offset = gridSize;
     return (
-        <div
-            className={`flex ${className || ""}`}
-            style={{ position: "relative", zoom:'1' }}
-        >
-            {/* Cột chữ Y (cố định) */}
-            <div className="flex flex-col border-r"
-                style={{ marginTop: `${gridSize}px` }}
-            >
-                {letters.map((letter) => (
-                    <div
-                        key={letter}
-                        className="flex items-center justify-center font-bold"
-                        style={{
-                            width: gridSize,
-                            height: gridSize,
-                        }}
+        <>
+            {
+                gridSize === 30 &&
+                <div className="flex gap-3 justify-center items-center w-full">
+                    Zoom: 
+                    <button className="py-2 px-4 p border-2 border-border"
+                        onClick={()=>setZoom(prev=>prev-0.1)}
                     >
-                        {letter}
+                        -
+                    </button>
+                    <div className="px-5 py-2 border-2 border-border flex items-center justify-center">
+                        <p>{Math.floor(zoom*100) }%</p>
                     </div>
-                ))}
-            </div>
+                    <button className="py-2 px-4 border-2 border-border"
+                        onClick={()=>setZoom(prev=>prev+0.1)}
+                    >
+                        +
+                    </button>
+                </div>
+            }
 
-            <div className="h-full flex flex-col overflow-x-auto max-w-[86vw] relative">
-                {/* Numbers — TRƯỢT THEO BOARD */}
-                <div className="flex"
+            <div
+                className={`flex ${className || ""}`}
+                style={{ position: "relative", zoom: zoom }}
+            >
+                {/* Cột chữ Y (cố định) */}
+                <div className="flex flex-col border-r"
+                    style={{ marginTop: `${gridSize}px` }}
                 >
-                    {numbers.map((num) => (
+                    {letters.map((letter) => (
                         <div
-                            key={num}
+                            key={letter}
                             className="flex items-center justify-center font-bold"
                             style={{
-                                minWidth: gridSize,
+                                width: gridSize,
                                 height: gridSize,
+                                fontSize: `${zoom}rem`
                             }}
                         >
-                            {num}
+                            {letter}
                         </div>
                     ))}
-
                 </div>
-                {/* BOARD */}
-                <div className="relative">
-                    <div
-                        className="grid"
-                        style={{
-                            gridTemplateColumns: `repeat(${gridCount}, ${gridSize}px)`,
-                            gridTemplateRows: `repeat(${gridCount}, ${gridSize}px)`,
-                        }}
-                    >
-                        {Array.from({ length: gridCount * gridCount }).map((_, idx) => (
-                            <Cell
-                                key={idx}
-                                x={0}
-                                y={0}
-                                hasShip={false}
-                                hit={false}
-                                disabled
-                                gridSize={gridSize}
-                            />
-                        ))}
-                    </div>
-                    {/* <DndContext> */}
-                    {/* Ships */}
-                    {/* <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid]}> */}
-                    {ListShip.map(ship => {
-                        const pos = ships[ship.id];
-                        return (
-                            <DndContext key={ship.id} onDragEnd={handleDragEnd} modifiers={[snapToGrid]}>
-                                <Ship
-                                    key={ship.id}
-                                    id={ship.id}
-                                    shipame={ship.type}
-                                    image={ship.image}
-                                    gridSize={gridSize}
-                                    size={ship.size}
-                                    gridCount={gridCount}
-                                    positionFirstBlock={pos}
-                                    isVertical={pos.isVertical}
-                                    onRotate={handleRotate}
-                                    onlyView={disabled}
-                                />
-                            </DndContext>
 
-                        );
-                    })}
-                    {/* </DndContext> */}
+                <div className="h-full flex flex-col overflow-x-auto max-w-[86vw] relative">
+                    {/* Numbers — TRƯỢT THEO BOARD */}
+                    <div className="flex"
+                    >
+                        {numbers.map((num) => (
+                            <div
+                                key={num}
+                                className="flex items-center justify-center font-bold"
+                                style={{
+                                    minWidth: gridSize,
+                                    height: gridSize,
+                                    fontSize: `${zoom}rem`
+                                }}
+                            >
+                                {num}
+                            </div>
+                        ))}
+
+                    </div>
+                    {/* BOARD */}
+                    <div className="relative">
+                        <div
+                            className="grid"
+                            style={{
+                                gridTemplateColumns: `repeat(${gridCount}, ${gridSize}px)`,
+                                gridTemplateRows: `repeat(${gridCount}, ${gridSize}px)`,
+                            }}
+                        >
+                            {Array.from({ length: gridCount * gridCount }).map((_, idx) => (
+                                <Cell
+                                    key={idx}
+                                    x={0}
+                                    y={0}
+                                    hasShip={false}
+                                    hit={false}
+                                    disabled
+                                    gridSize={gridSize}
+                                />
+                            ))}
+                        </div>
+                        {/* <DndContext> */}
+                        {/* Ships */}
+                        {/* <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGrid]}> */}
+                        {ListShip.map(ship => {
+                            const pos = ships[ship.id];
+                            return (
+                                <DndContext key={ship.id} onDragEnd={handleDragEnd} modifiers={[snapToGrid]}>
+                                    <Ship
+                                        key={ship.id}
+                                        id={ship.id}
+                                        shipame={ship.type}
+                                        image={ship.image}
+                                        gridSize={gridSize}
+                                        size={ship.size}
+                                        gridCount={gridCount}
+                                        positionFirstBlock={pos}
+                                        isVertical={pos.isVertical}
+                                        onRotate={handleRotate}
+                                        onlyView={disabled}
+                                    />
+                                </DndContext>
+
+                            );
+                        })}
+                        {/* </DndContext> */}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
+
     );
 });
 

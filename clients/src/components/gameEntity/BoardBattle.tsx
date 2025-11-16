@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Cell from "./Cell";
-import type { Player, Ship, Shot } from "../../types/game";
+import type { Player, RoomType, Ship, Shot } from "../../types/game";
 import { useSocket } from "../../hooks/useSocket";
 import { useAppSettings } from "../../context/appSetting";
 import ShipComponent from "./Ship";
@@ -8,14 +8,15 @@ import ShipComponent from "./Ship";
 
 interface BaseProps {
     type: "canShot" | "view";
+    roomType: RoomType;
     showAxisLabels?: boolean;
-    small?: boolean;
+    // small?: boolean;
     className?: string;
     gridCount?: number;
     gridSize?: number;
     listShipShow?: Ship[];
     shots: Shot[] | undefined;
-    players?:(Player|null)[]
+    players?: (Player | null)[]
 }
 
 // Khi type === "canShot", roomId bắt buộc
@@ -32,17 +33,18 @@ interface ViewProps extends BaseProps {
 
 type Props = CanShotProps | ViewProps;
 
-const BoardBattle = ({ type, showAxisLabels, small = false, className = "", gridCount = 10, gridSize = 40, roomId, shots = [], listShipShow = [],players=[]}: Props) => {
+const BoardBattle = ({ type, showAxisLabels, className = "", gridCount = 10, gridSize = 40, roomId, shots = [], listShipShow = [], players = [],roomType }: Props) => {
     // console.log('Board Battle');
     const { attack } = useSocket()
     const { playerId } = useAppSettings();
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".slice(0, gridCount).split("");
     const numbers = Array.from({ length: gridCount }, (_, i) => i + 1);
     const [focusedCell, setFocusedCell] = useState<{ x: number; y: number } | null>(null);
+    const [zoom,setZoom] = useState<number>(1)
 
     const shot = (x: number, y: number) => {
         roomId && attack(roomId, x, y, playerId)
-        
+
 
         setFocusedCell(null);
     };
@@ -87,163 +89,187 @@ const BoardBattle = ({ type, showAxisLabels, small = false, className = "", grid
             setFocusedCell({ x, y });
         }
     }, []);
-    
-    return (
-        <div className={`inline-block flex ${className} opacity-1`}
-            style={{
-                position: "relative",
-                zoom: small ? 0.6 : 1,
-                transformOrigin: "top left"
-            }}
-        >
 
-            {/* Cột chữ Y (cố định) */}
+    return (
+        <>
             {
-                showAxisLabels && <div className="flex flex-col border-r"
-                    style={{ marginTop: `${gridSize}px` }}
-                >
-                    {letters.map((letter) => (
-                        <div
-                            key={letter}
-                            className="flex items-center justify-center font-bold"
-                            style={{
-                                width: gridSize * 0.8,
-                                height: gridSize,
-                            }}
-                        >
-                            {letter}
-                        </div>
-                    ))}
+                gridSize === 30 && roomType==='one_board' &&
+                <div className="flex gap-3 justify-center items-center w-full">
+                    Zoom: 
+                    <button className="py-2 px-4 p border-2 border-border"
+                        onClick={()=>setZoom(prev=>prev-0.1)}
+                    >
+                        -
+                    </button>
+                    <div className="px-5 py-2 border-2 border-border flex items-center justify-center">
+                        <p>{Math.floor(zoom*100) }%</p>
+                    </div>
+                    <button className="py-2 px-4 border-2 border-border"
+                        onClick={()=>setZoom(prev=>prev+0.1)}
+                    >
+                        +
+                    </button>
                 </div>
             }
-
-            <div className={`h-full flex flex-col overflow-x-auto max-w-[86vw] relative ${type !== 'canShot' ? 'board-disabled' : 'board-not-disabled'}`}
-
+            <div className={`inline-block flex ${className} opacity-1`}
+                style={{
+                    position: "relative",
+                    zoom: zoom,
+                    transformOrigin: "top left"
+                }}
             >
-                {
-                    showAxisLabels &&
-                    <>
-                        <div className="flex"
-                        >
-                            {numbers.map((num) => (
-                                <div
-                                    key={num}
-                                    className="flex items-center justify-center font-bold"
-                                    style={{
-                                        minWidth: gridSize,
-                                        height: gridSize,
-                                    }}
-                                >
-                                    {num}
-                                </div>
-                            ))}
 
-                        </div>
-                    </>
+                {/* Cột chữ Y (cố định) */}
+                {
+                    showAxisLabels && <div className="flex flex-col border-r"
+                        style={{ marginTop: `${gridSize}px` }}
+                    >
+                        {letters.map((letter) => (
+                            <div
+                                key={letter}
+                                className="flex items-center justify-center font-bold"
+                                style={{
+                                    width: gridSize * 0.8,
+                                    height: gridSize,
+                                    fontSize: `${zoom}rem`
+                                }}
+                            >
+                                {letter}
+                            </div>
+                        ))}
+                    </div>
                 }
 
-                {/* BOARD */}
-                <div className="relative z-20">
-                    <div
-                        className="grid"
+                <div className={`h-full flex flex-col overflow-x-auto max-w-[86vw] relative ${type !== 'canShot' ? 'board-disabled' : 'board-not-disabled'}`}
+
+                >
+                    {
+                        showAxisLabels &&
+                        <>
+                            <div className="flex"
+                            >
+                                {numbers.map((num) => (
+                                    <div
+                                        key={num}
+                                        className="flex items-center justify-center font-bold"
+                                        style={{
+                                            minWidth: gridSize,
+                                            height: gridSize,
+                                            fontSize: `${zoom}rem`
+                                        }}
+                                    >
+                                        {num}
+                                    </div>
+                                ))}
+
+                            </div>
+                        </>
+                    }
+
+                    {/* BOARD */}
+                    <div className="relative z-20">
+                        <div
+                            className="grid"
+                            style={{
+                                gridTemplateColumns: `repeat(${gridCount}, ${gridSize}px)`,
+                                gridTemplateRows: `repeat(${gridCount}, ${gridSize}px)`,
+                            }}
+                        >
+                            {Array.from({ length: gridCount * gridCount }).map((_, idx) => {
+                                const row = Math.floor(idx / gridCount);
+                                const col = idx % gridCount;
+                                const hit = shotMapRef.current.get(`${row},${col}`)?.hit
+                                const miss = shotMapRef.current.get(`${row},${col}`) ? true : false
+                                const hasMyShip = listShipShowMap.get(`${row},${col}`)
+                                return (
+                                    <Cell
+                                        key={`${row}-${col}`}
+                                        x={row}
+                                        y={col}
+                                        hasShip={hit}
+                                        hit={miss}
+                                        isNewHit={(shots[shots.length - 1]?.x === row && shots[shots.length - 1]?.y === col) ? true : false}
+                                        isNewHitToShip={(shots[shots.length - 1]?.x === row && shots[shots.length - 1]?.y === col && shots[shots.length - 1].hit)}
+                                        shot={handleClick}
+                                        isFocus={focusedCell?.x === row && focusedCell?.y === col}
+                                        disabled={miss}
+                                        gridSize={gridSize}
+                                        hasMyShip={hasMyShip}
+                                    />
+                                )
+                            })}
+                        </div>
+                    </div>
+                    <div className="absolute z-10"
                         style={{
-                            gridTemplateColumns: `repeat(${gridCount}, ${gridSize}px)`,
-                            gridTemplateRows: `repeat(${gridCount}, ${gridSize}px)`,
+                            top: showAxisLabels ? gridSize : 0,
                         }}
                     >
-                        {Array.from({ length: gridCount * gridCount }).map((_, idx) => {
-                            const row = Math.floor(idx / gridCount);
-                            const col = idx % gridCount;
-                            const hit = shotMapRef.current.get(`${row},${col}`)?.hit
-                            const miss = shotMapRef.current.get(`${row},${col}`) ? true : false
-                            const hasMyShip = listShipShowMap.get(`${row},${col}`)
+                        {listShipShow && listShipShow.map(ship => {
+                            const firstCoord = ship?.coordinates?.[0];
+                            const positionFirstBlock = {
+                                x: firstCoord?.y * gridSize,
+                                y: firstCoord?.x * gridSize
+                            }
                             return (
-                                <Cell
-                                    key={`${row}-${col}`}
-                                    x={row}
-                                    y={col}
-                                    hasShip={hit}
-                                    hit={miss}
-                                    isNewHit={(shots[shots.length - 1]?.x === row && shots[shots.length - 1]?.y === col) ? true : false}
-                                    isNewHitToShip={(shots[shots.length - 1]?.x === row && shots[shots.length - 1]?.y === col && shots[shots.length - 1].hit)}
-                                    shot={handleClick}
-                                    isFocus={focusedCell?.x === row && focusedCell?.y === col}
-                                    disabled={miss}
+                                <ShipComponent
+                                    key={`${ship.playerId}-${ship.id}`}
+                                    id={ship.id}
+                                    shipame={ship.type}
+                                    image={ship.image}
                                     gridSize={gridSize}
-                                    hasMyShip={hasMyShip}
+                                    size={ship.size}
+                                    gridCount={gridCount}
+                                    positionFirstBlock={positionFirstBlock}
+                                    isVertical={ship.coordinates?.[0].x === ship.coordinates?.[1].x ? false : true}
+                                    onlyView={type === "view"}
+                                    isSunk={ship.sunk}
+                                    showOpacity
                                 />
-                            )
+                            );
                         })}
                     </div>
-                </div>
-                <div className="absolute z-10"
-                    style={{ 
-                        top: showAxisLabels ?gridSize:0, 
-                    }}
-                >
-                    {listShipShow && listShipShow.map(ship => {
-                        const firstCoord = ship?.coordinates?.[0];
-                        const positionFirstBlock = {
-                            x: firstCoord?.y * gridSize,
-                            y: firstCoord?.x * gridSize
-                        }
-                        return (
-                            <ShipComponent
-                                key={`${ship.playerId}-${ship.id}`}
-                                id={ship.id}
-                                shipame={ship.type}
-                                image={ship.image}
-                                gridSize={gridSize}
-                                size={ship.size}
-                                gridCount={gridCount}
-                                positionFirstBlock={positionFirstBlock}
-                                isVertical={ship.coordinates?.[0].x === ship.coordinates?.[1].x ? false : true}
-                                onlyView={type === "view"}
-                                isSunk={ship.sunk}
-                                showOpacity
-                            />
-                        );
-                    })}
-                </div>
-                <div className="absolute z-30"
-                    style={{ 
-                        top: showAxisLabels ?gridSize:0, 
-                    }}
-                >
-                    {listShipShow && listShipShow.map(ship => {
-                        const firstCoord = ship?.coordinates?.[0];
-                        const positionFirstBlock = {
-                            x: firstCoord?.y * gridSize,
-                            y: firstCoord?.x * gridSize
-                        }
-                        return (
-                            <ShipComponent
-                                key={`${ship.playerId}-${ship.id}`}
-                                id={ship.id}
-                                shipame={ship.type}
-                                image={ship.image}
-                                gridSize={gridSize}
-                                size={ship.size}
-                                gridCount={gridCount}
-                                positionFirstBlock={positionFirstBlock}
-                                isVertical={ship.coordinates?.[0].x === ship.coordinates?.[1].x ? false : true}
-                                onlyView={type === "view"}
-                                isSunk={ship.sunk}
-                                showOpacity
-                                hideShip
-                                className={`
-                                    ${ship.playerId===players[0]?.id?"border-2 border-blue-700":""}
-                                    ${ship.playerId===players[1]?.id?"border-2 border-red-500":""}
-                                    ${ship.playerId===players[2]?.id?"border-2 border-green-500":""}
-                                    ${ship.playerId===players[3]?.id?"border-2 border-yellow-500":""}
+                    <div className="absolute z-30"
+                        style={{
+                            top: showAxisLabels ? gridSize : 0,
+                        }}
+                    >
+                        {listShipShow && listShipShow.map(ship => {
+                            const firstCoord = ship?.coordinates?.[0];
+                            const positionFirstBlock = {
+                                x: firstCoord?.y * gridSize,
+                                y: firstCoord?.x * gridSize
+                            }
+                            return (
+                                <ShipComponent
+                                    key={`${ship.playerId}-${ship.id}`}
+                                    id={ship.id}
+                                    shipame={ship.type}
+                                    image={ship.image}
+                                    gridSize={gridSize}
+                                    size={ship.size}
+                                    gridCount={gridCount}
+                                    positionFirstBlock={positionFirstBlock}
+                                    isVertical={ship.coordinates?.[0].x === ship.coordinates?.[1].x ? false : true}
+                                    onlyView={type === "view"}
+                                    isSunk={ship.sunk}
+                                    showOpacity
+                                    hideShip
+                                    className={`
+                                    ${ship.playerId === players[0]?.id ? "border-2 border-blue-700" : ""}
+                                    ${ship.playerId === players[1]?.id ? "border-2 border-red-500" : ""}
+                                    ${ship.playerId === players[2]?.id ? "border-2 border-green-500" : ""}
+                                    ${ship.playerId === players[3]?.id ? "border-2 border-yellow-500" : ""}
                                 `}
-                            />
-                        );
-                    })}
-                </div>
+                                />
+                            );
+                        })}
+                    </div>
 
+                </div>
             </div>
-        </div>
+        </>
+
     );
 };
 

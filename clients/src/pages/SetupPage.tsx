@@ -202,7 +202,7 @@ const SetupPage = () => {
                 <div className="flex justify-center w-full p-2 border-2 border-border">
                     <p>{t("deployFleet")}</p>
                 </div>
-                <div className="flex justify-center">
+                <div className="flex flex-col items-center justify-center">
                     <BoardSetup
                         ref={boardRef}
                         // onSetupChange={handleShipsChange}

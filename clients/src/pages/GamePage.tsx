@@ -108,6 +108,7 @@ const GamePage = ({
                     <span className={`w-full p-2 text-center border-2 border-btn-bg`} style={!isMyTurn ? { borderColor: 'red' } : {}}>{isMyTurn ? t("your_turn") : t("enemy_fleet")}</span>
                     <BoardBattle
                         key='enemyBoard'
+                        roomType={room.type}
                         type={game?.status === 'ended' || !isMyTurn ? "view" : "canShot"}
                         gridSize={gridSize}
                         roomId={roomId ?? ""}
@@ -138,6 +139,7 @@ const GamePage = ({
                     <span className="w-full p-2 text-center border-2 border-btn-bg" style={!isMyTurn ? { borderColor: 'red' } : {}}>{isMyTurn ? t("your_fleet") : t("enemy_turn")}</span>
                     <BoardBattle
                         key='myBoard'
+                        roomType={room.type}
                         type="view"
                         roomId={roomId}
                         gridSize={gridSize}

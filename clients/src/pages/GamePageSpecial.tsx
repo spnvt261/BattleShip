@@ -129,6 +129,7 @@ const GamePageSpecial = () => {
             <div className={`relative flex justify-center items-center w-full max-w-[750px] min-h-[40px] [@media(max-width:512px)]:flex-col mt-8 transition-all duration-500 `}>
                 <BoardBattle
                     key='board'
+                    roomType={room.type}
                     type={playerTurn?.id === playerId ? "canShot" : "view"}
                     roomId={roomId!}
                     gridSize={gridSize}
@@ -233,7 +234,6 @@ const GamePageSpecial = () => {
                             <CustomButton
                                 label={t("back_to_home")}
                                 onClick={() => {
-                                    roomId && leaveRoom(roomId, playerId)
                                     navigate("/")
                                 }}
                             />

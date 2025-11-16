@@ -72,8 +72,8 @@ export function CustomSelectTab<T extends string | number>({
                     >
                         <span className={`max-w-[200px] truncate font-bold ${renderClassLabel?.(opt)}`}
                             style={{color:opt === value ? "#fff":disabled?"gray":""}}
-                        >{renderLabel(opt)}-
-                            <span style={{color:'red'}}>{disabled?"OUT":""}</span>
+                        >{renderLabel(opt)}
+                            <span style={{color:'red'}}>{disabled?" OUT":""}</span>
                         </span>
                         
                     </div>

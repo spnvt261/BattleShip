@@ -136,6 +136,7 @@ const ChatModal = ({
                                         <CustomButton
                                             label={t("send")}
                                             onClick={() => {
+                                                if(inputValue.length===0) return
                                                 sendMessage(roomId, playerName, inputValue, playerId)
                                                 setInputalue('')
                                             }}

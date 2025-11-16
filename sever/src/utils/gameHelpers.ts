@@ -25,23 +25,39 @@ export function checkEndGame(game: Game): { ended: boolean; winnerId?: string } 
   return { ended: false };
 }
 
-export function checkEndGameOneBoardMode(game: Game,room:Room): { ended: boolean; winnerId?: string } {
+export function checkEndGameOneBoardMode(game: Game, room: Room): { ended: boolean; winnerId?: string } {
   // if any player's ships are all sunk -> game ends
-  if(game.players.filter(p=>p.isDie).length===(room.roomPlayerNumber-1)){
-    return {ended:true,winnerId:game.players.find(p=>!p.isDie)?.playerId}
+  if (game.players.filter(p => p.isDie).length === (room.roomPlayerNumber - 1)) {
+    return { ended: true, winnerId: game.players.find(p => !p.isDie)?.playerId }
   }
   return { ended: false };
 }
 
-export function checkPlayerOut(game:Game,playerId:string){
-  const player = game.players.find(p=>p.playerId===playerId);
-  if(!player){
+export function checkPlayerOut(game: Game, playerId: string) {
+  const player = game.players.find(p => p.playerId === playerId);
+  if (!player) {
     throw "Player Not Found"
   }
   const playerAllSunk = player.ships.every(s => s.sunk);
-  if(playerAllSunk){
-    player.isDie=true;
-    console.log('playerOut:',playerId);
+  if (playerAllSunk) {
+    player.isDie = true;
+    console.log('playerOut:', playerId);
+  }
+}
+
+export function playerDie(room: Room, playerId: string) {
+  const game = room.game
+  if (!game) return
+  const player = room.game?.players.find(p => p.playerId === playerId)
+  if (!player) return
+  player.isDie = true
+  player.ships.forEach(ship => {
+    ship.sunk = true
+  })
+  const playerIndex = game.players.filter(p=>!p.isDie).findIndex(p => p.playerId === playerId);
+  const playerAlive = game.players.filter(p => !p.isDie)
+  if (game.turn === playerId) {
+    game.turn = playerIndex === (playerAlive.length - 1) ? playerAlive[0].playerId : playerAlive[playerIndex + 1].playerId
   }
 }
 

@@ -68,6 +68,9 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
                         if(!res.room?.game){
                             return null
                         }
+                        if(res.room.game.players.every(p=>p.playerId!==playerId)){
+                            return null
+                        }
                         switch(playerId){
                             case res.room.players[0].id: return res.room.game.players[0];
                             case res.room.players[1].id: return res.room.game.players[1];
@@ -83,7 +86,12 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }, [playerId])
     useEffect(() => {
         const unsubroom = onRoomUpdate((res) => {
-            if (room && res.room.players.length === (room.roomPlayerNumber-1)  && room.players.length === room.roomPlayerNumber && room.status !== 'waiting') {
+            
+            if (room && res.room.players.length === (room.roomPlayerNumber-1)  
+                && room.players.length === room.roomPlayerNumber 
+                && ( (room.status !== 'waiting' && room.type==='classic') || (room.type=='one_board' && room.game?.status==='placing') )
+            ) 
+            {
                 const playerLeaveRoom: Player = room.players.filter((p,index)=> p.id !== res.room.players[index]?.id)[0]
                 notify(t("player_left", { player: playerLeaveRoom?.name || "" }), 'warning')
                 cleanRoom()
@@ -101,19 +109,20 @@ export const GameProvider: FC<{ children: ReactNode }> = ({ children }) => {
         })
 
         const unsubplayerstate = onPlayerStateUpdate((res) => {
-            setPlayerState(prev => {
-                if (!prev) return res.playerState;
+            setPlayerState(_prev => {
+                // if (!prev) 
+                return res.playerState;
 
-                return {
-                    ...prev,
-                    // chỉ cập nhật những field thay đổi
-                    shotsFired: res.playerState.shotsFired ?? prev.shotsFired??[],
-                    shotsReceived: res.playerState.shotsReceived ?? prev.shotsReceived??[],
-                    sunkEnemyShips: res.playerState.sunkEnemyShips ?? prev.sunkEnemyShips??[],
-                    isReady: res.playerState.isReady ?? prev.isReady,
-                    // giữ nguyên ships nếu không có thay đổi
-                    ships: res.playerState.ships?.length ? res.playerState.ships : prev.ships??[],
-                };
+                // return {
+                //     ...prev,
+                //     // chỉ cập nhật những field thay đổi
+                //     shotsFired: res.playerState.shotsFired ?? prev.shotsFired??[],
+                //     shotsReceived: res.playerState.shotsReceived ?? prev.shotsReceived??[],
+                //     sunkEnemyShips: res.playerState.sunkEnemyShips ?? prev.sunkEnemyShips??[],
+                //     isReady: res.playerState.isReady ?? prev.isReady,
+                //     // giữ nguyên ships nếu không có thay đổi
+                //     ships: res.playerState.ships?.length ? res.playerState.ships : prev.ships??[],
+                // };
             });
         })
         return () => {

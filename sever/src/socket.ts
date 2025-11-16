@@ -91,7 +91,7 @@ export function initSockets(io: IOServer) {
 
         socket.on("leave_room", (payload: { roomId: string; playerId?: string }, cb: any) => {
             const playerId = payload?.playerId || socketToPlayer.get(socket.id) || socket.id;
-            leaveRoom(payload.roomId, playerId);
+            leaveRoom(payload.roomId, playerId,io);
             // cleanup mapping for this socket
             socketToPlayer.delete(socket.id);
             socket.leave(payload.roomId);
@@ -148,6 +148,7 @@ export function initSockets(io: IOServer) {
 
         socket.on("chat", (payload: { roomId: string; text: string; name: string; playerId: string }, cb: any) => {
             const { roomId, text, name } = payload;
+            if(text.length===0)cb && cb({ ok: false });
             const playerId = payload.playerId || socketToPlayer.get(socket.id) || socket.id;
             socketToPlayer.set(socket.id, playerId);
             addMessage(roomId, playerId, name, text, io);

@@ -10,8 +10,13 @@ export const useAuth = (room: Room | null, game: Game | null, options?: { suppre
     const { notify } = useNotification();
     useEffect(() => {
         if (!room) return
-        const [player1, player2] = room.players
-        if (!player1 && !player2) return
+        const players = room.players.filter(Boolean)
+        if (players.length === 0) return
+        if (players.every(p => p.id !== playerId)) {
+            notify(t("Room is full"), "warning");
+            navigate("/")
+            return;
+        }
         // if (player1&&player2&& player1.id !== playerId && player2.id !== playerId) {
         //     notify(t("Room is full"), "warning");
         //     navigate("/")
@@ -23,7 +28,12 @@ export const useAuth = (room: Room | null, game: Game | null, options?: { suppre
                 navigate(`/room/${room.id}/setup`)
                 return
             } else if (game.status === 'playing') {
-                navigate(`/room/${room.id}/fight`)
+                if (room.type === 'classic') {
+                    navigate(`/room/${room.id}/fight`)
+                } else if (room.type === 'one_board') {
+                    navigate(`/room/${room.id}/fight-mode`)
+                }
+
             } else {
                 notify(t("match_finish"), "error")
                 navigate("/");
